@@ -704,13 +704,34 @@ function WorkflowStudio({
   return (
     <div style={{ display: 'flex', flex: 1, minHeight: 0, width: '100%' }}>
       <aside className="workflow-sidebar-panel" style={workflowSidebarAside}>
+        <div
+          style={{
+            flexShrink: 0,
+            padding: '16px 18px 14px',
+            borderBottom: '1px solid rgba(255,255,255,0.07)',
+          }}
+        >
+          <Link
+            href="/"
+            style={{ display: 'inline-block', lineHeight: 0, opacity: 0.95 }}
+            title="Ana sayfa"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/klak-logo.png"
+              alt="KLAK"
+              style={{ height: 34, width: 'auto', display: 'block' }}
+            />
+          </Link>
+        </div>
+
         {/* Workflow list */}
         <div
           style={{
             flexShrink: 0,
             display: 'flex',
             flexDirection: 'column',
-            padding: '18px 18px 14px',
+            padding: '14px 18px 14px',
             borderBottom: '1px solid rgba(255,255,255,0.07)',
             gap: 0,
             minHeight: 0,
@@ -1050,15 +1071,27 @@ export default function WorkflowBuilder() {
         <Link
           href="/"
           style={{
-            fontSize: 13,
-            color: 'rgba(255,255,255,0.45)',
-            textDecoration: 'none',
             display: 'flex',
             alignItems: 'center',
-            gap: 6,
+            gap: 12,
+            textDecoration: 'none',
           }}
+          title="Ana sayfa"
         >
-          <span aria-hidden>←</span> Studio
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/klak-logo.png"
+            alt="KLAK"
+            style={{ height: 26, width: 'auto', display: 'block' }}
+          />
+          <span
+            style={{
+              fontSize: 13,
+              color: 'rgba(255,255,255,0.45)',
+            }}
+          >
+            <span aria-hidden>←</span> Studio
+          </span>
         </Link>
         <span style={{ color: 'rgba(255,255,255,0.12)', fontSize: 12 }}>|</span>
         <span

@@ -45,10 +45,11 @@ export default function Sidebar({
       >
         {/* Logo */}
         <div style={{ marginBottom: 20 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/klak-logo.png"
-            alt="KLAK Studio"
-            style={{ height: 80, width: 'auto', display: 'block' }}
+            alt="KLAK"
+            style={{ height: 72, width: 'auto', maxWidth: '100%', display: 'block' }}
           />
         </div>
 

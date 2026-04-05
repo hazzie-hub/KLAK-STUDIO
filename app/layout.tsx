@@ -4,6 +4,9 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'KLAK Studio — AI Image Generator',
   description: 'Transform ideas into cinematic visuals',
+  icons: {
+    icon: '/klak-logo.png',
+  },
 };
 
 export default function RootLayout({

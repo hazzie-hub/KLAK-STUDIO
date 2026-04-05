@@ -30,6 +30,12 @@ export default function MainCanvas({ children }: MainCanvasProps) {
           flexShrink: 0,
         }}
       >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/klak-logo.png"
+          alt="KLAK"
+          style={{ height: 22, width: 'auto', display: 'block' }}
+        />
         <span
           style={{
             fontSize: 11,
@@ -38,7 +44,7 @@ export default function MainCanvas({ children }: MainCanvasProps) {
             textTransform: 'uppercase',
           }}
         >
-          KLAK Studio
+          Studio
         </span>
         <span style={{ color: 'var(--border-default)', fontSize: 10 }}>·</span>
         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Mock mod</span>
