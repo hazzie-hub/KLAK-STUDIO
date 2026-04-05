@@ -1,8 +1,6 @@
 'use client';
 
-import KlakLogo from '@/components/KlakLogo';
-import { KLAK_LOGO_HEIGHT } from '@/lib/klakLogoSizes';
-import Link from 'next/link';
+import StudioTopNav from '@/components/layout/StudioTopNav';
 
 interface MainCanvasProps {
   children?: React.ReactNode;
@@ -32,35 +30,7 @@ export default function MainCanvas({ children }: MainCanvasProps) {
           flexShrink: 0,
         }}
       >
-        <KlakLogo
-          style={{
-            height: KLAK_LOGO_HEIGHT.studioTopBar,
-            width: 'auto',
-            display: 'block',
-          }}
-        />
-        <span
-          style={{
-            fontSize: 11,
-            color: 'var(--text-muted)',
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-          }}
-        >
-          Studio
-        </span>
-        <span style={{ color: 'var(--border-default)', fontSize: 10 }}>·</span>
-        <Link
-          href="/workflow"
-          style={{
-            fontSize: 11,
-            color: 'var(--text-secondary)',
-            textDecoration: 'none',
-            letterSpacing: '0.04em',
-          }}
-        >
-          Workflow
-        </Link>
+        <StudioTopNav />
       </div>
 
       {/* Scrollable content area */}

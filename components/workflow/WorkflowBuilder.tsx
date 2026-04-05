@@ -19,6 +19,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import KlakLogo from '@/components/KlakLogo';
+import StudioTopNav from '@/components/layout/StudioTopNav';
 import { KLAK_LOGO_HEIGHT } from '@/lib/klakLogoSizes';
 import {
   cloneGraph,
@@ -1066,49 +1067,12 @@ export default function WorkflowBuilder() {
           borderBottom: '1px solid rgba(255,255,255,0.06)',
           display: 'flex',
           alignItems: 'center',
-          padding: '0 20px',
+          padding: '0 24px',
           gap: 16,
           background: 'rgba(14,14,16,0.98)',
         }}
       >
-        <Link
-          href="/"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            textDecoration: 'none',
-          }}
-          title="Ana sayfa"
-        >
-          <KlakLogo
-            style={{
-              height: KLAK_LOGO_HEIGHT.workflowHeader,
-              width: 'auto',
-              display: 'block',
-            }}
-          />
-          <span
-            style={{
-              fontSize: 13,
-              color: 'rgba(255,255,255,0.45)',
-            }}
-          >
-            <span aria-hidden>←</span> Studio
-          </span>
-        </Link>
-        <span style={{ color: 'rgba(255,255,255,0.12)', fontSize: 12 }}>|</span>
-        <span
-          className="font-display"
-          style={{
-            fontSize: 15,
-            fontWeight: 700,
-            letterSpacing: '-0.02em',
-            color: 'rgba(255,255,255,0.92)',
-          }}
-        >
-          Workflow
-        </span>
+        <StudioTopNav />
         <span style={{ flex: 1 }} />
         <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.28)' }}>
           localStorage · Kaydet
