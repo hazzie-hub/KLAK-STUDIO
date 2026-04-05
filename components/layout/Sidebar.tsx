@@ -47,7 +47,7 @@ export default function Sidebar({
         {/* Logo */}
         <div style={{ marginBottom: 20 }}>
           <KlakLogo
-            style={{ height: 96, width: 'auto', maxWidth: '100%', display: 'block' }}
+            style={{ height: 125, width: 'auto', maxWidth: '100%', display: 'block' }}
           />
         </div>
 

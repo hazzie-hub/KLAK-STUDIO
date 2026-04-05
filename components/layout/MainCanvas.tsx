@@ -31,7 +31,7 @@ export default function MainCanvas({ children }: MainCanvasProps) {
           flexShrink: 0,
         }}
       >
-        <KlakLogo style={{ height: 28, width: 'auto', display: 'block' }} />
+        <KlakLogo style={{ height: 36, width: 'auto', display: 'block' }} />
         <span
           style={{
             fontSize: 11,

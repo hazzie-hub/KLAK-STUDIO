@@ -717,7 +717,7 @@ function WorkflowStudio({
             style={{ display: 'inline-block', lineHeight: 0, opacity: 0.95 }}
             title="Ana sayfa"
           >
-            <KlakLogo style={{ height: 46, width: 'auto', display: 'block' }} />
+            <KlakLogo style={{ height: 60, width: 'auto', display: 'block' }} />
           </Link>
         </div>
 
@@ -1074,7 +1074,7 @@ export default function WorkflowBuilder() {
           }}
           title="Ana sayfa"
         >
-          <KlakLogo style={{ height: 32, width: 'auto', display: 'block' }} />
+          <KlakLogo style={{ height: 42, width: 'auto', display: 'block' }} />
           <span
             style={{
               fontSize: 13,
