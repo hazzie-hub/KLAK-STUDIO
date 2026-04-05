@@ -123,3 +123,30 @@ html, body {
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
 }
+
+/* React Flow — workflow builder (dark) */
+.workflow-canvas .react-flow__controls {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.workflow-canvas .react-flow__controls-button {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  fill: var(--text-secondary);
+}
+
+.workflow-canvas .react-flow__controls-button:hover {
+  background: var(--bg-elevated);
+  fill: var(--accent);
+}
+
+.workflow-canvas .react-flow__edge-path {
+  stroke: rgba(255, 214, 10, 0.55);
+}
+
+.workflow-canvas .react-flow__connectionline {
+  stroke: var(--accent);
+}

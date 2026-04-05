@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 interface MainCanvasProps {
   children?: React.ReactNode;
 }
@@ -40,6 +42,18 @@ export default function MainCanvas({ children }: MainCanvasProps) {
         </span>
         <span style={{ color: 'var(--border-default)', fontSize: 10 }}>·</span>
         <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Mock mod</span>
+        <span style={{ color: 'var(--border-default)', fontSize: 10 }}>·</span>
+        <Link
+          href="/workflow"
+          style={{
+            fontSize: 11,
+            color: 'var(--text-secondary)',
+            textDecoration: 'none',
+            letterSpacing: '0.04em',
+          }}
+        >
+          Workflow
+        </Link>
         <div style={{ flex: 1 }} />
         {/* Status indicator */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>

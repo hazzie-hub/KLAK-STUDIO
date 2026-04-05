@@ -1,5 +1,4 @@
 {
   "/page": "app/page.js",
-  "/api/transform-prompt/route": "app/api/transform-prompt/route.js",
-  "/api/generate-images/route": "app/api/generate-images/route.js"
+  "/workflow/page": "app/workflow/page.js"
 }
