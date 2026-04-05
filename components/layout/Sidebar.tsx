@@ -64,19 +64,15 @@ export default function Sidebar({
 
         <button
           type="button"
-          className="sidebar-new-folder-btn"
+          className="neon-solid-btn"
           onClick={onNewFolder}
           style={{
             width: '100%',
             padding: '8px 12px',
             borderRadius: 8,
-            border: 'none',
             fontSize: 11,
-            fontWeight: 600,
             letterSpacing: '0.02em',
             cursor: 'pointer',
-            fontFamily: 'DM Sans, sans-serif',
-            transition: 'filter 0.2s ease, box-shadow 0.2s ease',
           }}
         >
           + Yeni klasör

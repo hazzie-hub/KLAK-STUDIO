@@ -26,11 +26,11 @@
   --accent-dim: rgba(255, 214, 10, 0.12);
   --accent-glow: rgba(255, 214, 10, 0.25);
 
-  /* Sidebar — neon “Yeni klasör” */
-  --neon-folder-bg: #e8ff3d;
-  --neon-folder-text: #0a0a0c;
-  --neon-folder-glow: rgba(232, 255, 61, 0.22);
-  --neon-folder-glow-hover: rgba(232, 255, 61, 0.45);
+  /* Neon solid (Yeni klasör, Üret, Workflow birincil aksiyonlar) */
+  --neon-solid-bg: #e8ff3d;
+  --neon-solid-text: #0a0a0c;
+  --neon-solid-glow: rgba(232, 255, 61, 0.22);
+  --neon-solid-glow-hover: rgba(232, 255, 61, 0.45);
 
   /* Sidebar */
   --sidebar-width: 280px;
@@ -219,23 +219,34 @@ html, body {
   background: rgba(255, 214, 10, 0.25);
 }
 
-/* Generate sidebar — yeni klasör (minimal neon) */
-.sidebar-new-folder-btn {
-  background: var(--neon-folder-bg);
-  color: var(--neon-folder-text);
-  box-shadow: 0 0 18px var(--neon-folder-glow);
+/* Neon solid — Generate (Üret), klasör, Workflow birincil butonlar */
+.neon-solid-btn {
+  background: var(--neon-solid-bg);
+  color: var(--neon-solid-text);
+  box-shadow: 0 0 18px var(--neon-solid-glow);
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  transition: filter 0.2s ease, box-shadow 0.2s ease, opacity 0.15s ease;
 }
 
-.sidebar-new-folder-btn:hover {
+.neon-solid-btn:hover:not(:disabled) {
   filter: brightness(1.06);
-  box-shadow: 0 0 26px var(--neon-folder-glow-hover);
+  box-shadow: 0 0 26px var(--neon-solid-glow-hover);
 }
 
-.sidebar-new-folder-btn:focus {
+.neon-solid-btn:focus {
   outline: none;
 }
 
-.sidebar-new-folder-btn:focus-visible {
+.neon-solid-btn:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
+}
+
+.neon-solid-btn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+  filter: none;
+  box-shadow: none;
 }

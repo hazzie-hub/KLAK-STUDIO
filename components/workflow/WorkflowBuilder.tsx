@@ -261,20 +261,14 @@ function RunPipelinePanel({
     <Panel position="top-right" style={{ margin: 12 }}>
       <button
         type="button"
+        className="neon-solid-btn"
         onClick={handleRun}
         disabled={busy}
         style={{
           padding: '10px 20px',
           borderRadius: 10,
-          border: '1px solid rgba(255,214,10,0.35)',
-          background: busy
-            ? 'rgba(255,214,10,0.08)'
-            : 'rgba(255,214,10,0.14)',
-          color: 'var(--accent)',
           fontSize: 13,
-          fontWeight: 600,
           cursor: busy ? 'wait' : 'pointer',
-          fontFamily: '"DM Sans", sans-serif',
         }}
       >
         {busy ? 'Çalışıyor…' : 'Çalıştır'}
@@ -763,17 +757,15 @@ function WorkflowStudio({
           <p style={labelStyle}>Workflow&apos;lar</p>
           <button
             type="button"
+            className="neon-solid-btn"
             onClick={handleNew}
             style={{
-              padding: '11px 14px',
-              borderRadius: 11,
-              border: '1px solid rgba(255,214,10,0.32)',
-              background: 'rgba(255,214,10,0.1)',
-              color: 'var(--accent)',
-              fontSize: 13,
-              fontWeight: 600,
+              width: '100%',
+              padding: '10px 14px',
+              borderRadius: 10,
+              fontSize: 12,
+              letterSpacing: '0.02em',
               cursor: 'pointer',
-              fontFamily: '"DM Sans", sans-serif',
               marginBottom: 12,
             }}
           >
@@ -931,18 +923,14 @@ function WorkflowStudio({
               />
               <button
                 type="button"
+                className="neon-solid-btn"
                 onClick={handleSave}
                 style={{
                   flexShrink: 0,
-                  padding: '0 20px',
+                  padding: '0 18px',
                   borderRadius: 10,
-                  border: '1px solid rgba(255,255,255,0.14)',
-                  background: 'rgba(255,255,255,0.1)',
-                  color: 'rgba(255,255,255,0.95)',
                   fontSize: 13,
-                  fontWeight: 600,
                   cursor: 'pointer',
-                  fontFamily: '"DM Sans", sans-serif',
                   whiteSpace: 'nowrap',
                 }}
               >
@@ -962,19 +950,15 @@ function WorkflowStudio({
           >
             <button
               type="button"
+              className="neon-solid-btn"
               onClick={handleSave}
               disabled
               style={{
                 width: '100%',
-                padding: '11px 14px',
+                padding: '10px 14px',
                 borderRadius: 10,
-                border: '1px solid rgba(255,255,255,0.06)',
-                background: 'rgba(255,255,255,0.03)',
-                color: 'rgba(255,255,255,0.25)',
                 fontSize: 13,
-                fontWeight: 600,
                 cursor: 'not-allowed',
-                fontFamily: '"DM Sans", sans-serif',
               }}
             >
               Kaydet
