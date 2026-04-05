@@ -1,1 +1,1 @@
-{"/_not-found/page":"/_not-found","/page":"/","/workflow/page":"/workflow","/api/transform-prompt/route":"/api/transform-prompt","/api/generate-images/route":"/api/generate-images","/api/voice-reply/route":"/api/voice-reply"}
+{"/_not-found/page":"/_not-found","/api/generate-images/route":"/api/generate-images","/page":"/","/storyboard/page":"/storyboard","/api/transform-prompt/route":"/api/transform-prompt","/api/voice-reply/route":"/api/voice-reply","/workflow/page":"/workflow","/api/storyboard/route":"/api/storyboard"}
