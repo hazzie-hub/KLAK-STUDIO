@@ -17,7 +17,7 @@ interface UseVoiceInputReturn {
 export function useVoiceInput({ onTranscript, onError }: UseVoiceInputOptions): UseVoiceInputReturn {
   const [isListening, setIsListening] = useState(false);
   const [isSupported, setIsSupported] = useState(false);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<any>(null);
 
   useEffect(() => {
     const SpeechRecognition =
@@ -30,7 +30,7 @@ export function useVoiceInput({ onTranscript, onError }: UseVoiceInputOptions): 
 
     setIsSupported(true);
 
-    const recognition = new SpeechRecognition();
+    const recognition: any = new SpeechRecognition();
     recognition.lang = 'tr-TR';
     recognition.continuous = false;
     recognition.interimResults = false;
