@@ -35,7 +35,7 @@ export default function MainCanvas({ children }: MainCanvasProps) {
           className="klak-logo"
           src="/klak-logo.png"
           alt="KLAK"
-          style={{ height: 22, width: 'auto', display: 'block' }}
+          style={{ height: 28, width: 'auto', display: 'block' }}
         />
         <span
           style={{

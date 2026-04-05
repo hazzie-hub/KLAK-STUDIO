@@ -49,8 +49,8 @@ export default function Sidebar({
           <img
             className="klak-logo"
             src="/klak-logo.png"
-            alt="KLAK"
-            style={{ height: 72, width: 'auto', maxWidth: '100%', display: 'block' }}
+            alt="KLAK AI & Tech Studio"
+            style={{ height: 96, width: 'auto', maxWidth: '100%', display: 'block' }}
           />
         </div>
 

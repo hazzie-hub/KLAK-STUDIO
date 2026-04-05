@@ -721,7 +721,7 @@ function WorkflowStudio({
               className="klak-logo"
               src="/klak-logo.png"
               alt="KLAK"
-              style={{ height: 34, width: 'auto', display: 'block' }}
+              style={{ height: 46, width: 'auto', display: 'block' }}
             />
           </Link>
         </div>
@@ -1084,7 +1084,7 @@ export default function WorkflowBuilder() {
             className="klak-logo"
             src="/klak-logo.png"
             alt="KLAK"
-            style={{ height: 26, width: 'auto', display: 'block' }}
+            style={{ height: 32, width: 'auto', display: 'block' }}
           />
           <span
             style={{
