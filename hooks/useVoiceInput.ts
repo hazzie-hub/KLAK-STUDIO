@@ -36,13 +36,13 @@ export function useVoiceInput({ onTranscript, onError }: UseVoiceInputOptions): 
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
       onTranscript(transcript);
       setIsListening(false);
     };
 
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+    recognition.onerror = (event: any) => {
       const messages: Record<string, string> = {
         'not-allowed': 'Mikrofon izni reddedildi.',
         'no-speech': 'Ses algılanamadı, tekrar dene.',
