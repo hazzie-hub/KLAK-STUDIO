@@ -7,15 +7,22 @@ import ImagePreview from './ImagePreview';
 
 interface ImageGalleryProps {
   images: GeneratedImage[];
-  prompt: string;
-  transformedPrompt?: string;
+  /** Aktif klasör adı */
+  folderName: string;
+  /** Örn. "3 üretim · 12 görsel" */
+  summaryLine?: string;
+  /** En yeni üretimin ham promptu (varsa) */
+  lastRawPrompt?: string;
+  lastTransformedPrompt?: string;
   onDeleteImage?: (imageId: string) => void;
 }
 
 export default function ImageGallery({
   images,
-  prompt,
-  transformedPrompt,
+  folderName,
+  summaryLine,
+  lastRawPrompt,
+  lastTransformedPrompt,
   onDeleteImage,
 }: ImageGalleryProps) {
   const [selectedImage, setSelectedImage] = useState<GeneratedImage | null>(null);
@@ -25,7 +32,6 @@ export default function ImageGallery({
   return (
     <>
       <div style={{ padding: '32px 32px 120px' }}>
-        {/* Prompt display */}
         <div style={{ marginBottom: 24 }}>
           <p style={{
             fontSize: 11,
@@ -35,7 +41,7 @@ export default function ImageGallery({
             marginBottom: 8,
             fontFamily: 'DM Sans, sans-serif',
           }}>
-            Fikrin
+            Klasör
           </p>
           <h2 style={{
             fontFamily: 'Syne, sans-serif',
@@ -43,45 +49,81 @@ export default function ImageGallery({
             fontWeight: 700,
             color: 'var(--text-primary)',
             letterSpacing: '-0.02em',
-            marginBottom: transformedPrompt ? 10 : 0,
+            marginBottom: summaryLine ? 6 : 0,
           }}>
-            {prompt}
+            {folderName}
           </h2>
-          {transformedPrompt && (
-            <div style={{
-              display: 'flex',
-              alignItems: 'flex-start',
-              gap: 8,
-              padding: '10px 14px',
-              borderRadius: 10,
-              background: 'var(--accent-dim)',
-              border: '1px solid var(--border-accent)',
-              marginTop: 8,
+          {summaryLine && (
+            <p style={{
+              margin: 0,
+              fontSize: 12,
+              color: 'var(--text-muted)',
+              fontFamily: 'DM Sans, sans-serif',
             }}>
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
-                <path d="M7 1L8 4.5H11.5L8.75 6.5L9.75 10L7 8L4.25 10L5.25 6.5L2.5 4.5H6L7 1Z" fill="var(--accent)" opacity="0.8"/>
-              </svg>
-              <p style={{
-                fontSize: 12,
-                color: 'var(--accent)',
-                lineHeight: 1.5,
-                fontFamily: 'DM Sans, sans-serif',
-                opacity: 0.85,
-              }}>
-                {transformedPrompt}
-              </p>
-            </div>
+              {summaryLine}
+            </p>
           )}
         </div>
 
-        {/* Divider */}
+        {lastRawPrompt && (
+          <>
+            <div style={{ marginBottom: 20 }}>
+              <p style={{
+                fontSize: 11,
+                color: 'var(--text-muted)',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                marginBottom: 8,
+                fontFamily: 'DM Sans, sans-serif',
+              }}>
+                Son üretim
+              </p>
+              <h3 style={{
+                fontFamily: 'Syne, sans-serif',
+                fontSize: 16,
+                fontWeight: 600,
+                color: 'var(--text-primary)',
+                letterSpacing: '-0.02em',
+                marginBottom: lastTransformedPrompt ? 10 : 0,
+                lineHeight: 1.35,
+              }}>
+                {lastRawPrompt}
+              </h3>
+              {lastTransformedPrompt && (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: 8,
+                  padding: '10px 14px',
+                  borderRadius: 10,
+                  background: 'var(--accent-dim)',
+                  border: '1px solid var(--border-accent)',
+                  marginTop: 8,
+                }}>
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, marginTop: 1 }}>
+                    <path d="M7 1L8 4.5H11.5L8.75 6.5L9.75 10L7 8L4.25 10L5.25 6.5L2.5 4.5H6L7 1Z" fill="var(--accent)" opacity="0.8"/>
+                  </svg>
+                  <p style={{
+                    fontSize: 12,
+                    color: 'var(--accent)',
+                    lineHeight: 1.5,
+                    fontFamily: 'DM Sans, sans-serif',
+                    opacity: 0.85,
+                  }}>
+                    {lastTransformedPrompt}
+                  </p>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
         <div style={{
           height: 1,
           background: 'var(--border-subtle)',
           marginBottom: 24,
         }} />
 
-        {/* Grid */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(3, 1fr)',
@@ -98,7 +140,6 @@ export default function ImageGallery({
           ))}
         </div>
 
-        {/* Footer hint */}
         <p style={{
           fontSize: 11,
           color: 'var(--text-muted)',
@@ -106,11 +147,10 @@ export default function ImageGallery({
           marginTop: 20,
           fontFamily: 'DM Sans, sans-serif',
         }}>
-          Görsele tıkla → büyük önizle · İndir / Sil üstte
+          Tüm üretimler bu klasörde · Görsele tıkla · İndir / Sil üstte
         </p>
       </div>
 
-      {/* Preview modal */}
       {selectedImage && (
         <ImagePreview
           image={selectedImage}

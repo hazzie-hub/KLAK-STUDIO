@@ -19,6 +19,15 @@ export interface PromptHistoryItem {
   createdAt: Date;
 }
 
+/** Generate sayfası: bir klasörde birden fazla üretim (batch) birikir */
+export interface GenerateFolder {
+  id: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+  entries: PromptHistoryItem[];
+}
+
 export interface AppState {
   rawInput: string;
   transformedPrompt: string | null;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import MainCanvas from '@/components/layout/MainCanvas';
 import InputBar from '@/components/input/InputBar';
@@ -9,56 +9,68 @@ import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { usePromptTransform } from '@/hooks/usePromptTransform';
 import { useImageGeneration } from '@/hooks/useImageGeneration';
 import {
+  createEmptyFolder,
+  flattenFolderImages,
   loadGenerateSession,
   saveGenerateSession,
 } from '@/lib/generateHistoryStorage';
-import { AIModel, AspectRatio, GeneratedImage, PromptHistoryItem } from '@/types';
+import { AIModel, AspectRatio, GenerateFolder, GeneratedImage, PromptHistoryItem } from '@/types';
 
 export default function Home() {
-  const [history, setHistory] = useState<PromptHistoryItem[]>([]);
-  const [activeHistoryId, setActiveHistoryId] = useState<string | null>(null);
+  const [folders, setFolders] = useState<GenerateFolder[]>([]);
+  const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
   const [sessionReady, setSessionReady] = useState(false);
   const [prompt, setPrompt] = useState('');
-  const [submittedPrompt, setSubmittedPrompt] = useState('');
-  const [transformedPrompt, setTransformedPrompt] = useState('');
   const [model, setModel] = useState<AIModel>('flux-pro');
   const [aspect, setAspect] = useState<AspectRatio>('1:1');
   const [isLoading, setIsLoading] = useState(false);
-  const [results, setResults] = useState<GeneratedImage[]>([]);
   const [voiceError, setVoiceError] = useState<string | null>(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
+  const activeFolderIdRef = useRef<string | null>(null);
+  useEffect(() => {
+    activeFolderIdRef.current = activeFolderId;
+  }, [activeFolderId]);
+
+  const activeFolder = useMemo(
+    () => folders.find((f) => f.id === activeFolderId) ?? null,
+    [folders, activeFolderId],
+  );
+
+  const results = useMemo(
+    () => (activeFolder ? flattenFolderImages(activeFolder) : []),
+    [activeFolder],
+  );
 
   const { transform } = usePromptTransform();
   const { generate } = useImageGeneration();
 
-  const historyRef = useRef(history);
-  const activeRef = useRef(activeHistoryId);
   useEffect(() => {
-    historyRef.current = history;
-    activeRef.current = activeHistoryId;
-  }, [history, activeHistoryId]);
-
-  useEffect(() => {
-    const { history: loaded, activeHistoryId: aid } = loadGenerateSession();
-    if (loaded.length > 0) {
-      setHistory(loaded);
-      const item = aid ? loaded.find((x) => x.id === aid) : undefined;
-      const pick = item ?? loaded[0];
-      setActiveHistoryId(pick.id);
-      setResults(pick.images);
-      setSubmittedPrompt(pick.rawInput);
-      setTransformedPrompt(pick.transformedPrompt);
+    const { folders: loaded, activeFolderId: aid } = loadGenerateSession();
+    let list = loaded;
+    if (list.length === 0) {
+      list = [createEmptyFolder('Klasör 1')];
     }
+    const act = aid && list.some((f) => f.id === aid) ? aid : list[0].id;
+    setFolders(list);
+    setActiveFolderId(act);
     setSessionReady(true);
   }, []);
 
   useEffect(() => {
     if (!sessionReady) return;
-    saveGenerateSession(history, activeHistoryId);
-  }, [sessionReady, history, activeHistoryId]);
+    saveGenerateSession(folders, activeFolderId);
+  }, [sessionReady, folders, activeFolderId]);
+
+  useEffect(() => {
+    if (!sessionReady || folders.length === 0) return;
+    if (!activeFolderId || !folders.some((f) => f.id === activeFolderId)) {
+      setActiveFolderId(folders[0].id);
+    }
+  }, [sessionReady, folders, activeFolderId]);
 
   const handleTranscript = useCallback((text: string) => {
-    setPrompt((prev) => prev ? `${prev} ${text}` : text);
+    setPrompt((prev) => (prev ? `${prev} ${text}` : text));
     setVoiceError(null);
   }, []);
 
@@ -72,52 +84,53 @@ export default function Home() {
     onError: handleVoiceError,
   });
 
-  const handleHistorySelect = (item: PromptHistoryItem) => {
-    setActiveHistoryId(item.id);
-    setSubmittedPrompt(item.rawInput);
-    setTransformedPrompt(item.transformedPrompt);
-    setResults(item.images);
-  };
+  const handleSelectFolder = useCallback((id: string) => {
+    setActiveFolderId(id);
+  }, []);
+
+  const handleNewFolder = useCallback(() => {
+    setFolders((prev) => {
+      const f = createEmptyFolder(`Klasör ${prev.length + 1}`);
+      setActiveFolderId(f.id);
+      return [f, ...prev];
+    });
+  }, []);
 
   const handleGenerate = async () => {
     if (!prompt.trim()) return;
 
     const rawInput = prompt;
+    const targetFolderId = activeFolderIdRef.current;
+    if (!targetFolderId) return;
+
     setIsLoading(true);
-    setResults([]);
-    setSubmittedPrompt(rawInput);
     setPrompt('');
 
-    // Adım 1: Prompt iyileştir
     setStatusMessage('Fikrin işleniyor...');
     const improved = await transform(rawInput);
-    setTransformedPrompt(improved);
 
-    // Adım 2: Görsel üret
     setStatusMessage('Görseller üretiliyor... (30-60sn sürebilir)');
     const generated = await generate({ prompt: improved, aspectRatio: aspect, model });
 
     const seed = Date.now();
-    const newResults: GeneratedImage[] = generated.length > 0
-      ? generated.map((img, i) => ({
-          id: `result-${seed}-${i}`,
-          url: img.url,
-          prompt: img.revisedPrompt ?? improved,
-          aspectRatio: aspect,
-          model,
-          createdAt: new Date(),
-        }))
-      : // Hata durumunda mock görseller
-        [0, 1, 2].map((i) => ({
-          id: `result-${seed}-${i}`,
-          url: `https://picsum.photos/seed/${seed + i}/800/800`,
-          prompt: improved,
-          aspectRatio: aspect,
-          model,
-          createdAt: new Date(),
-        }));
-
-    setResults(newResults);
+    const newResults: GeneratedImage[] =
+      generated.length > 0
+        ? generated.map((img, i) => ({
+            id: `result-${seed}-${i}`,
+            url: img.url,
+            prompt: img.revisedPrompt ?? improved,
+            aspectRatio: aspect,
+            model,
+            createdAt: new Date(),
+          }))
+        : [0, 1, 2].map((i) => ({
+            id: `result-${seed}-${i}`,
+            url: `https://picsum.photos/seed/${seed + i}/800/800`,
+            prompt: improved,
+            aspectRatio: aspect,
+            model,
+            createdAt: new Date(),
+          }));
 
     const newItem: PromptHistoryItem = {
       id: `h-${seed}`,
@@ -127,62 +140,62 @@ export default function Home() {
       createdAt: new Date(),
     };
 
-    setHistory((prev) => [newItem, ...prev]);
-    setActiveHistoryId(newItem.id);
+    setFolders((prev) =>
+      prev.map((f) =>
+        f.id === targetFolderId
+          ? { ...f, entries: [newItem, ...f.entries], updatedAt: new Date() }
+          : f,
+      ),
+    );
+
     setStatusMessage(null);
     setIsLoading(false);
   };
 
   const handleDeleteImage = useCallback((imageId: string) => {
-    const prev = historyRef.current;
-    const aid = activeRef.current;
-    const mapped = prev.map((item) =>
-      item.id === aid
-        ? { ...item, images: item.images.filter((i) => i.id !== imageId) }
-        : item,
+    const fid = activeFolderIdRef.current;
+    setFolders((prev) =>
+      prev.map((folder) => {
+        if (folder.id !== fid) return folder;
+        const entries = folder.entries
+          .map((entry) => ({
+            ...entry,
+            images: entry.images.filter((i) => i.id !== imageId),
+          }))
+          .filter((entry) => entry.images.length > 0);
+        return { ...folder, entries, updatedAt: new Date() };
+      }),
     );
-    const next = mapped.filter((item) => item.images.length > 0);
-    const still = aid ? next.find((h) => h.id === aid) : undefined;
-
-    setHistory(next);
-    if (still) {
-      setResults(still.images);
-    } else {
-      const first = next[0];
-      setActiveHistoryId(first?.id ?? null);
-      if (first) {
-        setResults(first.images);
-        setSubmittedPrompt(first.rawInput);
-        setTransformedPrompt(first.transformedPrompt);
-      } else {
-        setResults([]);
-        setSubmittedPrompt('');
-        setTransformedPrompt('');
-      }
-    }
   }, []);
+
+  const lastEntry = activeFolder?.entries[0];
+  const batchCount = activeFolder?.entries.length ?? 0;
+  const summaryLine =
+    batchCount > 0 ? `${batchCount} üretim · ${results.length} görsel` : undefined;
 
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', background: 'var(--bg-void)' }}>
       <Sidebar
-        history={history}
-        activeId={activeHistoryId}
-        onSelect={handleHistorySelect}
+        folders={folders}
+        activeFolderId={activeFolderId}
+        onSelectFolder={handleSelectFolder}
+        onNewFolder={handleNewFolder}
       />
 
       <div style={{ flex: 1, position: 'relative', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <MainCanvas>
-          {results.length > 0 && (
+          {results.length > 0 && activeFolder && (
             <ImageGallery
               images={results}
-              prompt={submittedPrompt}
-              transformedPrompt={transformedPrompt}
+              folderName={activeFolder.name}
+              summaryLine={summaryLine}
+              lastRawPrompt={lastEntry?.rawInput}
+              lastTransformedPrompt={lastEntry?.transformedPrompt}
               onDeleteImage={handleDeleteImage}
             />
           )}
         </MainCanvas>
 
-        {/* Durum bildirimi */}
         {statusMessage && (
           <div style={{
             position: 'absolute',
@@ -214,7 +227,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* Ses hatası */}
         {voiceError && (
           <div style={{
             position: 'absolute',
@@ -235,7 +247,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* Dinleniyor */}
         {isListening && !voiceError && !statusMessage && (
           <div style={{
             position: 'absolute',
