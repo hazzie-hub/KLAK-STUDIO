@@ -46,7 +46,7 @@ export default function Sidebar({
         }}
       >
         {/* Logo */}
-        <div style={{ marginBottom: 20 }}>
+        <div style={{ marginBottom: 14 }}>
           <KlakLogo
             style={{
               height: KLAK_LOGO_HEIGHT.sidebar,
@@ -76,19 +76,38 @@ export default function Sidebar({
         {history.length === 0 ? (
           <div
             style={{
-              padding: '32px 20px',
+              margin: '24px 20px 0',
+              padding: '28px 16px',
+              borderRadius: 10,
+              border: '1px dashed var(--border-subtle)',
+              background: 'rgba(255,255,255,0.02)',
               textAlign: 'center',
-              color: 'var(--text-muted)',
-              fontSize: 13,
-              lineHeight: 1.6,
             }}
           >
-            <div style={{ fontSize: 22, marginBottom: 8, opacity: 0.4 }}>✦</div>
-            Henüz üretim yok.
-            <br />
-            İlk fikrini yaz ve
-            <br />
-            Üret'e bas.
+            <p
+              style={{
+                margin: 0,
+                fontSize: 10,
+                fontWeight: 500,
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                color: 'var(--text-muted)',
+                opacity: 0.85,
+              }}
+            >
+              Geçmiş boş
+            </p>
+            <p
+              style={{
+                margin: '10px 0 0',
+                fontSize: 12,
+                lineHeight: 1.5,
+                color: 'var(--text-secondary)',
+                opacity: 0.75,
+              }}
+            >
+              Prompt yazıp ürettiğinde burada listelenir.
+            </p>
           </div>
         ) : (
           history.map((item) => (
@@ -156,9 +175,7 @@ export default function Sidebar({
         }}
       >
         <p style={{ fontSize: 10.5, color: 'var(--text-muted)', lineHeight: 1.5 }}>
-          {history.length > 0
-            ? `${history.length} üretim · MVP v0.1`
-            : 'MVP v0.1 · Mock mod aktif'}
+          {history.length > 0 ? `${history.length} üretim · MVP v0.1` : 'MVP v0.1'}
         </p>
       </div>
     </aside>

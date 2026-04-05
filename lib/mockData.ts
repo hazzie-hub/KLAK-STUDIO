@@ -53,7 +53,6 @@ export const MOCK_HISTORY: PromptHistoryItem[] = [
 
 export const AI_MODELS = [
   { value: 'flux-pro', label: 'Flux Pro' },
-  { value: 'dall-e-3', label: 'DALL·E 3' },
   { value: 'stable-diffusion-3', label: 'SD 3.5' },
 ] as const;
 

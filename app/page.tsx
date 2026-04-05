@@ -16,7 +16,7 @@ export default function Home() {
   const [prompt, setPrompt] = useState('');
   const [submittedPrompt, setSubmittedPrompt] = useState('');
   const [transformedPrompt, setTransformedPrompt] = useState('');
-  const [model, setModel] = useState<AIModel>('dall-e-3');
+  const [model, setModel] = useState<AIModel>('flux-pro');
   const [aspect, setAspect] = useState<AspectRatio>('1:1');
   const [isLoading, setIsLoading] = useState(false);
   const [results, setResults] = useState<GeneratedImage[]>([]);

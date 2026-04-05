@@ -50,8 +50,6 @@ export default function MainCanvas({ children }: MainCanvasProps) {
           Studio
         </span>
         <span style={{ color: 'var(--border-default)', fontSize: 10 }}>·</span>
-        <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>Mock mod</span>
-        <span style={{ color: 'var(--border-default)', fontSize: 10 }}>·</span>
         <Link
           href="/workflow"
           style={{
@@ -63,20 +61,6 @@ export default function MainCanvas({ children }: MainCanvasProps) {
         >
           Workflow
         </Link>
-        <div style={{ flex: 1 }} />
-        {/* Status indicator */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <div
-            style={{
-              width: 6,
-              height: 6,
-              borderRadius: '50%',
-              background: 'var(--accent)',
-              animation: 'glow-pulse 2s ease infinite',
-            }}
-          />
-          <span style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Hazır</span>
-        </div>
       </div>
 
       {/* Scrollable content area */}
