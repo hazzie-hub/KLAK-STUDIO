@@ -253,7 +253,7 @@ function RunPipelinePanel({
           fontSize: 13,
           fontWeight: 600,
           cursor: busy ? 'wait' : 'pointer',
-          fontFamily: "'DM Sans', sans-serif",
+          fontFamily: '"DM Sans", sans-serif',
         }}
       >
         {busy ? 'Çalışıyor…' : 'Çalıştır'}
@@ -262,26 +262,29 @@ function RunPipelinePanel({
   );
 }
 
-const asideStyle: React.CSSProperties = {
-  width: 268,
+const workflowSidebarAside: React.CSSProperties = {
+  width: 340,
+  minWidth: 300,
+  maxWidth: 420,
   flexShrink: 0,
-  borderRight: '1px solid rgba(255,255,255,0.06)',
-  background: 'rgba(12,12,14,0.95)',
+  borderRight: '1px solid rgba(255,255,255,0.08)',
+  background: 'linear-gradient(180deg, rgba(16,16,20,0.98) 0%, rgba(10,10,12,0.99) 100%)',
   display: 'flex',
   flexDirection: 'column',
-  padding: '14px 12px',
-  gap: 10,
-  overflowY: 'auto',
+  height: '100%',
   minHeight: 0,
+  overflow: 'hidden',
+  boxShadow: '4px 0 32px rgba(0,0,0,0.35)',
 };
 
 const labelStyle: React.CSSProperties = {
-  fontSize: 10,
-  fontWeight: 500,
-  letterSpacing: '0.14em',
+  fontSize: 11,
+  fontWeight: 600,
+  letterSpacing: '0.12em',
   textTransform: 'uppercase',
-  color: 'rgba(255,255,255,0.28)',
-  padding: '0 8px 2px',
+  color: 'rgba(255,255,255,0.38)',
+  padding: '0 2px 8px',
+  margin: 0,
 };
 
 type FlowCanvasProps = {
@@ -465,67 +468,99 @@ function NodePalette({
   return (
     <>
       <p style={labelStyle}>Node ekle</p>
-      {(Object.keys(PALETTE_META) as PaletteKey[]).map((key) => {
-        const meta = PALETTE_META[key];
-        return (
-          <div
-            key={key}
-            draggable
-            onDragStart={(e) => onPaletteDragStart(e, key)}
-            style={{
-              padding: '10px 12px',
-              borderRadius: 10,
-              border: '1px solid rgba(255,255,255,0.06)',
-              background: 'rgba(22,22,26,0.9)',
-              cursor: 'grab',
-            }}
-            onMouseDown={(e) => {
-              (e.currentTarget as HTMLDivElement).style.cursor = 'grabbing';
-            }}
-            onMouseUp={(e) => {
-              (e.currentTarget as HTMLDivElement).style.cursor = 'grab';
-            }}
-          >
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 10,
+        }}
+      >
+        {(Object.keys(PALETTE_META) as PaletteKey[]).map((key) => {
+          const meta = PALETTE_META[key];
+          return (
             <div
+              key={key}
+              draggable
+              onDragStart={(e) => onPaletteDragStart(e, key)}
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                marginBottom: 4,
+                padding: '12px 14px',
+                borderRadius: 12,
+                border: '1px solid rgba(255,255,255,0.08)',
+                background: 'rgba(24,24,30,0.92)',
+                cursor: 'grab',
+                transition: 'border-color 0.15s ease, background 0.15s ease',
+              }}
+              onMouseDown={(e) => {
+                (e.currentTarget as HTMLDivElement).style.cursor = 'grabbing';
+              }}
+              onMouseUp={(e) => {
+                (e.currentTarget as HTMLDivElement).style.cursor = 'grab';
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLDivElement).style.borderColor =
+                  'rgba(255,255,255,0.14)';
+                (e.currentTarget as HTMLDivElement).style.background =
+                  'rgba(32,32,40,0.95)';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLDivElement).style.borderColor =
+                  'rgba(255,255,255,0.08)';
+                (e.currentTarget as HTMLDivElement).style.background =
+                  'rgba(24,24,30,0.92)';
               }}
             >
-              <span
+              <div
                 style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: '50%',
-                  background: meta.accent,
-                  flexShrink: 0,
-                }}
-              />
-              <span
-                style={{
-                  fontSize: 13,
-                  fontWeight: 600,
-                  color: 'rgba(255,255,255,0.9)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  marginBottom: 6,
                 }}
               >
-                {meta.title}
+                <span
+                  style={{
+                    width: 9,
+                    height: 9,
+                    borderRadius: '50%',
+                    background: meta.accent,
+                    flexShrink: 0,
+                    boxShadow: `0 0 10px ${meta.accent}40`,
+                  }}
+                />
+                <span
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 600,
+                    color: 'rgba(255,255,255,0.94)',
+                    letterSpacing: '-0.01em',
+                  }}
+                >
+                  {meta.title}
+                </span>
+              </div>
+              <span
+                style={{
+                  fontSize: 12,
+                  lineHeight: 1.45,
+                  color: 'rgba(255,255,255,0.4)',
+                  display: 'block',
+                  paddingLeft: 19,
+                }}
+              >
+                {meta.hint}
               </span>
             </div>
-            <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.32)' }}>
-              {meta.hint}
-            </span>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
       <p
         style={{
-          marginTop: 4,
-          padding: '8px 8px 0',
-          fontSize: 11,
+          marginTop: 14,
+          padding: '12px 4px 0',
+          fontSize: 12,
           lineHeight: 1.55,
-          color: 'rgba(255,255,255,0.28)',
+          color: 'rgba(255,255,255,0.32)',
+          borderTop: '1px solid rgba(255,255,255,0.06)',
         }}
       >
         Çalıştır: System + Input Prompt → transform → görsel.
@@ -633,174 +668,255 @@ function WorkflowStudio({
 
   return (
     <div style={{ display: 'flex', flex: 1, minHeight: 0, width: '100%' }}>
-      <aside style={{ ...asideStyle, width: 240 }}>
-        <p style={labelStyle}>Workflow&apos;lar</p>
-        <button
-          type="button"
-          onClick={handleNew}
-          style={{
-            padding: '9px 12px',
-            borderRadius: 10,
-            border: '1px solid rgba(255,214,10,0.28)',
-            background: 'rgba(255,214,10,0.08)',
-            color: 'var(--accent)',
-            fontSize: 12,
-            fontWeight: 600,
-            cursor: 'pointer',
-            fontFamily: "'DM Sans', sans-serif",
-          }}
-        >
-          + Yeni workflow
-        </button>
-
+      <aside className="workflow-sidebar-panel" style={workflowSidebarAside}>
+        {/* Workflow list */}
         <div
           style={{
+            flexShrink: 0,
             display: 'flex',
             flexDirection: 'column',
-            gap: 6,
-            maxHeight: 200,
-            overflowY: 'auto',
-            paddingRight: 2,
+            padding: '18px 18px 14px',
+            borderBottom: '1px solid rgba(255,255,255,0.07)',
+            gap: 0,
+            minHeight: 0,
+            maxHeight: 'min(42vh, 380px)',
           }}
         >
-          {workflows.map((w) => (
+          <p style={labelStyle}>Workflow&apos;lar</p>
+          <button
+            type="button"
+            onClick={handleNew}
+            style={{
+              padding: '11px 14px',
+              borderRadius: 11,
+              border: '1px solid rgba(255,214,10,0.32)',
+              background: 'rgba(255,214,10,0.1)',
+              color: 'var(--accent)',
+              fontSize: 13,
+              fontWeight: 600,
+              cursor: 'pointer',
+              fontFamily: '"DM Sans", sans-serif',
+              marginBottom: 12,
+            }}
+          >
+            + Yeni workflow
+          </button>
+
+          <div
+            style={{
+              flex: 1,
+              minHeight: 140,
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+              paddingRight: 4,
+              marginRight: -4,
+            }}
+          >
+            {workflows.map((w) => (
+              <div
+                key={w.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  borderRadius: 11,
+                  border:
+                    w.id === activeId
+                      ? '1px solid rgba(255,214,10,0.4)'
+                      : '1px solid rgba(255,255,255,0.08)',
+                  background:
+                    w.id === activeId
+                      ? 'rgba(255,214,10,0.08)'
+                      : 'rgba(26,26,32,0.95)',
+                  padding: '10px 12px',
+                  minHeight: 48,
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => selectWorkflow(w)}
+                  style={{
+                    flex: 1,
+                    minWidth: 0,
+                    textAlign: 'left',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    padding: '2px 4px',
+                    fontSize: 13,
+                    fontWeight: w.id === activeId ? 600 : 500,
+                    color: 'rgba(255,255,255,0.92)',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                  title={w.name}
+                >
+                  {w.name}
+                </button>
+                <button
+                  type="button"
+                  title="Adı düzenle"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    selectWorkflow(w);
+                    requestAnimationFrame(() => nameInputRef.current?.focus());
+                  }}
+                  style={{
+                    flexShrink: 0,
+                    width: 36,
+                    height: 36,
+                    borderRadius: 9,
+                    border: 'none',
+                    background: 'rgba(255,255,255,0.07)',
+                    color: 'rgba(255,255,255,0.5)',
+                    cursor: 'pointer',
+                    fontSize: 14,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  ✎
+                </button>
+                <button
+                  type="button"
+                  title="Sil"
+                  onClick={(e) => handleDelete(w.id, e)}
+                  style={{
+                    flexShrink: 0,
+                    width: 36,
+                    height: 36,
+                    borderRadius: 9,
+                    border: 'none',
+                    background: 'rgba(248,113,113,0.14)',
+                    color: 'rgba(248,113,113,0.95)',
+                    cursor: 'pointer',
+                    fontSize: 18,
+                    lineHeight: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Name and save */}
+        {activeId && (
+          <div
+            style={{
+              flexShrink: 0,
+              padding: '16px 18px',
+              borderBottom: '1px solid rgba(255,255,255,0.07)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 10,
+            }}
+          >
+            <p style={{ ...labelStyle, paddingBottom: 0 }}>Workflow adı</p>
             <div
-              key={w.id}
               style={{
                 display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                borderRadius: 8,
-                border:
-                  w.id === activeId
-                    ? '1px solid rgba(255,214,10,0.35)'
-                    : '1px solid rgba(255,255,255,0.06)',
-                background:
-                  w.id === activeId
-                    ? 'rgba(255,214,10,0.06)'
-                    : 'rgba(22,22,26,0.85)',
-                padding: '6px 8px',
+                gap: 10,
+                alignItems: 'stretch',
               }}
             >
-              <button
-                type="button"
-                onClick={() => selectWorkflow(w)}
+              <input
+                ref={nameInputRef}
+                type="text"
+                value={nameDraft}
+                onChange={(e) => setNameDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+                }}
+                placeholder="İsim…"
                 style={{
                   flex: 1,
                   minWidth: 0,
-                  textAlign: 'left',
-                  background: 'none',
-                  border: 'none',
+                  padding: '12px 14px',
+                  borderRadius: 10,
+                  border: '1px solid rgba(255,255,255,0.12)',
+                  background: 'rgba(0,0,0,0.4)',
+                  color: 'rgba(255,255,255,0.92)',
+                  fontSize: 14,
+                  outline: 'none',
+                  fontFamily: '"DM Sans", sans-serif',
+                }}
+              />
+              <button
+                type="button"
+                onClick={handleSave}
+                style={{
+                  flexShrink: 0,
+                  padding: '0 20px',
+                  borderRadius: 10,
+                  border: '1px solid rgba(255,255,255,0.14)',
+                  background: 'rgba(255,255,255,0.1)',
+                  color: 'rgba(255,255,255,0.95)',
+                  fontSize: 13,
+                  fontWeight: 600,
                   cursor: 'pointer',
-                  padding: '4px 2px',
-                  fontSize: 12,
-                  fontWeight: w.id === activeId ? 600 : 500,
-                  color: 'rgba(255,255,255,0.88)',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
+                  fontFamily: '"DM Sans", sans-serif',
                   whiteSpace: 'nowrap',
                 }}
-                title={w.name}
               >
-                {w.name}
-              </button>
-              <button
-                type="button"
-                title="Adı düzenle"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  selectWorkflow(w);
-                  requestAnimationFrame(() => nameInputRef.current?.focus());
-                }}
-                style={{
-                  flexShrink: 0,
-                  padding: '4px 6px',
-                  borderRadius: 6,
-                  border: 'none',
-                  background: 'rgba(255,255,255,0.06)',
-                  color: 'rgba(255,255,255,0.45)',
-                  cursor: 'pointer',
-                  fontSize: 11,
-                }}
-              >
-                ✎
-              </button>
-              <button
-                type="button"
-                title="Sil"
-                onClick={(e) => handleDelete(w.id, e)}
-                style={{
-                  flexShrink: 0,
-                  padding: '4px 7px',
-                  borderRadius: 6,
-                  border: 'none',
-                  background: 'rgba(248,113,113,0.12)',
-                  color: 'rgba(248,113,113,0.9)',
-                  cursor: 'pointer',
-                  fontSize: 12,
-                }}
-              >
-                ×
+                Kaydet
               </button>
             </div>
-          ))}
-        </div>
-
-        {activeId && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <p style={labelStyle}>Workflow adı</p>
-            <input
-              ref={nameInputRef}
-              type="text"
-              value={nameDraft}
-              onChange={(e) => setNameDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
-              }}
-              placeholder="İsim…"
-              style={{
-                width: '100%',
-                padding: '9px 10px',
-                borderRadius: 8,
-                border: '1px solid rgba(255,255,255,0.1)',
-                background: 'rgba(0,0,0,0.35)',
-                color: 'rgba(255,255,255,0.9)',
-                fontSize: 13,
-                outline: 'none',
-                fontFamily: "'DM Sans', sans-serif",
-              }}
-            />
           </div>
         )}
 
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={!activeId}
+        {!activeId && (
+          <div
+            style={{
+              flexShrink: 0,
+              padding: '12px 18px',
+              borderBottom: '1px solid rgba(255,255,255,0.07)',
+            }}
+          >
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled
+              style={{
+                width: '100%',
+                padding: '11px 14px',
+                borderRadius: 10,
+                border: '1px solid rgba(255,255,255,0.06)',
+                background: 'rgba(255,255,255,0.03)',
+                color: 'rgba(255,255,255,0.25)',
+                fontSize: 13,
+                fontWeight: 600,
+                cursor: 'not-allowed',
+                fontFamily: '"DM Sans", sans-serif',
+              }}
+            >
+              Kaydet
+            </button>
+          </div>
+        )}
+
+        {/* Node palette */}
+        <div
+          className="workflow-palette"
           style={{
-            padding: '9px 12px',
-            borderRadius: 10,
-            border: '1px solid rgba(255,255,255,0.12)',
-            background: activeId ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.03)',
-            color: activeId ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.25)',
-            fontSize: 12,
-            fontWeight: 600,
-            cursor: activeId ? 'pointer' : 'not-allowed',
-            fontFamily: "'DM Sans', sans-serif",
+            flex: 1,
+            minHeight: 200,
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            padding: '18px 18px 22px',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
-          Kaydet
-        </button>
-
-        <div
-          style={{
-            height: 1,
-            background: 'rgba(255,255,255,0.06)',
-            margin: '8px 0',
-          }}
-        />
-
-        <div className="workflow-palette">
           <NodePalette onPaletteDragStart={onPaletteDragStart} />
         </div>
       </aside>
