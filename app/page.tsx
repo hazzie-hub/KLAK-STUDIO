@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import MainCanvas from '@/components/layout/MainCanvas';
 import InputBar from '@/components/input/InputBar';
@@ -8,11 +8,16 @@ import ImageGallery from '@/components/gallery/ImageGallery';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { usePromptTransform } from '@/hooks/usePromptTransform';
 import { useImageGeneration } from '@/hooks/useImageGeneration';
+import {
+  loadGenerateSession,
+  saveGenerateSession,
+} from '@/lib/generateHistoryStorage';
 import { AIModel, AspectRatio, GeneratedImage, PromptHistoryItem } from '@/types';
 
 export default function Home() {
   const [history, setHistory] = useState<PromptHistoryItem[]>([]);
   const [activeHistoryId, setActiveHistoryId] = useState<string | null>(null);
+  const [sessionReady, setSessionReady] = useState(false);
   const [prompt, setPrompt] = useState('');
   const [submittedPrompt, setSubmittedPrompt] = useState('');
   const [transformedPrompt, setTransformedPrompt] = useState('');
@@ -25,6 +30,32 @@ export default function Home() {
 
   const { transform } = usePromptTransform();
   const { generate } = useImageGeneration();
+
+  const historyRef = useRef(history);
+  const activeRef = useRef(activeHistoryId);
+  useEffect(() => {
+    historyRef.current = history;
+    activeRef.current = activeHistoryId;
+  }, [history, activeHistoryId]);
+
+  useEffect(() => {
+    const { history: loaded, activeHistoryId: aid } = loadGenerateSession();
+    if (loaded.length > 0) {
+      setHistory(loaded);
+      const item = aid ? loaded.find((x) => x.id === aid) : undefined;
+      const pick = item ?? loaded[0];
+      setActiveHistoryId(pick.id);
+      setResults(pick.images);
+      setSubmittedPrompt(pick.rawInput);
+      setTransformedPrompt(pick.transformedPrompt);
+    }
+    setSessionReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!sessionReady) return;
+    saveGenerateSession(history, activeHistoryId);
+  }, [sessionReady, history, activeHistoryId]);
 
   const handleTranscript = useCallback((text: string) => {
     setPrompt((prev) => prev ? `${prev} ${text}` : text);
@@ -102,6 +133,35 @@ export default function Home() {
     setIsLoading(false);
   };
 
+  const handleDeleteImage = useCallback((imageId: string) => {
+    const prev = historyRef.current;
+    const aid = activeRef.current;
+    const mapped = prev.map((item) =>
+      item.id === aid
+        ? { ...item, images: item.images.filter((i) => i.id !== imageId) }
+        : item,
+    );
+    const next = mapped.filter((item) => item.images.length > 0);
+    const still = aid ? next.find((h) => h.id === aid) : undefined;
+
+    setHistory(next);
+    if (still) {
+      setResults(still.images);
+    } else {
+      const first = next[0];
+      setActiveHistoryId(first?.id ?? null);
+      if (first) {
+        setResults(first.images);
+        setSubmittedPrompt(first.rawInput);
+        setTransformedPrompt(first.transformedPrompt);
+      } else {
+        setResults([]);
+        setSubmittedPrompt('');
+        setTransformedPrompt('');
+      }
+    }
+  }, []);
+
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', background: 'var(--bg-void)' }}>
       <Sidebar
@@ -117,6 +177,7 @@ export default function Home() {
               images={results}
               prompt={submittedPrompt}
               transformedPrompt={transformedPrompt}
+              onDeleteImage={handleDeleteImage}
             />
           )}
         </MainCanvas>

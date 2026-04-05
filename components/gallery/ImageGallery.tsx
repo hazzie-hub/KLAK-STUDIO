@@ -9,9 +9,15 @@ interface ImageGalleryProps {
   images: GeneratedImage[];
   prompt: string;
   transformedPrompt?: string;
+  onDeleteImage?: (imageId: string) => void;
 }
 
-export default function ImageGallery({ images, prompt, transformedPrompt }: ImageGalleryProps) {
+export default function ImageGallery({
+  images,
+  prompt,
+  transformedPrompt,
+  onDeleteImage,
+}: ImageGalleryProps) {
   const [selectedImage, setSelectedImage] = useState<GeneratedImage | null>(null);
 
   if (images.length === 0) return null;
@@ -87,6 +93,7 @@ export default function ImageGallery({ images, prompt, transformedPrompt }: Imag
               image={image}
               index={index}
               onClick={setSelectedImage}
+              onDelete={onDeleteImage}
             />
           ))}
         </div>
@@ -99,7 +106,7 @@ export default function ImageGallery({ images, prompt, transformedPrompt }: Imag
           marginTop: 20,
           fontFamily: 'DM Sans, sans-serif',
         }}>
-          Görsele tıkla → büyük önizle
+          Görsele tıkla → büyük önizle · İndir / Sil üstte
         </p>
       </div>
 
@@ -108,6 +115,7 @@ export default function ImageGallery({ images, prompt, transformedPrompt }: Imag
         <ImagePreview
           image={selectedImage}
           onClose={() => setSelectedImage(null)}
+          onDeleteImage={onDeleteImage}
         />
       )}
     </>

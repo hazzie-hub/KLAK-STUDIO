@@ -1,25 +1,61 @@
 'use client';
 
+import { useCallback, useState } from 'react';
+import type { CSSProperties } from 'react';
 import { GeneratedImage } from '@/types';
+import { downloadImageFromUrl } from '@/lib/downloadImage';
+
+const actionBtn: CSSProperties = {
+  padding: '6px 10px',
+  borderRadius: 8,
+  fontSize: 11,
+  fontWeight: 600,
+  fontFamily: 'DM Sans, sans-serif',
+  cursor: 'pointer',
+  border: '1px solid rgba(255,255,255,0.2)',
+  background: 'rgba(8,8,8,0.75)',
+  color: 'rgba(255,255,255,0.92)',
+  backdropFilter: 'blur(8px)',
+  transition: 'border-color 0.15s ease, background 0.15s ease',
+};
 
 interface ImageCardProps {
   image: GeneratedImage;
   index: number;
   onClick: (image: GeneratedImage) => void;
+  onDelete?: (imageId: string) => void;
 }
 
-export default function ImageCard({ image, index, onClick }: ImageCardProps) {
+export default function ImageCard({ image, index, onClick, onDelete }: ImageCardProps) {
+  const [hover, setHover] = useState(false);
+
+  const handleDownload = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      const safe = image.id.replace(/[^a-zA-Z0-9-_]/g, '').slice(0, 40) || 'gorsel';
+      void downloadImageFromUrl(image.url, `klak-${safe}.png`);
+    },
+    [image.id, image.url],
+  );
+
+  const handleDelete = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      onDelete?.(image.id);
+    },
+    [image.id, onDelete],
+  );
+
   return (
-    <button
-      onClick={() => onClick(image)}
+    <div
       style={{
         position: 'relative',
         borderRadius: 16,
         overflow: 'hidden',
         border: '1px solid var(--border-subtle)',
         background: 'var(--bg-elevated)',
-        cursor: 'pointer',
-        padding: 0,
         aspectRatio: '1 / 1',
         width: '100%',
         animation: 'fade-in-up 0.4s ease forwards',
@@ -28,43 +64,106 @@ export default function ImageCard({ image, index, onClick }: ImageCardProps) {
         transition: 'transform 0.2s ease, border-color 0.2s ease',
       }}
       onMouseEnter={(e) => {
-        (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.02)';
-        (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border-accent)';
+        setHover(true);
+        (e.currentTarget as HTMLDivElement).style.transform = 'scale(1.02)';
+        (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--border-accent)';
       }}
       onMouseLeave={(e) => {
-        (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1)';
-        (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border-subtle)';
+        setHover(false);
+        (e.currentTarget as HTMLDivElement).style.transform = 'scale(1)';
+        (e.currentTarget as HTMLDivElement).style.borderColor = 'var(--border-subtle)';
       }}
     >
-      {/* Image */}
-      <img
-        src={image.url}
-        alt={image.prompt}
+      <button
+        type="button"
+        onClick={() => onClick(image)}
         style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover',
-          display: 'block',
+          position: 'absolute',
+          inset: 0,
+          padding: 0,
+          margin: 0,
+          border: 'none',
+          cursor: 'pointer',
+          background: 'transparent',
         }}
-      />
+        aria-label="Önizle"
+      >
+        <img
+          src={image.url}
+          alt={image.prompt}
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            display: 'block',
+            pointerEvents: 'none',
+          }}
+        />
+      </button>
 
-      {/* Hover overlay */}
+      {/* Üst: indir / sil */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 8,
+          right: 8,
+          left: 8,
+          display: 'flex',
+          justifyContent: 'flex-end',
+          gap: 6,
+          zIndex: 2,
+          pointerEvents: 'auto',
+        }}
+      >
+        <button
+          type="button"
+          onClick={handleDownload}
+          style={actionBtn}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--border-accent)';
+            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,214,10,0.12)';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(255,255,255,0.2)';
+            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(8,8,8,0.75)';
+          }}
+        >
+          İndir
+        </button>
+        {onDelete && (
+          <button
+            type="button"
+            onClick={handleDelete}
+            style={{
+              ...actionBtn,
+              borderColor: 'rgba(255,80,80,0.35)',
+              color: 'rgba(255,140,140,0.95)',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,60,60,0.2)';
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.background = 'rgba(8,8,8,0.75)';
+            }}
+          >
+            Sil
+          </button>
+        )}
+      </div>
+
+      {/* Alt hover: önizle ipucu */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
           background: 'linear-gradient(to top, rgba(8,8,8,0.8) 0%, transparent 50%)',
-          opacity: 0,
+          opacity: hover ? 1 : 0,
           transition: 'opacity 0.2s ease',
           display: 'flex',
           alignItems: 'flex-end',
           padding: 14,
-        }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLDivElement).style.opacity = '1';
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLDivElement).style.opacity = '0';
+          pointerEvents: 'none',
+          zIndex: 1,
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -98,10 +197,12 @@ export default function ImageCard({ image, index, onClick }: ImageCardProps) {
           fontWeight: 600,
           color: 'rgba(255,255,255,0.5)',
           fontFamily: 'Syne, sans-serif',
+          zIndex: 2,
+          pointerEvents: 'none',
         }}
       >
         {index + 1}
       </div>
-    </button>
+    </div>
   );
 }

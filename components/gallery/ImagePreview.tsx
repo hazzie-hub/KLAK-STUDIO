@@ -1,14 +1,16 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { GeneratedImage } from '@/types';
+import { downloadImageFromUrl } from '@/lib/downloadImage';
 
 interface ImagePreviewProps {
   image: GeneratedImage;
   onClose: () => void;
+  onDeleteImage?: (imageId: string) => void;
 }
 
-export default function ImagePreview({ image, onClose }: ImagePreviewProps) {
+export default function ImagePreview({ image, onClose, onDeleteImage }: ImagePreviewProps) {
   // ESC to close
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -17,6 +19,16 @@ export default function ImagePreview({ image, onClose }: ImagePreviewProps) {
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, [onClose]);
+
+  const handleDownload = useCallback(() => {
+    const safe = image.id.replace(/[^a-zA-Z0-9-_]/g, '').slice(0, 40) || 'gorsel';
+    void downloadImageFromUrl(image.url, `klak-${safe}.png`);
+  }, [image.id, image.url]);
+
+  const handleDelete = useCallback(() => {
+    onDeleteImage?.(image.id);
+    onClose();
+  }, [image.id, onDeleteImage, onClose]);
 
   return (
     <div
@@ -45,7 +57,7 @@ export default function ImagePreview({ image, onClose }: ImagePreviewProps) {
         }}
       >
         {/* Top bar */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap' }}>
           <span
             style={{
               fontSize: 11,
@@ -57,7 +69,45 @@ export default function ImagePreview({ image, onClose }: ImagePreviewProps) {
           >
             Önizleme
           </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <button
+              type="button"
+              onClick={handleDownload}
+              style={{
+                padding: '8px 14px',
+                borderRadius: 8,
+                background: 'var(--accent-dim)',
+                border: '1px solid var(--border-accent)',
+                color: 'var(--accent)',
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+                fontFamily: 'DM Sans, sans-serif',
+              }}
+            >
+              İndir
+            </button>
+            {onDeleteImage && (
+              <button
+                type="button"
+                onClick={handleDelete}
+                style={{
+                  padding: '8px 14px',
+                  borderRadius: 8,
+                  background: 'rgba(255,60,60,0.12)',
+                  border: '1px solid rgba(255,80,80,0.35)',
+                  color: 'rgba(255,140,140,0.95)',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  fontFamily: 'DM Sans, sans-serif',
+                }}
+              >
+                Sil
+              </button>
+            )}
           <button
+            type="button"
             onClick={onClose}
             style={{
               width: 32,
@@ -85,6 +135,7 @@ export default function ImagePreview({ image, onClose }: ImagePreviewProps) {
               <path d="M1 1L11 11M11 1L1 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
           </button>
+          </div>
         </div>
 
         {/* Image */}
