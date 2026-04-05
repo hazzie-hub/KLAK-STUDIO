@@ -12,7 +12,10 @@ interface InputBarProps {
   onChange: (v: string) => void;
   onSubmit: () => void;
   isListening: boolean;
-  onMicClick: () => void;
+  onMicPointerDown: () => void;
+  onMicPointerUp: () => void;
+  /** Web Speech API yoksa mikrofon kapalı */
+  micSupported?: boolean;
   model: AIModel;
   onModelChange: (m: AIModel) => void;
   aspect: AspectRatio;
@@ -26,7 +29,9 @@ export default function InputBar({
   onChange,
   onSubmit,
   isListening,
-  onMicClick,
+  onMicPointerDown,
+  onMicPointerUp,
+  micSupported = true,
   model,
   onModelChange,
   aspect,
@@ -60,7 +65,12 @@ export default function InputBar({
         disabled={disabled || isLoading}
         isListening={isListening}
       />
-      <MicButton isListening={isListening} onClick={onMicClick} disabled={disabled || isLoading} />
+      <MicButton
+        isListening={isListening}
+        onPointerDownHold={onMicPointerDown}
+        onPointerUpHold={onMicPointerUp}
+        disabled={disabled || isLoading || !micSupported}
+      />
       <GenerateButton
         onClick={onSubmit}
         disabled={disabled || !value.trim()}

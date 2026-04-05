@@ -115,7 +115,7 @@ function EmptyState() {
             lineHeight: 1.6,
           }}
         >
-          Aşağıya bir fikir yaz ya da mikrofona bas.
+          Aşağıya yaz veya mikrofona basılı tutup Türkçe konuş.
           Sistem onu sinematik bir görsel prompt'una dönüştürür.
         </p>
       </div>

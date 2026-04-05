@@ -14,6 +14,7 @@ import {
   loadGenerateSession,
   saveGenerateSession,
 } from '@/lib/generateHistoryStorage';
+import { speakTurkish } from '@/lib/speakTurkish';
 import { AIModel, AspectRatio, GenerateFolder, GeneratedImage, PromptHistoryItem } from '@/types';
 
 export default function Home() {
@@ -45,6 +46,10 @@ export default function Home() {
   const { transform } = usePromptTransform();
   const { generate } = useImageGeneration();
 
+  const promptRef = useRef(prompt);
+  promptRef.current = prompt;
+  const voiceBaselineRef = useRef('');
+
   useEffect(() => {
     try {
       const { folders: loaded, activeFolderId: aid } = loadGenerateSession();
@@ -70,20 +75,127 @@ export default function Home() {
     saveGenerateSession(folders, activeFolderId);
   }, [sessionReady, folders, activeFolderId]);
 
-  const handleTranscript = useCallback((text: string) => {
-    setPrompt((prev) => (prev ? `${prev} ${text}` : text));
-    setVoiceError(null);
-  }, []);
-
   const handleVoiceError = useCallback((error: string) => {
     setVoiceError(error);
     setTimeout(() => setVoiceError(null), 3000);
   }, []);
 
-  const { isListening, toggle: toggleMic } = useVoiceInput({
-    onTranscript: handleTranscript,
+  const runImageGenerationFromRaw = useCallback(
+    async (rawInput: string) => {
+      const trimmed = rawInput.trim();
+      const targetFolderId = activeFolderIdRef.current;
+      if (!trimmed || !sessionReady || !targetFolderId) {
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+      setPrompt('');
+
+      setStatusMessage('Fikrin işleniyor...');
+      const improved = await transform(trimmed);
+
+      setStatusMessage('Görseller üretiliyor... (30-60sn sürebilir)');
+      const generated = await generate({ prompt: improved, aspectRatio: aspect, model });
+
+      const seed = Date.now();
+      const newResults: GeneratedImage[] =
+        generated.length > 0
+          ? generated.map((img, i) => ({
+              id: `result-${seed}-${i}`,
+              url: img.url,
+              prompt: img.revisedPrompt ?? improved,
+              aspectRatio: aspect,
+              model,
+              createdAt: new Date(),
+            }))
+          : [0, 1, 2].map((i) => ({
+              id: `result-${seed}-${i}`,
+              url: `https://picsum.photos/seed/${seed + i}/800/800`,
+              prompt: improved,
+              aspectRatio: aspect,
+              model,
+              createdAt: new Date(),
+            }));
+
+      const newItem: PromptHistoryItem = {
+        id: `h-${seed}`,
+        rawInput: trimmed,
+        transformedPrompt: improved,
+        images: newResults,
+        createdAt: new Date(),
+      };
+
+      setFolders((prev) =>
+        prev.map((f) =>
+          f.id === targetFolderId
+            ? { ...f, entries: [newItem, ...f.entries], updatedAt: new Date() }
+            : f,
+        ),
+      );
+
+      setStatusMessage(null);
+      setIsLoading(false);
+    },
+    [sessionReady, transform, generate, aspect, model],
+  );
+
+  const executeVoicePipeline = useCallback(
+    async (fullPrompt: string) => {
+      const trimmed = fullPrompt.trim();
+      if (!trimmed || !sessionReady) return;
+
+      setIsLoading(true);
+      setPrompt(trimmed);
+      promptRef.current = trimmed;
+      setVoiceError(null);
+
+      try {
+        setStatusMessage('Kısa yanıt hazırlanıyor...');
+        const res = await fetch('/api/voice-reply', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userText: trimmed }),
+        });
+        const data = await res.json();
+        const reply =
+          typeof data.reply === 'string' ? data.reply : 'Tamam, hemen oluşturuyorum.';
+        setStatusMessage('Asistan sesli yanıtlıyor...');
+        await speakTurkish(reply);
+      } catch (e) {
+        console.error('Voice pipeline:', e);
+        await speakTurkish('Tamam, görselini oluşturuyorum.');
+      }
+
+      setStatusMessage(null);
+      await runImageGenerationFromRaw(trimmed);
+    },
+    [sessionReady, runImageGenerationFromRaw],
+  );
+
+  const { isListening, isSupported, startHold, endHold } = useVoiceInput({
+    onLiveTranscript: (live) => {
+      setVoiceError(null);
+      const b = voiceBaselineRef.current.trim();
+      setPrompt(b ? `${b} ${live}`.trim() : live);
+    },
+    onHoldComplete: (spoken) => {
+      if (!spoken.trim()) return;
+      const b = voiceBaselineRef.current.trim();
+      const full = b ? `${b} ${spoken}`.trim() : spoken;
+      void executeVoicePipeline(full);
+    },
     onError: handleVoiceError,
   });
+
+  const handleMicPointerDown = useCallback(() => {
+    voiceBaselineRef.current = promptRef.current;
+    startHold();
+  }, [startHold]);
+
+  const handleMicPointerUp = useCallback(() => {
+    endHold();
+  }, [endHold]);
 
   const handleSelectFolder = useCallback((id: string) => {
     setActiveFolderId(id);
@@ -100,61 +212,9 @@ export default function Home() {
     if (newFolderId) setActiveFolderId(newFolderId);
   }, [sessionReady]);
 
-  const handleGenerate = async () => {
-    if (!prompt.trim() || !sessionReady) return;
-
-    const rawInput = prompt;
-    const targetFolderId = activeFolderIdRef.current;
-    if (!targetFolderId) return;
-
-    setIsLoading(true);
-    setPrompt('');
-
-    setStatusMessage('Fikrin işleniyor...');
-    const improved = await transform(rawInput);
-
-    setStatusMessage('Görseller üretiliyor... (30-60sn sürebilir)');
-    const generated = await generate({ prompt: improved, aspectRatio: aspect, model });
-
-    const seed = Date.now();
-    const newResults: GeneratedImage[] =
-      generated.length > 0
-        ? generated.map((img, i) => ({
-            id: `result-${seed}-${i}`,
-            url: img.url,
-            prompt: img.revisedPrompt ?? improved,
-            aspectRatio: aspect,
-            model,
-            createdAt: new Date(),
-          }))
-        : [0, 1, 2].map((i) => ({
-            id: `result-${seed}-${i}`,
-            url: `https://picsum.photos/seed/${seed + i}/800/800`,
-            prompt: improved,
-            aspectRatio: aspect,
-            model,
-            createdAt: new Date(),
-          }));
-
-    const newItem: PromptHistoryItem = {
-      id: `h-${seed}`,
-      rawInput,
-      transformedPrompt: improved,
-      images: newResults,
-      createdAt: new Date(),
-    };
-
-    setFolders((prev) =>
-      prev.map((f) =>
-        f.id === targetFolderId
-          ? { ...f, entries: [newItem, ...f.entries], updatedAt: new Date() }
-          : f,
-      ),
-    );
-
-    setStatusMessage(null);
-    setIsLoading(false);
-  };
+  const handleGenerate = useCallback(() => {
+    void runImageGenerationFromRaw(promptRef.current);
+  }, [runImageGenerationFromRaw]);
 
   const handleDeleteImage = useCallback((imageId: string) => {
     const fid = activeFolderIdRef.current;
@@ -278,7 +338,7 @@ export default function Home() {
                 }} />
               ))}
             </div>
-            Dinleniyor... Konuş
+            Basılı tut, konuş (bırakınca devam eder)
           </div>
         )}
 
@@ -289,7 +349,9 @@ export default function Home() {
           onChange={setPrompt}
           onSubmit={handleGenerate}
           isListening={isListening}
-          onMicClick={toggleMic}
+          onMicPointerDown={handleMicPointerDown}
+          onMicPointerUp={handleMicPointerUp}
+          micSupported={isSupported}
           model={model}
           onModelChange={setModel}
           aspect={aspect}

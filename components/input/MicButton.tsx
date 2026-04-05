@@ -1,17 +1,33 @@
 'use client';
 
+import { useRef } from 'react';
+
 interface MicButtonProps {
   isListening: boolean;
-  onClick: () => void;
+  onPointerDownHold: () => void;
+  onPointerUpHold: () => void;
   disabled?: boolean;
 }
 
-export default function MicButton({ isListening, onClick, disabled = false }: MicButtonProps) {
+export default function MicButton({
+  isListening,
+  onPointerDownHold,
+  onPointerUpHold,
+  disabled = false,
+}: MicButtonProps) {
+  const pressedRef = useRef(false);
+
+  const endIfPressed = () => {
+    if (!pressedRef.current) return;
+    pressedRef.current = false;
+    onPointerUpHold();
+  };
+
   return (
     <button
-      onClick={onClick}
+      type="button"
       disabled={disabled}
-      title={isListening ? 'Dinlemeyi durdur' : 'Sesle yaz'}
+      title={disabled ? 'Ses girişi desteklenmiyor' : 'Basılı tut ve konuş (tr-TR)'}
       style={{
         width: 48,
         height: 48,
@@ -27,6 +43,24 @@ export default function MicButton({ isListening, onClick, disabled = false }: Mi
         transition: 'all 0.2s ease',
         opacity: disabled ? 0.5 : 1,
         position: 'relative',
+        touchAction: 'none',
+        userSelect: 'none',
+      }}
+      onPointerDown={(e) => {
+        if (disabled) return;
+        e.preventDefault();
+        pressedRef.current = true;
+        (e.currentTarget as HTMLButtonElement).setPointerCapture(e.pointerId);
+        onPointerDownHold();
+      }}
+      onPointerUp={endIfPressed}
+      onPointerCancel={endIfPressed}
+      onPointerLeave={(e) => {
+        if (e.buttons === 0) return;
+        endIfPressed();
+      }}
+      onLostPointerCapture={() => {
+        endIfPressed();
       }}
       onMouseEnter={(e) => {
         if (!isListening && !disabled) {

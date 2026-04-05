@@ -29,7 +29,7 @@ export default function PromptInput({
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         disabled={disabled}
-        placeholder={isListening ? 'Dinleniyor...' : 'Bir fikir yaz veya mikrofona bas...'}
+        placeholder={isListening ? 'Konuşuyorsun…' : 'Yaz veya mikrofona basılı tut (tr-TR)…'}
         rows={1}
         style={{
           width: '100%',
