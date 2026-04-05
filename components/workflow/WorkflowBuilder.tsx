@@ -614,11 +614,7 @@ function WorkflowStudio({
 
   const handleNew = () => {
     const idx = workflows.length + 1;
-    const fresh = createStoredWorkflow(
-      `Yeni workflow ${idx}`,
-      INITIAL_WORKFLOW_NODES,
-      INITIAL_WORKFLOW_EDGES,
-    );
+    const fresh = createStoredWorkflow(`Yeni workflow ${idx}`, [], []);
     const next = [...workflows, fresh];
     setWorkflows(next);
     saveWorkflowsToStorage(next);
