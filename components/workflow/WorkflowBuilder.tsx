@@ -605,7 +605,32 @@ function WorkflowStudio({
     e.dataTransfer.effectAllowed = 'move';
   };
 
+  const persistActiveToStore = (
+    prevId: string,
+    currentName: string,
+    currentNodes: Node[],
+    currentEdges: Edge[],
+  ) => {
+    const name = currentName.trim() || 'İsimsiz workflow';
+    const { nodes: n, edges: e } = cloneGraph(currentNodes, currentEdges);
+    setWorkflows((prev) => {
+      const next = prev.map((item) =>
+        item.id === prevId
+          ? { ...item, name, nodes: n, edges: e, updatedAt: Date.now() }
+          : item,
+      );
+      saveWorkflowsToStorage(next);
+      return next;
+    });
+  };
+
   const selectWorkflow = (w: StoredWorkflow) => {
+    if (activeId === w.id) return;
+
+    if (activeId) {
+      persistActiveToStore(activeId, nameDraft, nodes, edges);
+    }
+
     setActiveId(w.id);
     setNodes(w.nodes);
     setEdges(w.edges);
@@ -615,9 +640,23 @@ function WorkflowStudio({
   const handleNew = () => {
     const idx = workflows.length + 1;
     const fresh = createStoredWorkflow(`Yeni workflow ${idx}`, [], []);
-    const next = [...workflows, fresh];
-    setWorkflows(next);
-    saveWorkflowsToStorage(next);
+
+    setWorkflows((prev) => {
+      let base = prev;
+      if (activeId) {
+        const name = nameDraft.trim() || 'İsimsiz workflow';
+        const { nodes: n, edges: e } = cloneGraph(nodes, edges);
+        base = prev.map((item) =>
+          item.id === activeId
+            ? { ...item, name, nodes: n, edges: e, updatedAt: Date.now() }
+            : item,
+        );
+      }
+      const next = [...base, fresh];
+      saveWorkflowsToStorage(next);
+      return next;
+    });
+
     setActiveId(fresh.id);
     setNodes(fresh.nodes);
     setEdges(fresh.edges);
