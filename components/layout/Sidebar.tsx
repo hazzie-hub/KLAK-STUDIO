@@ -1,6 +1,7 @@
 'use client';
 
 import KlakLogo from '@/components/KlakLogo';
+import { KLAK_LOGO_HEIGHT } from '@/lib/klakLogoSizes';
 import { MOCK_HISTORY } from '@/lib/mockData';
 import { PromptHistoryItem } from '@/types';
 
@@ -47,7 +48,12 @@ export default function Sidebar({
         {/* Logo */}
         <div style={{ marginBottom: 20 }}>
           <KlakLogo
-            style={{ height: 125, width: 'auto', maxWidth: '100%', display: 'block' }}
+            style={{
+              height: KLAK_LOGO_HEIGHT.sidebar,
+              width: 'auto',
+              maxWidth: '100%',
+              display: 'block',
+            }}
           />
         </div>
 

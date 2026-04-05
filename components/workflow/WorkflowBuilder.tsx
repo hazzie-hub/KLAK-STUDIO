@@ -19,6 +19,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import KlakLogo from '@/components/KlakLogo';
+import { KLAK_LOGO_HEIGHT } from '@/lib/klakLogoSizes';
 import {
   cloneGraph,
   loadWorkflows,
@@ -717,7 +718,13 @@ function WorkflowStudio({
             style={{ display: 'inline-block', lineHeight: 0, opacity: 0.95 }}
             title="Ana sayfa"
           >
-            <KlakLogo style={{ height: 60, width: 'auto', display: 'block' }} />
+            <KlakLogo
+              style={{
+                height: KLAK_LOGO_HEIGHT.workflowSidebar,
+                width: 'auto',
+                display: 'block',
+              }}
+            />
           </Link>
         </div>
 
@@ -1074,7 +1081,13 @@ export default function WorkflowBuilder() {
           }}
           title="Ana sayfa"
         >
-          <KlakLogo style={{ height: 42, width: 'auto', display: 'block' }} />
+          <KlakLogo
+            style={{
+              height: KLAK_LOGO_HEIGHT.workflowHeader,
+              width: 'auto',
+              display: 'block',
+            }}
+          />
           <span
             style={{
               fontSize: 13,

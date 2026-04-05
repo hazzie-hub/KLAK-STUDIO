@@ -1,6 +1,7 @@
 'use client';
 
 import KlakLogo from '@/components/KlakLogo';
+import { KLAK_LOGO_HEIGHT } from '@/lib/klakLogoSizes';
 import Link from 'next/link';
 
 interface MainCanvasProps {
@@ -31,7 +32,13 @@ export default function MainCanvas({ children }: MainCanvasProps) {
           flexShrink: 0,
         }}
       >
-        <KlakLogo style={{ height: 36, width: 'auto', display: 'block' }} />
+        <KlakLogo
+          style={{
+            height: KLAK_LOGO_HEIGHT.studioTopBar,
+            width: 'auto',
+            display: 'block',
+          }}
+        />
         <span
           style={{
             fontSize: 11,
