@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import ReactFlow, {
   Background,
@@ -19,7 +19,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import KlakLogo from '@/components/KlakLogo';
-import StudioTopNav from '@/components/layout/StudioTopNav';
+import StudioTopNav, { StudioTopNavFallback } from '@/components/layout/StudioTopNav';
 import { KLAK_LOGO_HEIGHT } from '@/lib/klakLogoSizes';
 import {
   cloneGraph,
@@ -1072,7 +1072,9 @@ export default function WorkflowBuilder() {
           background: 'rgba(14,14,16,0.98)',
         }}
       >
-        <StudioTopNav />
+        <Suspense fallback={<StudioTopNavFallback />}>
+          <StudioTopNav />
+        </Suspense>
         <span style={{ flex: 1 }} />
         <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.28)' }}>
           localStorage · Kaydet

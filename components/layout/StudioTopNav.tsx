@@ -1,9 +1,11 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import type { CSSProperties } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
-function navLinkStyle(active: boolean): React.CSSProperties {
+function navLinkStyle(active: boolean): CSSProperties {
   return {
     fontSize: 11,
     color: active ? 'var(--text-primary)' : 'var(--text-muted)',
@@ -17,9 +19,28 @@ function navLinkStyle(active: boolean): React.CSSProperties {
 
 export default function StudioTopNav() {
   const pathname = usePathname();
-  const isGenerate = pathname === '/' || pathname === '';
-  const isWorkflow = pathname?.startsWith('/workflow') ?? false;
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
+  // İlk paint'te sunucu/istemci aynı kalsın (usePathname SSR'da farklı olabiliyor → hydration hatası)
+  const isGenerate = mounted && (pathname === '/' || pathname === '');
+  const isWorkflow = mounted && (pathname?.startsWith('/workflow') ?? false);
+
+  return <StudioTopNavInner isGenerate={isGenerate} isWorkflow={isWorkflow} />;
+}
+
+/** usePathname Suspense fallback — linkler çalışır, vurgu mount sonrası gelir */
+export function StudioTopNavFallback() {
+  return <StudioTopNavInner isGenerate={false} isWorkflow={false} />;
+}
+
+function StudioTopNavInner({
+  isGenerate,
+  isWorkflow,
+}: {
+  isGenerate: boolean;
+  isWorkflow: boolean;
+}) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
       <Link href="/" style={navLinkStyle(isGenerate)}>
