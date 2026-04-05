@@ -3,7 +3,7 @@
 import type { CSSProperties } from 'react';
 import Link from 'next/link';
 
-export type StudioNavActive = 'generate' | 'workflow';
+export type StudioNavActive = 'generate' | 'workflow' | 'storyboard';
 
 function navLinkStyle(active: boolean): CSSProperties {
   return {
@@ -20,15 +20,20 @@ function navLinkStyle(active: boolean): CSSProperties {
 export default function StudioTopNav({ active }: { active: StudioNavActive }) {
   const isGenerate = active === 'generate';
   const isWorkflow = active === 'workflow';
+  const isStoryboard = active === 'storyboard';
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
       <Link href="/" style={navLinkStyle(isGenerate)} prefetch>
         Generate
       </Link>
       <span style={{ color: 'var(--border-default)', fontSize: 10 }}>·</span>
       <Link href="/workflow" style={navLinkStyle(isWorkflow)} prefetch>
         Workflow
+      </Link>
+      <span style={{ color: 'var(--border-default)', fontSize: 10 }}>·</span>
+      <Link href="/storyboard" style={navLinkStyle(isStoryboard)} prefetch>
+        Storyboard
       </Link>
     </div>
   );
