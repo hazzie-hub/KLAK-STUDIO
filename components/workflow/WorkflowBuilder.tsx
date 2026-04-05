@@ -718,6 +718,7 @@ function WorkflowStudio({
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
+              className="klak-logo"
               src="/klak-logo.png"
               alt="KLAK"
               style={{ height: 34, width: 'auto', display: 'block' }}
@@ -1080,6 +1081,7 @@ export default function WorkflowBuilder() {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
+            className="klak-logo"
             src="/klak-logo.png"
             alt="KLAK"
             style={{ height: 26, width: 'auto', display: 'block' }}

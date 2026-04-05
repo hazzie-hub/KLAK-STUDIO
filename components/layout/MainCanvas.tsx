@@ -32,6 +32,7 @@ export default function MainCanvas({ children }: MainCanvasProps) {
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
+          className="klak-logo"
           src="/klak-logo.png"
           alt="KLAK"
           style={{ height: 22, width: 'auto', display: 'block' }}
