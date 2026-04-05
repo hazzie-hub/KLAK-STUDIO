@@ -89,11 +89,13 @@ export default function Home() {
   }, []);
 
   const handleNewFolder = useCallback(() => {
+    let newFolderId: string | null = null;
     setFolders((prev) => {
       const f = createEmptyFolder(`Klasör ${prev.length + 1}`);
-      setActiveFolderId(f.id);
+      newFolderId = f.id;
       return [f, ...prev];
     });
+    if (newFolderId) setActiveFolderId(newFolderId);
   }, []);
 
   const handleGenerate = async () => {

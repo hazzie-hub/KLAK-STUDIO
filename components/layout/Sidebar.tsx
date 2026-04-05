@@ -64,31 +64,19 @@ export default function Sidebar({
 
         <button
           type="button"
+          className="sidebar-new-folder-btn"
           onClick={onNewFolder}
           style={{
             width: '100%',
             padding: '8px 12px',
             borderRadius: 8,
             border: 'none',
-            background: '#E8FF3D',
-            color: '#0a0a0c',
             fontSize: 11,
             fontWeight: 600,
             letterSpacing: '0.02em',
             cursor: 'pointer',
             fontFamily: 'DM Sans, sans-serif',
-            boxShadow: '0 0 18px rgba(232, 255, 61, 0.22)',
             transition: 'filter 0.2s ease, box-shadow 0.2s ease',
-          }}
-          onMouseEnter={(e) => {
-            const el = e.currentTarget as HTMLButtonElement;
-            el.style.filter = 'brightness(1.06)';
-            el.style.boxShadow = '0 0 26px rgba(232, 255, 61, 0.45)';
-          }}
-          onMouseLeave={(e) => {
-            const el = e.currentTarget as HTMLButtonElement;
-            el.style.filter = 'none';
-            el.style.boxShadow = '0 0 18px rgba(232, 255, 61, 0.22)';
           }}
         >
           + Yeni klasör

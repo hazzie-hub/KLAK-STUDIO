@@ -80,6 +80,7 @@ export default function ImageCard({ image, index, onClick, onDelete }: ImageCard
         style={{
           position: 'absolute',
           inset: 0,
+          zIndex: 0,
           padding: 0,
           margin: 0,
           border: 'none',
