@@ -39,12 +39,10 @@ export default function ImageGallery({
             letterSpacing: '0.08em',
             textTransform: 'uppercase',
             marginBottom: 8,
-            fontFamily: 'DM Sans, sans-serif',
           }}>
             Klasör
           </p>
           <h2 style={{
-            fontFamily: 'Syne, sans-serif',
             fontSize: 20,
             fontWeight: 700,
             color: 'var(--text-primary)',
@@ -58,7 +56,6 @@ export default function ImageGallery({
               margin: 0,
               fontSize: 12,
               color: 'var(--text-muted)',
-              fontFamily: 'DM Sans, sans-serif',
             }}>
               {summaryLine}
             </p>
@@ -74,12 +71,10 @@ export default function ImageGallery({
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
                 marginBottom: 8,
-                fontFamily: 'DM Sans, sans-serif',
               }}>
                 Son üretim
               </p>
               <h3 style={{
-                fontFamily: 'Syne, sans-serif',
                 fontSize: 16,
                 fontWeight: 600,
                 color: 'var(--text-primary)',
@@ -107,7 +102,6 @@ export default function ImageGallery({
                     fontSize: 12,
                     color: 'var(--accent)',
                     lineHeight: 1.5,
-                    fontFamily: 'DM Sans, sans-serif',
                     opacity: 0.85,
                   }}>
                     {lastTransformedPrompt}
@@ -145,7 +139,6 @@ export default function ImageGallery({
           color: 'var(--text-muted)',
           textAlign: 'center',
           marginTop: 20,
-          fontFamily: 'DM Sans, sans-serif',
         }}>
           Tüm üretimler bu klasörde · Görsele tıkla · İndir / Sil üstte
         </p>

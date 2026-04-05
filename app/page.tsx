@@ -213,7 +213,6 @@ export default function Home() {
             padding: '10px 16px',
             fontSize: 13,
             color: 'var(--accent)',
-            fontFamily: 'DM Sans, sans-serif',
             animation: 'fade-in-up 0.2s ease forwards',
             zIndex: 50,
             display: 'flex',
@@ -244,7 +243,6 @@ export default function Home() {
             padding: '10px 16px',
             fontSize: 13,
             color: 'rgba(255,100,100,0.9)',
-            fontFamily: 'DM Sans, sans-serif',
             zIndex: 50,
             whiteSpace: 'nowrap',
           }}>
@@ -264,7 +262,6 @@ export default function Home() {
             padding: '10px 16px',
             fontSize: 13,
             color: 'var(--accent)',
-            fontFamily: 'DM Sans, sans-serif',
             zIndex: 50,
             display: 'flex',
             alignItems: 'center',

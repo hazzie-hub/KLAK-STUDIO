@@ -10,7 +10,6 @@ const actionBtn: CSSProperties = {
   borderRadius: 8,
   fontSize: 11,
   fontWeight: 600,
-  fontFamily: 'DM Sans, sans-serif',
   cursor: 'pointer',
   border: '1px solid rgba(255,255,255,0.2)',
   background: 'rgba(8,8,8,0.75)',
@@ -176,7 +175,7 @@ export default function ImageCard({ image, index, onClick, onDelete }: ImageCard
             <path d="M1 9H5V13H1V9Z" stroke="rgba(255,255,255,0.7)" strokeWidth="1.2" strokeLinecap="round"/>
             <path d="M9 9H13V13H9V9Z" stroke="rgba(255,255,255,0.7)" strokeWidth="1.2" strokeLinecap="round"/>
           </svg>
-          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)', fontFamily: 'DM Sans, sans-serif' }}>
+          <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.7)' }}>
             Önizle
           </span>
         </div>
@@ -199,7 +198,6 @@ export default function ImageCard({ image, index, onClick, onDelete }: ImageCard
           fontSize: 10,
           fontWeight: 600,
           color: 'rgba(255,255,255,0.5)',
-          fontFamily: 'Syne, sans-serif',
           zIndex: 2,
           pointerEvents: 'none',
         }}

@@ -39,7 +39,6 @@ export default function PromptInput({
           border: `1px solid ${isListening ? 'var(--accent)' : 'var(--border-default)'}`,
           color: 'var(--text-primary)',
           fontSize: 14,
-          fontFamily: 'DM Sans, sans-serif',
           padding: '0 16px',
           resize: 'none',
           outline: 'none',

@@ -64,7 +64,6 @@ export default function ImagePreview({ image, onClose, onDeleteImage }: ImagePre
               color: 'var(--text-muted)',
               letterSpacing: '0.08em',
               textTransform: 'uppercase',
-              fontFamily: 'DM Sans, sans-serif',
             }}
           >
             Önizleme
@@ -82,7 +81,6 @@ export default function ImagePreview({ image, onClose, onDeleteImage }: ImagePre
                 fontSize: 12,
                 fontWeight: 600,
                 cursor: 'pointer',
-                fontFamily: 'DM Sans, sans-serif',
               }}
             >
               İndir
@@ -100,7 +98,6 @@ export default function ImagePreview({ image, onClose, onDeleteImage }: ImagePre
                   fontSize: 12,
                   fontWeight: 600,
                   cursor: 'pointer',
-                  fontFamily: 'DM Sans, sans-serif',
                 }}
               >
                 Sil
@@ -162,31 +159,31 @@ export default function ImagePreview({ image, onClose, onDeleteImage }: ImagePre
             border: '1px solid var(--border-subtle)',
           }}
         >
-          <p style={{ fontSize: 10, color: 'var(--text-muted)', marginBottom: 6, letterSpacing: '0.08em', textTransform: 'uppercase', fontFamily: 'DM Sans, sans-serif' }}>
+          <p style={{ fontSize: 10, color: 'var(--text-muted)', marginBottom: 6, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             Prompt
           </p>
-          <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6, fontFamily: 'DM Sans, sans-serif' }}>
+          <p style={{ fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
             {image.prompt}
           </p>
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
             <span style={{
               padding: '4px 10px', borderRadius: 6,
               background: 'var(--accent-dim)', border: '1px solid var(--border-accent)',
-              fontSize: 11, color: 'var(--accent)', fontFamily: 'DM Sans, sans-serif',
+              fontSize: 11, color: 'var(--accent)',
             }}>
               {image.model}
             </span>
             <span style={{
               padding: '4px 10px', borderRadius: 6,
               background: 'var(--bg-overlay)', border: '1px solid var(--border-default)',
-              fontSize: 11, color: 'var(--text-muted)', fontFamily: 'DM Sans, sans-serif',
+              fontSize: 11, color: 'var(--text-muted)',
             }}>
               {image.aspectRatio}
             </span>
           </div>
         </div>
 
-        <p style={{ fontSize: 11, color: 'var(--text-muted)', textAlign: 'center', fontFamily: 'DM Sans, sans-serif' }}>
+        <p style={{ fontSize: 11, color: 'var(--text-muted)', textAlign: 'center' }}>
           ESC veya dışarı tıkla kapatmak için
         </p>
       </div>

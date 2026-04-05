@@ -11,7 +11,6 @@ const card: React.CSSProperties = {
   background: 'rgba(22,22,24,0.92)',
   backdropFilter: 'blur(12px)',
   boxShadow: '0 12px 40px rgba(0,0,0,0.45)',
-  fontFamily: "'DM Sans', system-ui, sans-serif",
   minWidth: 300,
   maxWidth: 380,
 };

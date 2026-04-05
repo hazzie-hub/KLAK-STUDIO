@@ -53,7 +53,6 @@ export default function GenerateButton({ onClick, disabled = false, isLoading = 
             fontSize: 13,
             fontWeight: 700,
             color: 'var(--neon-solid-text)',
-            fontFamily: 'Syne, sans-serif',
             letterSpacing: '-0.01em',
           }}>
             Üretiliyor...
@@ -68,7 +67,6 @@ export default function GenerateButton({ onClick, disabled = false, isLoading = 
             fontSize: 13,
             fontWeight: 700,
             color: 'var(--neon-solid-text)',
-            fontFamily: 'Syne, sans-serif',
             letterSpacing: '-0.01em',
           }}>
             Üret

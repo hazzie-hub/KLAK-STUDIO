@@ -918,7 +918,6 @@ function WorkflowStudio({
                   color: 'rgba(255,255,255,0.92)',
                   fontSize: 14,
                   outline: 'none',
-                  fontFamily: '"DM Sans", sans-serif',
                 }}
               />
               <button

@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -49,7 +47,7 @@ html, body {
   height: 100%;
   background: var(--bg-void);
   color: var(--text-primary);
-  font-family: 'DM Sans', sans-serif;
+  /* Gövde fontu: app/layout.tsx next/font Inter (sınıf) — tarayıcılar arası tutarlı */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
@@ -76,9 +74,11 @@ html, body {
   color: var(--accent);
 }
 
-/* Typography utilities */
+/* Başlıklar: aynı font, biraz daha sıkı aralık */
 .font-display {
-  font-family: 'Syne', sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
 }
 
 /* Grain overlay effect */
@@ -225,7 +225,7 @@ html, body {
   color: var(--neon-solid-text);
   box-shadow: 0 0 18px var(--neon-solid-glow);
   border: none;
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   font-weight: 600;
   transition: filter 0.2s ease, box-shadow 0.2s ease, opacity 0.15s ease;
 }

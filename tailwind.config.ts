@@ -12,8 +12,8 @@ const config: Config = {
         accent: '#FFD60A',
       },
       fontFamily: {
-        display: ['Syne', 'sans-serif'],
-        body: ['DM Sans', 'sans-serif'],
+        display: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        body: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
     },
   },
