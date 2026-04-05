@@ -1,4 +1,32 @@
-/** Tarayıcı Speech Synthesis — Türkçe ses tercihi. */
+/** Türkçe TTS — mümkünse erkek sesi seçer. */
+function pickTurkishMaleVoice(
+  voices: SpeechSynthesisVoice[],
+): SpeechSynthesisVoice | undefined {
+  const tr = voices.filter(
+    (v) =>
+      v.lang.toLowerCase().startsWith('tr') ||
+      /turkish|türkçe/i.test(v.name),
+  );
+  if (tr.length === 0) return undefined;
+
+  const maleHints =
+    /yusuf|tolga|ahmet|mehmet|emir|barış|cem|murat|fuat|erkek|male|bass|low|#male|microsoft.*tolga|google.*tr.*male/i;
+  const femaleHints =
+    /yelda|ayşe|zeynep|filiz|female|kadın|#female|microsoft.*ayca|microsoft.*emel/i;
+
+  const male = tr.find(
+    (v) => maleHints.test(v.name) || (v.voiceURI && maleHints.test(v.voiceURI)),
+  );
+  if (male) return male;
+
+  const notFemale = tr.filter(
+    (v) => !femaleHints.test(v.name) && !(v.voiceURI && femaleHints.test(v.voiceURI)),
+  );
+  if (notFemale.length > 0) return notFemale[0];
+
+  return tr[0];
+}
+
 export function speakTurkish(text: string): Promise<void> {
   if (typeof window === 'undefined' || !window.speechSynthesis) {
     return Promise.resolve();
@@ -10,13 +38,16 @@ export function speakTurkish(text: string): Promise<void> {
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'tr-TR';
       utterance.rate = 1;
-      utterance.pitch = 1;
 
       const voices = window.speechSynthesis.getVoices();
-      const tr =
-        voices.find((v) => v.lang.toLowerCase().startsWith('tr')) ??
-        voices.find((v) => /turkish|türkçe/i.test(v.name));
-      if (tr) utterance.voice = tr;
+      const voice = pickTurkishMaleVoice(voices);
+      if (voice) {
+        utterance.voice = voice;
+        utterance.lang = voice.lang || 'tr-TR';
+        utterance.pitch = 0.92;
+      } else {
+        utterance.pitch = 0.88;
+      }
 
       utterance.onend = () => resolve();
       utterance.onerror = () => resolve();

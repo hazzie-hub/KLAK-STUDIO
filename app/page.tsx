@@ -49,6 +49,7 @@ export default function Home() {
   const promptRef = useRef(prompt);
   promptRef.current = prompt;
   const voiceBaselineRef = useRef('');
+  const voiceMessagesRef = useRef<{ role: 'user' | 'assistant'; content: string }[]>([]);
 
   useEffect(() => {
     try {
@@ -150,25 +151,55 @@ export default function Home() {
       promptRef.current = trimmed;
       setVoiceError(null);
 
+      const prior = voiceMessagesRef.current;
+      const messagesPayload: { role: 'user' | 'assistant'; content: string }[] = [
+        ...prior,
+        { role: 'user', content: trimmed },
+      ];
+
       try {
-        setStatusMessage('Kısa yanıt hazırlanıyor...');
+        setStatusMessage('Yanıt hazırlanıyor...');
         const res = await fetch('/api/voice-reply', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userText: trimmed }),
+          body: JSON.stringify({ messages: messagesPayload }),
         });
         const data = await res.json();
-        const reply =
-          typeof data.reply === 'string' ? data.reply : 'Tamam, hemen oluşturuyorum.';
+        const reply: string =
+          typeof data.reply === 'string' ? data.reply : 'Tamam, devam edelim.';
+        const shouldGenerate = data.shouldGenerate === true;
+        const imageBrief =
+          typeof data.imageBrief === 'string' ? data.imageBrief.trim() : '';
+
+        const updatedThread: { role: 'user' | 'assistant'; content: string }[] = [
+          ...messagesPayload,
+          { role: 'assistant', content: reply },
+        ];
+        voiceMessagesRef.current = updatedThread.slice(-24);
+
         setStatusMessage('Asistan sesli yanıtlıyor...');
         await speakTurkish(reply);
+
+        setPrompt('');
+        promptRef.current = '';
+
+        if (shouldGenerate) {
+          const rawForImage =
+            imageBrief ||
+            messagesPayload.filter((m) => m.role === 'user').map((m) => m.content).join('\n');
+          setStatusMessage(null);
+          await runImageGenerationFromRaw(rawForImage);
+          voiceMessagesRef.current = [];
+        } else {
+          setStatusMessage(null);
+          setIsLoading(false);
+        }
       } catch (e) {
         console.error('Voice pipeline:', e);
-        await speakTurkish('Tamam, görselini oluşturuyorum.');
+        await speakTurkish('Şu an bağlanamadım, tekrar dener misin?');
+        setStatusMessage(null);
+        setIsLoading(false);
       }
-
-      setStatusMessage(null);
-      await runImageGenerationFromRaw(trimmed);
     },
     [sessionReady, runImageGenerationFromRaw],
   );
