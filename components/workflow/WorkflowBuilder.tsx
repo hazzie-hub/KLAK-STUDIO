@@ -18,6 +18,7 @@ import ReactFlow, {
   type NodeTypes,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
+import KlakLogo from '@/components/KlakLogo';
 import {
   cloneGraph,
   loadWorkflows,
@@ -716,13 +717,7 @@ function WorkflowStudio({
             style={{ display: 'inline-block', lineHeight: 0, opacity: 0.95 }}
             title="Ana sayfa"
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              className="klak-logo"
-              src="/klak-logo.png"
-              alt="KLAK"
-              style={{ height: 46, width: 'auto', display: 'block' }}
-            />
+            <KlakLogo style={{ height: 46, width: 'auto', display: 'block' }} />
           </Link>
         </div>
 
@@ -1079,13 +1074,7 @@ export default function WorkflowBuilder() {
           }}
           title="Ana sayfa"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            className="klak-logo"
-            src="/klak-logo.png"
-            alt="KLAK"
-            style={{ height: 32, width: 'auto', display: 'block' }}
-          />
+          <KlakLogo style={{ height: 32, width: 'auto', display: 'block' }} />
           <span
             style={{
               fontSize: 13,

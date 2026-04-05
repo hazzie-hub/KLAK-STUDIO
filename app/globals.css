@@ -212,11 +212,3 @@ html, body {
 .workflow-sidebar-panel::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 214, 10, 0.25);
 }
-
-/**
- * KLAK logosu: PNG’de düz siyah zemin varsa koyu UI’da arka planı yok eder (screen).
- * Dosyayı gerçek alpha şeffaflığıyla yeniden dışa aktarırsan bu sınıfı img’den kaldırabilirsin.
- */
-img.klak-logo {
-  mix-blend-mode: screen;
-}

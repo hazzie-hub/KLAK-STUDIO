@@ -1,5 +1,6 @@
 'use client';
 
+import KlakLogo from '@/components/KlakLogo';
 import Link from 'next/link';
 
 interface MainCanvasProps {
@@ -30,13 +31,7 @@ export default function MainCanvas({ children }: MainCanvasProps) {
           flexShrink: 0,
         }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          className="klak-logo"
-          src="/klak-logo.png"
-          alt="KLAK"
-          style={{ height: 28, width: 'auto', display: 'block' }}
-        />
+        <KlakLogo style={{ height: 28, width: 'auto', display: 'block' }} />
         <span
           style={{
             fontSize: 11,

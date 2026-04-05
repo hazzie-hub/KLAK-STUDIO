@@ -1,5 +1,6 @@
 'use client';
 
+import KlakLogo from '@/components/KlakLogo';
 import { MOCK_HISTORY } from '@/lib/mockData';
 import { PromptHistoryItem } from '@/types';
 
@@ -45,11 +46,7 @@ export default function Sidebar({
       >
         {/* Logo */}
         <div style={{ marginBottom: 20 }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            className="klak-logo"
-            src="/klak-logo.png"
-            alt="KLAK AI & Tech Studio"
+          <KlakLogo
             style={{ height: 96, width: 'auto', maxWidth: '100%', display: 'block' }}
           />
         </div>
