@@ -101,7 +101,7 @@ export default function ImageCard({ image, index, onClick, onDelete }: ImageCard
         />
       </button>
 
-      {/* Üst: indir / sil */}
+      {/* Üst: indir / sil — yalnızca kart hover */}
       <div
         style={{
           position: 'absolute',
@@ -112,7 +112,9 @@ export default function ImageCard({ image, index, onClick, onDelete }: ImageCard
           justifyContent: 'flex-end',
           gap: 6,
           zIndex: 2,
-          pointerEvents: 'auto',
+          opacity: hover ? 1 : 0,
+          pointerEvents: hover ? 'auto' : 'none',
+          transition: 'opacity 0.2s ease',
         }}
       >
         <button

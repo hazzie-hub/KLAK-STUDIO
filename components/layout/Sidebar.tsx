@@ -67,28 +67,31 @@ export default function Sidebar({
           onClick={onNewFolder}
           style={{
             width: '100%',
-            padding: '11px 14px',
-            borderRadius: 10,
-            border: '1px dashed var(--border-accent)',
-            background: 'var(--accent-dim)',
-            color: 'var(--accent)',
-            fontSize: 12,
+            padding: '8px 12px',
+            borderRadius: 8,
+            border: 'none',
+            background: '#E8FF3D',
+            color: '#0a0a0c',
+            fontSize: 11,
             fontWeight: 600,
-            letterSpacing: '0.06em',
-            textTransform: 'uppercase',
+            letterSpacing: '0.02em',
             cursor: 'pointer',
             fontFamily: 'DM Sans, sans-serif',
-            transition: 'background 0.15s ease, border-color 0.15s ease',
+            boxShadow: '0 0 18px rgba(232, 255, 61, 0.22)',
+            transition: 'filter 0.2s ease, box-shadow 0.2s ease',
           }}
           onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.background =
-              'rgba(255,214,10,0.14)';
+            const el = e.currentTarget as HTMLButtonElement;
+            el.style.filter = 'brightness(1.06)';
+            el.style.boxShadow = '0 0 26px rgba(232, 255, 61, 0.45)';
           }}
           onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.background = 'var(--accent-dim)';
+            const el = e.currentTarget as HTMLButtonElement;
+            el.style.filter = 'none';
+            el.style.boxShadow = '0 0 18px rgba(232, 255, 61, 0.22)';
           }}
         >
-          Yeni klasör
+          + Yeni klasör
         </button>
 
         <p
