@@ -1007,31 +1007,57 @@ export default function WorkflowBuilder() {
   const [nodes, setNodes, onNodesChange] = useNodesState(INITIAL_WORKFLOW_NODES);
   const [edges, setEdges, onEdgesChange] = useEdgesState(INITIAL_WORKFLOW_EDGES);
 
+  // Sadece mount: setNodes/setEdges her render'da yeni referans olabiliyor → effect sonsuz tetiklenir, sayfa yenileme döngüsü
   useEffect(() => {
-    const stored = loadWorkflows();
-    if (stored.length === 0) {
+    let cancelled = false;
+    try {
+      const stored = loadWorkflows();
+      if (stored.length === 0) {
+        const first = createStoredWorkflow(
+          'Varsayılan workflow',
+          INITIAL_WORKFLOW_NODES,
+          INITIAL_WORKFLOW_EDGES,
+        );
+        const next = [first];
+        saveWorkflowsToStorage(next);
+        if (!cancelled) {
+          setWorkflows(next);
+          setActiveId(first.id);
+          setNodes(first.nodes);
+          setEdges(first.edges);
+          setNameDraft(first.name);
+        }
+      } else {
+        if (!cancelled) {
+          setWorkflows(stored);
+          const first = stored[0];
+          setActiveId(first.id);
+          setNodes(first.nodes);
+          setEdges(first.edges);
+          setNameDraft(first.name);
+        }
+      }
+    } catch (e) {
+      console.error('Workflow load failed:', e);
       const first = createStoredWorkflow(
         'Varsayılan workflow',
         INITIAL_WORKFLOW_NODES,
         INITIAL_WORKFLOW_EDGES,
       );
-      const next = [first];
-      saveWorkflowsToStorage(next);
-      setWorkflows(next);
-      setActiveId(first.id);
-      setNodes(first.nodes);
-      setEdges(first.edges);
-      setNameDraft(first.name);
-    } else {
-      setWorkflows(stored);
-      const first = stored[0];
-      setActiveId(first.id);
-      setNodes(first.nodes);
-      setEdges(first.edges);
-      setNameDraft(first.name);
+      if (!cancelled) {
+        setWorkflows([first]);
+        setActiveId(first.id);
+        setNodes(first.nodes);
+        setEdges(first.edges);
+        setNameDraft(first.name);
+      }
+    } finally {
+      if (!cancelled) setMounted(true);
     }
-    setMounted(true);
-  }, [setNodes, setEdges]);
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   if (!mounted) {
     return (

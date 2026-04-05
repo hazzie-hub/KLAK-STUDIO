@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import MainCanvas from '@/components/layout/MainCanvas';
 import InputBar from '@/components/input/InputBar';
@@ -45,16 +45,24 @@ export default function Home() {
   const { transform } = usePromptTransform();
   const { generate } = useImageGeneration();
 
-  useLayoutEffect(() => {
-    const { folders: loaded, activeFolderId: aid } = loadGenerateSession();
-    let list = loaded;
-    if (list.length === 0) {
-      list = [createEmptyFolder('Klasör 1')];
+  useEffect(() => {
+    try {
+      const { folders: loaded, activeFolderId: aid } = loadGenerateSession();
+      let list = loaded;
+      if (list.length === 0) {
+        list = [createEmptyFolder('Klasör 1')];
+      }
+      const act = aid && list.some((f) => f.id === aid) ? aid : list[0].id;
+      setFolders(list);
+      setActiveFolderId(act);
+    } catch (e) {
+      console.error('Generate session load failed:', e);
+      const f = createEmptyFolder('Klasör 1');
+      setFolders([f]);
+      setActiveFolderId(f.id);
+    } finally {
+      setSessionReady(true);
     }
-    const act = aid && list.some((f) => f.id === aid) ? aid : list[0].id;
-    setFolders(list);
-    setActiveFolderId(act);
-    setSessionReady(true);
   }, []);
 
   useEffect(() => {
