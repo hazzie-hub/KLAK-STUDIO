@@ -19,6 +19,8 @@ function folderImageCount(f: GenerateFolder): number {
 }
 
 interface SidebarProps {
+  /** localStorage oturumu yüklendikten sonra true — erken tıklamayı ve yanlış boş UI’ı önler */
+  sessionReady: boolean;
   folders: GenerateFolder[];
   activeFolderId: string | null;
   onSelectFolder: (id: string) => void;
@@ -26,6 +28,7 @@ interface SidebarProps {
 }
 
 export default function Sidebar({
+  sessionReady,
   folders,
   activeFolderId,
   onSelectFolder,
@@ -65,6 +68,7 @@ export default function Sidebar({
         <button
           type="button"
           className="neon-solid-btn"
+          disabled={!sessionReady}
           onClick={onNewFolder}
           style={{
             width: '100%',
@@ -72,7 +76,7 @@ export default function Sidebar({
             borderRadius: 8,
             fontSize: 11,
             letterSpacing: '0.02em',
-            cursor: 'pointer',
+            cursor: sessionReady ? 'pointer' : 'not-allowed',
           }}
         >
           + Yeni klasör
@@ -94,7 +98,29 @@ export default function Sidebar({
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '8px 0' }}>
-        {folders.length === 0 ? (
+        {!sessionReady ? (
+          <div
+            style={{
+              margin: '24px 20px 0',
+              padding: '24px 16px',
+              borderRadius: 10,
+              border: '1px solid var(--border-subtle)',
+              background: 'rgba(255,255,255,0.02)',
+              textAlign: 'center',
+            }}
+          >
+            <p
+              style={{
+                margin: 0,
+                fontSize: 12,
+                lineHeight: 1.5,
+                color: 'var(--text-muted)',
+              }}
+            >
+              Oturum yükleniyor…
+            </p>
+          </div>
+        ) : folders.length === 0 ? (
           <div
             style={{
               margin: '24px 20px 0',

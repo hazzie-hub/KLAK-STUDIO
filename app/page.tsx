@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { useState, useCallback, useEffect, useLayoutEffect, useRef, useMemo } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import MainCanvas from '@/components/layout/MainCanvas';
 import InputBar from '@/components/input/InputBar';
@@ -45,7 +45,7 @@ export default function Home() {
   const { transform } = usePromptTransform();
   const { generate } = useImageGeneration();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const { folders: loaded, activeFolderId: aid } = loadGenerateSession();
     let list = loaded;
     if (list.length === 0) {
@@ -60,13 +60,6 @@ export default function Home() {
   useEffect(() => {
     if (!sessionReady) return;
     saveGenerateSession(folders, activeFolderId);
-  }, [sessionReady, folders, activeFolderId]);
-
-  useEffect(() => {
-    if (!sessionReady || folders.length === 0) return;
-    if (!activeFolderId || !folders.some((f) => f.id === activeFolderId)) {
-      setActiveFolderId(folders[0].id);
-    }
   }, [sessionReady, folders, activeFolderId]);
 
   const handleTranscript = useCallback((text: string) => {
@@ -89,6 +82,7 @@ export default function Home() {
   }, []);
 
   const handleNewFolder = useCallback(() => {
+    if (!sessionReady) return;
     let newFolderId: string | null = null;
     setFolders((prev) => {
       const f = createEmptyFolder(`Klasör ${prev.length + 1}`);
@@ -96,10 +90,10 @@ export default function Home() {
       return [f, ...prev];
     });
     if (newFolderId) setActiveFolderId(newFolderId);
-  }, []);
+  }, [sessionReady]);
 
   const handleGenerate = async () => {
-    if (!prompt.trim()) return;
+    if (!prompt.trim() || !sessionReady) return;
 
     const rawInput = prompt;
     const targetFolderId = activeFolderIdRef.current;
@@ -178,6 +172,7 @@ export default function Home() {
   return (
     <div style={{ display: 'flex', height: '100vh', width: '100vw', overflow: 'hidden', background: 'var(--bg-void)' }}>
       <Sidebar
+        sessionReady={sessionReady}
         folders={folders}
         activeFolderId={activeFolderId}
         onSelectFolder={handleSelectFolder}
@@ -295,6 +290,7 @@ export default function Home() {
           aspect={aspect}
           onAspectChange={setAspect}
           isLoading={isLoading}
+          disabled={!sessionReady}
         />
       </div>
     </div>
