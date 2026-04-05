@@ -1,7 +1,6 @@
 'use client';
 
-import { Suspense } from 'react';
-import StudioTopNav, { StudioTopNavFallback } from '@/components/layout/StudioTopNav';
+import StudioTopNav from '@/components/layout/StudioTopNav';
 
 interface MainCanvasProps {
   children?: React.ReactNode;
@@ -31,9 +30,7 @@ export default function MainCanvas({ children }: MainCanvasProps) {
           flexShrink: 0,
         }}
       >
-        <Suspense fallback={<StudioTopNavFallback />}>
-          <StudioTopNav />
-        </Suspense>
+        <StudioTopNav active="generate" />
       </div>
 
       {/* Scrollable content area */}

@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import ReactFlow, {
   Background,
@@ -19,7 +19,7 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import KlakLogo from '@/components/KlakLogo';
-import StudioTopNav, { StudioTopNavFallback } from '@/components/layout/StudioTopNav';
+import StudioTopNav from '@/components/layout/StudioTopNav';
 import { KLAK_LOGO_HEIGHT } from '@/lib/klakLogoSizes';
 import {
   cloneGraph,
@@ -137,10 +137,19 @@ function FitViewOnWorkflowChange({ workflowId }: { workflowId: string | null }) 
   useEffect(() => {
     if (!workflowId || workflowId === prev.current) return;
     prev.current = workflowId;
+    let cancelled = false;
     const t = requestAnimationFrame(() => {
-      fitView({ padding: 0.15, duration: 200 });
+      if (cancelled) return;
+      try {
+        fitView({ padding: 0.15, duration: 200 });
+      } catch {
+        /* sayfa değişiminde RF store boşalabiliyor */
+      }
     });
-    return () => cancelAnimationFrame(t);
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(t);
+    };
   }, [workflowId, fitView]);
 
   return null;
@@ -153,6 +162,13 @@ function RunPipelinePanel({
 }) {
   const { getNodes, getEdges } = useReactFlow();
   const [busy, setBusy] = useState(false);
+  const alive = useRef(true);
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
+    };
+  }, []);
 
   const handleRun = async () => {
     const nodes = getNodes();
@@ -186,6 +202,8 @@ function RunPipelinePanel({
     );
 
     const result = await runWorkflowPipeline(nodes, edges);
+
+    if (!alive.current) return;
 
     setNodes((nds) =>
       nds.map((n) => {
@@ -1072,9 +1090,7 @@ export default function WorkflowBuilder() {
           background: 'rgba(14,14,16,0.98)',
         }}
       >
-        <Suspense fallback={<StudioTopNavFallback />}>
-          <StudioTopNav />
-        </Suspense>
+        <StudioTopNav active="workflow" />
         <span style={{ flex: 1 }} />
         <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.28)' }}>
           localStorage · Kaydet
