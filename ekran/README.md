@@ -30,7 +30,7 @@ npm install
 /public       statik dosyalar (ikon)
 /src
   /schema     Zod şemaları — SAHNE VERİSİNİN TEK KAYNAĞI
-  /engine     zaman çizelgesi, tetikler, durum        (Adım 4)
+  /engine     zaman çizelgesi motoru, tetikler
   /shell      cihaz kabukları: ios, android, desktop
   /system     bildirim, arama ekranı, kilit, pil       (Adım 5)
   /modules    kilit, sosyal, …                         (Adım 5, 7)
@@ -68,6 +68,7 @@ Adım 6'da sette yapacak). Geçersiz değer sessizce yok sayılır:
 | `?pil=5` | Pil %5 (≤20 kırmızı) |
 | `?sarjda=1` | Şarjda (yeşil + şimşek) |
 | `?saat=07:30` | Saati değiştirir |
+| `?motor=1` | Geçici motor izleyicisi (olayları elle tetikle, başa sar) |
 
 **Önizleme modu neden var:** sette oynatıcı ekranı tamamen doldurur ve çentik
 çizilmez — gerçek cihazın çentiği zaten fiziksel olarak oradadır. Bilgisayarda
@@ -91,6 +92,22 @@ Sahne için **kod yazılmaz** (CLAUDE.md §2.2). Mevcut aksiyonlarla yapılamaya
 - **Aksiyonlar:** `bildirim`, `yorumGeldi`, `begeniGeldi`, `takipGeldi`, `mesajGeldi`,
   `yaziyor`, `aramaGeldi`, `pilDegisti`, `baglantiDegisti`, `ekranAc`,
   `ghostTypingBaslat`, `postYukle`
+## Zaman çizelgesi motoru
+
+Sahnenin kalbi `src/engine/motor.ts`. Görselden tamamen bağımsızdır: sahte saat
+enjekte edilip test edilebilir, bu yüzden determinizmi gerçekten ölçülebiliyor.
+
+- **Elle tetik süreyi ezer** (CLAUDE.md §2.5, §5): kumandadan/panelden tetiklenen
+  olay bekleyen zamanlayıcısını iptal eder ve zincir oradan devam eder.
+- **Aynı hotspot'a ikinci dokunuş olayı tekrar etmez** — sette çift post olmaz.
+- **Başa sar** olayları ve cihaz durumunu birebir ilk haline döndürür.
+- **Rastgelelik yok**; test bunu kaynak kodda da denetliyor.
+
+**Mimari kararı:** modüller "şu an ne görünüyor" diye motora sormaz;
+gerçekleşen olayların listesini okuyup ekranı ondan türetir (beğeni sayısı =
+gerçekleşen `begeniGeldi` olaylarının sayısı, gibi). Böylece başa sar tek satır,
+sahne deterministik ve hiçbir modül kendi zamanlayıcısını tutmuyor.
+
 ## Görsel yükleme kuralı
 
 Hiçbir modül kendi "yavaş yükleme" mantığını yazmaz (CLAUDE.md §3.1). Tüm
