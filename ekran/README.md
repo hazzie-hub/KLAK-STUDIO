@@ -25,20 +25,42 @@ npm install
 ## Klasörler
 
 ```
-/app          Next.js sayfaları (oynatıcı /p, kumanda /k, stüdyo /studio buraya gelecek)
+/app          Next.js sayfaları
+  /p/[kod]    oynatıcı
+/public       statik dosyalar (ikon)
 /src
   /schema     Zod şemaları — SAHNE VERİSİNİN TEK KAYNAĞI
   /engine     zaman çizelgesi, tetikler, durum        (Adım 4)
-  /shell      cihaz kabukları: ios, android, desktop  (Adım 2)
+  /shell      cihaz kabukları: ios, android, desktop
   /system     bildirim, arama ekranı, kilit, pil       (Adım 5)
   /modules    kilit, sosyal, …                         (Adım 5, 7)
   /shared     ghost-typing, hotspot, medya, derin-link (Adım 3, 8)
   /platform   tarayıcıya özel API'ler                  (Adım 10)
+  /icerik     dosyadan sahne/cihaz/hesap okuma
 /brands       kurgusal marka isimleri ve renkleri      (Adım 7)
 /content      sahne ve içerik verisi (Faz 1–3 dosya tabanlı)
 /scripts      validate.ts
 /tests        şema testleri
 ```
+
+## Oynatıcıyı açma
+
+```bash
+npm run dev
+```
+
+| Adres | Ne gösterir |
+|---|---|
+| `/p/eg-b03-s58` | Sahnenin kendi cihaz kabuğu, tam ekran (sette böyle çalışır) |
+| `/p/eg-b03-s58?onizleme=1` | Bilgisayarda bakmak için cihaz çerçevesi içinde |
+| `/p/eg-b03-s58?skin=ios` | Kabuğu ezer — `ios`, `android`, `desktop` |
+
+**Önizleme modu neden var:** sette oynatıcı ekranı tamamen doldurur ve çentik
+çizilmez — gerçek cihazın çentiği zaten fiziksel olarak oradadır. Bilgisayarda
+bakarken cihaz şeklini görmek için `?onizleme=1` çerçeveyi ve çentiği çizer.
+
+Olmayan bir sahne kodu açılırsa ekran **sessizce siyah** kalır; sebep yalnızca
+konsola yazılır (CLAUDE.md §2.6: kamerada hata görünmez).
 
 ## Yeni sahne nasıl yazılır
 
