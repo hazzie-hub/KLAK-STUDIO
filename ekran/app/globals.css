@@ -39,3 +39,9 @@ body {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* Yazma imleci. */
+@keyframes imlec {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}

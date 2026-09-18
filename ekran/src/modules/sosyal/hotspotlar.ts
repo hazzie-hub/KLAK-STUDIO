@@ -9,4 +9,13 @@ export const HOTSPOT = {
   postPaylas: "yeni-post-akisi-tamam",
   /** Post yükleme akışı başlatıldı (+ düğmesi). */
   postAkisiBasladi: "yeni-post-akisi-basladi",
+  /** Yorum alanına dokunuldu — klavye açılır, ghost typing burada başlar. */
+  yorumAlani: "yorum-alani",
+  /** Yorum "Paylaş"a basıldı. */
+  yorumGonderildi: "yorum-gonderildi",
+} as const;
+
+/** Ghost typing hedefi — sahneler `ghostTypingBaslat.hedef` olarak bunu kullanır. */
+export const GHOST_HEDEF = {
+  yorum: "yorum-yaz",
 } as const;

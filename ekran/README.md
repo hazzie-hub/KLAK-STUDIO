@@ -35,7 +35,7 @@ npm install
   /system     bildirim bannerı, pil uyarısı, kapanma ekranı
   /modules    kilit, sosyal; diğerleri Faz 3-4'te
   /durum      cihaz durumu katmanı: pil, sinyal, bağlantı, görsel yükleme
-  /shared     medya bileşeni; ghost-typing, hotspot, derin-link (Adım 8)
+  /shared     medya bileşeni, ghost-typing
   /platform   tarayıcıya özel API'ler                  (Adım 10)
   /icerik     dosyadan sahne/cihaz/hesap okuma
 /brands       kurgusal marka isimleri ve renkleri
@@ -55,6 +55,7 @@ npm run dev
 | `/p/eg-b03-s58` | Sahnenin kendi cihaz kabuğu, tam ekran (sette böyle çalışır) |
 | `/p/eg-b03-s12` | Kilit ekranına bildirim düşen sahne |
 | `/p/eg-b03-s71` | Pil bitip telefonun kapandığı sahne (Android) |
+| `/p/eg-b03-s59` | Nergis ghost typing ile yorum yazar |
 | `/p/eg-b03-s58?onizleme=1` | Bilgisayarda bakmak için cihaz çerçevesi içinde |
 | `/p/eg-b03-s58?skin=ios` | Kabuğu ezer — `ios`, `android`, `desktop` |
 
@@ -95,6 +96,27 @@ Sahne için **kod yazılmaz** (CLAUDE.md §2.2). Mevcut aksiyonlarla yapılamaya
 - **Aksiyonlar:** `bildirim`, `yorumGeldi`, `begeniGeldi`, `takipGeldi`, `mesajGeldi`,
   `yaziyor`, `aramaGeldi`, `pilDegisti`, `baglantiDegisti`, `ekranAc`,
   `ghostTypingBaslat`, `postYukle`
+## Ghost typing
+
+CLAUDE.md §7. Tüm yazma alanları `src/shared/ghost-typing` üzerinden geçer.
+
+| Mod | Davranış |
+|---|---|
+| `senaryolu` (varsayılan) | Sahte klavye çizilir. **Hangi tuşa basılırsa basılsın** senaryodaki metnin sıradaki harfi yazılır. Metin bitince tuşlar etkisizleşir, "Paylaş" aktifleşir. |
+| `otomatik` | Kimse dokunmadan, verilen hızda kendi kendine yazar (insert çekimler). Klavye çizilmez. |
+| `serbest` | Gerçek klavye/input. Sahnede açıkça seçilirse. |
+
+**Masaüstünde** sahte klavye çizilmez; fiziksel klavye dinlenir — yine hangi
+tuşa basıldığı önemsizdir. Backspace son harfi siler.
+
+**Türkçe ve emoji:** metin `Intl.Segmenter` ile ekranda görünen harflere bölünür,
+bu yüzden emoji tek adımda gelir, hiçbir adımda yarım karakter görünmez.
+Klavye düzeni Türkçe Q.
+
+Doğrulandı: 31 anlamsız tuşa basıldığında ekranda tam olarak
+`Teşekkürler, çok naziksiniz 🌿` çıkıyor; fazladan basılan tuşlar bir şey
+yapmıyor.
+
 ## Kurgusal markalar
 
 CLAUDE.md §2.1: gerçek marka yok. Uygulama adları ve renkleri **tek yerden**

@@ -5,8 +5,9 @@ import { useEffect, useRef, useState } from "react";
 import { markalar } from "@brands";
 import { useSahne } from "@/engine";
 import { useKutuphane } from "@/icerik/kutuphane";
+import { useGhostTyping } from "@/shared/ghost-typing";
 import { AktiviteEkrani, Feed, Kesfet, PostDetay, Profil, Yorumlar } from "./ekranlar";
-import { HOTSPOT } from "./hotspotlar";
+import { GHOST_HEDEF, HOTSPOT } from "./hotspotlar";
 import { Arti, Avatar, Buyutec, Ev, Kalp } from "./parcalar";
 import { useSosyalVeri } from "./veri";
 import { YuklemeAkisi } from "./yukle";
@@ -65,7 +66,14 @@ export function SosyalModulu({ baslangicEkrani, hesapId }: { baslangicEkrani: st
       case "post":
         return <PostDetay post={param === null ? null : veri.postAl(param)} git={git} geri={() => git("feed")} />;
       case "yorumlar":
-        return <Yorumlar post={param === null ? null : veri.postAl(param)} geri={() => git("feed")} />;
+        return (
+          <Yorumlar
+            post={param === null ? null : veri.postAl(param)}
+            geri={() => git("feed")}
+            benimHesabim={benimHesabim}
+            gonderildi={yorumGonderildi}
+          />
+        );
       case "yukle":
         return <YuklemeAkisi kapat={() => git("feed")} />;
       default:
@@ -73,7 +81,15 @@ export function SosyalModulu({ baslangicEkrani, hesapId }: { baslangicEkrani: st
     }
   };
 
-  const sekmeGoster = ekran !== "yukle";
+  // Klavye açıkken alt sekme çubuğu görünmez — gerçek telefonlarda klavye onu örter.
+  // Yorum listeye düştüğünde klavye kapanır, çubuk geri gelir.
+  const yorumGhost = useGhostTyping(GHOST_HEDEF.yorum);
+  const acikPost = ekran === "yorumlar" && param !== null ? veri.postAl(param) : null;
+  const yorumGonderildi =
+    yorumGhost.hedefMetin !== "" &&
+    (acikPost?.yorumlar.some((y) => y.metin === yorumGhost.hedefMetin) ?? false);
+  const klavyeAcik = ekran === "yorumlar" && yorumGhost.aktif && !yorumGonderildi;
+  const sekmeGoster = ekran !== "yukle" && !klavyeAcik;
 
   return (
     <div className="flex h-full w-full flex-col" style={{ background: "var(--zemin)", color: "var(--metin)" }}>

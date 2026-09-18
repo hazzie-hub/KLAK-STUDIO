@@ -1,0 +1,42 @@
+{
+  "kod": "eg-b03-s59",
+  "cihaz": "nergis-telefon",
+  "baslangic": { "modul": "sosyal", "ekran": "yorumlar", "hesap": "nergis", "icerikRef": "nergis-post-cicekci" },
+  "durum": { "baglanti": "normal", "gorsel": "normal" },
+  "olaylar": [
+    {
+      "id": "sezai-yorumu",
+      "ad": "Sezai'nin yorumu ekranda durur",
+      "tetik": { "tur": "baslangic", "gecikme": 0 },
+      "aksiyon": {
+        "tur": "yorumGeldi",
+        "hesap": "gonul-yolcusu",
+        "postRef": "nergis-post-cicekci",
+        "metin": "Yeni başlangıçlar hayırlı olsun."
+      }
+    },
+    {
+      "id": "yazmaya-basla",
+      "ad": "Nergis yorum alanına dokunur, klavye açılır",
+      "tetik": { "tur": "dokunma", "hedef": "yorum-alani" },
+      "aksiyon": {
+        "tur": "ghostTypingBaslat",
+        "hedef": "yorum-yaz",
+        "metin": "Teşekkürler, çok naziksiniz 🌿",
+        "mod": "senaryolu"
+      }
+    },
+    {
+      "id": "nergis-yorumu",
+      "ad": "Nergis yorumu paylaşır",
+      "tetik": { "tur": "dokunma", "hedef": "yorum-gonderildi" },
+      "aksiyon": {
+        "tur": "yorumGeldi",
+        "hesap": "nergis",
+        "postRef": "nergis-post-cicekci",
+        "metin": "Teşekkürler, çok naziksiniz 🌿"
+      }
+    }
+  ],
+  "talimat": "Yorumlar ekranı açık. Oyuncu ekrana bir kez dokunur, klavye açılır. Sonra KLAVYEDE İSTEDİĞİ TUŞLARA BASAR — senaryodaki metin kendiliğinden yazılır. Metin bitince Paylaş aktifleşir. Replikler senaryodan alınmalı; buradakiler yer tutucudur."
+}

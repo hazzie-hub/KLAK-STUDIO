@@ -1,8 +1,11 @@
 "use client";
 
 import { markalar } from "@brands";
+import { useSahne } from "@/engine";
 import { Medya } from "@/shared/medya";
+import { GhostYaziAlani, useGhostTyping } from "@/shared/ghost-typing";
 import { useKutuphane } from "@/icerik/kutuphane";
+import { GHOST_HEDEF, HOTSPOT } from "./hotspotlar";
 import { Avatar, Balon, Geri, Kalp, sayiYaz } from "./parcalar";
 import { PostKarti } from "./post-karti";
 import type { Aktivite, GorunenPost, SosyalVeri } from "./veri";
@@ -81,11 +84,30 @@ export function PostDetay({
   );
 }
 
-export function Yorumlar({ post, geri }: { post: GorunenPost | null; geri: () => void }) {
+export function Yorumlar({
+  post,
+  geri,
+  benimHesabim,
+  gonderildi = false,
+}: {
+  post: GorunenPost | null;
+  geri: () => void;
+  benimHesabim?: string;
+  /** Yazılan yorum listeye düştü mü? Yerel bayrak tutulmaz; olaylardan türer,
+      böylece başa sarınca kendiliğinden sıfırlanır. */
+  gonderildi?: boolean;
+}) {
+  const { dokun } = useSahne();
+  const kutuphane = useKutuphane();
+  const ghost = useGhostTyping(GHOST_HEDEF.yorum);
+
   return (
     <div className="flex h-full flex-col">
       <UstCubuk baslik="Yorumlar" geri={geri} />
-      <div className="min-h-0 flex-1 overflow-auto px-[13px] py-[11px]">
+      <div
+        className="min-h-0 flex-1 overflow-auto px-[13px] py-[11px]"
+        onPointerDown={() => dokun(HOTSPOT.yorumAlani)}
+      >
         {post !== null && post.aciklama !== "" && (
           <Satir hesapAdi={post.hesap?.kullaniciAdi} avatar={post.hesap} metin={post.aciklama} />
         )}
@@ -100,6 +122,17 @@ export function Yorumlar({ post, geri }: { post: GorunenPost | null; geri: () =>
           </p>
         )}
       </div>
+
+      {ghost.aktif && !gonderildi && (
+        <GhostYaziAlani
+          hedef={GHOST_HEDEF.yorum}
+          yerTutucu="Yorum ekle…"
+          gonderEtiketi="Paylaş"
+          onGonder={() => dokun(HOTSPOT.yorumGonderildi)}
+          sol={<Avatar hesap={kutuphane.hesap(benimHesabim ?? "")} boyut={29} />}
+          vurguRengi={MARKA.renk}
+        />
+      )}
     </div>
   );
 }
