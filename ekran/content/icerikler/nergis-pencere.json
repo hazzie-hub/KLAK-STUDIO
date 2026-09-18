@@ -1,0 +1,14 @@
+{
+  "id": "nergis-pencere",
+  "tur": "post",
+  "dizi": "eg",
+  "veri": {
+    "hesap": "nergis",
+    "gorsel": "pencere.svg",
+    "aciklama": "Bu şehir sabahları başka.",
+    "tarih": "3 gün",
+    "begeniSayisi": 96,
+    "yorumlar": [],
+    "konum": "Kadıköy"
+  }
+}

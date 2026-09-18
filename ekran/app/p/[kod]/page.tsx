@@ -1,9 +1,21 @@
-import { DurumSaglayici, durumEzmeleri, tekDeger, type Aramalar } from "@/durum";
+import {
+  DurumSaglayici,
+  durumEzmeleri,
+  tekDeger,
+  type Aramalar,
+} from "@/durum";
 import { SahneSaglayici } from "@/engine";
 import { ModulSec, modulGorunumu } from "@/modules";
 import { GizliKatman, SistemKatmani } from "@/system";
 import { Kabuk, gorunenDurum, skinSec } from "@/shell";
-import { cihazOku, sahneOku, tumSahneKodlari } from "@/icerik/yukle";
+import {
+  cihazOku,
+  sahneOku,
+  tumHesaplar,
+  tumIcerikler,
+  tumSahneKodlari,
+} from "@/icerik/yukle";
+import { KutuphaneSaglayici } from "@/icerik/kutuphane";
 
 /** Sahneler derleme anında üretilir — sette internet gerekmez (CLAUDE.md §2.3). */
 export function generateStaticParams() {
@@ -31,7 +43,9 @@ export default async function OynaticiSayfasi({
 
   const cihaz = cihazOku(sahne.cihaz);
   if (cihaz === null) {
-    console.error(`[ekran] ${kod}: "${sahne.cihaz}" cihazı bulunamadı, varsayılan kabuk kullanılıyor.`);
+    console.error(
+      `[ekran] ${kod}: "${sahne.cihaz}" cihazı bulunamadı, varsayılan kabuk kullanılıyor.`,
+    );
   }
 
   const skin = skinSec(tekDeger(aramalar, "skin"), cihaz?.skin);
@@ -42,18 +56,20 @@ export default async function OynaticiSayfasi({
 
   return (
     <DurumSaglayici baslangic={durum}>
-      <SahneSaglayici sahne={sahne}>
-        <Kabuk
-          skin={skin}
-          onizleme={onizleme}
-          icerikUste={gorunum.icerikUste}
-          ustKatman={gorunum.ustKatman}
-        >
-          <ModulSec sahne={sahne} cihaz={cihaz} />
-          <SistemKatmani aktifModul={sahne.baslangic.modul} />
-          <GizliKatman />
-        </Kabuk>
-      </SahneSaglayici>
+      <KutuphaneSaglayici hesaplar={tumHesaplar()} icerikler={tumIcerikler()}>
+        <SahneSaglayici sahne={sahne}>
+          <Kabuk
+            skin={skin}
+            onizleme={onizleme}
+            icerikUste={gorunum.icerikUste}
+            ustKatman={gorunum.ustKatman}
+          >
+            <ModulSec sahne={sahne} cihaz={cihaz} />
+            <SistemKatmani aktifModul={sahne.baslangic.modul} />
+            <GizliKatman />
+          </Kabuk>
+        </SahneSaglayici>
+      </KutuphaneSaglayici>
     </DurumSaglayici>
   );
 }

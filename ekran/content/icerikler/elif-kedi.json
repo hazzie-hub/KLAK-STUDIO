@@ -1,0 +1,19 @@
+{
+  "id": "elif-kedi",
+  "tur": "post",
+  "dizi": "eg",
+  "veri": {
+    "hesap": "elif-demir",
+    "gorsel": "kedi.svg",
+    "aciklama": "Komşunun kedisi yine bizde.",
+    "tarih": "2 gün",
+    "begeniSayisi": 201,
+    "yorumlar": [
+      {
+        "hesap": "kadikoy-kahve",
+        "metin": "Bize de uğratın"
+      }
+    ],
+    "konum": "Moda"
+  }
+}

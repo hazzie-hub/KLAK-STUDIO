@@ -1,4 +1,5 @@
 import { useSahne } from "@/engine";
+import { markaAl } from "@brands";
 import type { Aksiyon } from "@/schema";
 
 export type BildirimAksiyonu = Extract<Aksiyon, { tur: "bildirim" }>;
@@ -20,19 +21,24 @@ export function useBildirimler(): Bildirim[] {
 }
 
 /**
- * Uygulama adının ekranda görünecek hali.
- * GEÇİCİ: Adım 7'de /brands'ten kurgusal marka adı gelecek; şimdilik
- * slug insanlaştırılıyor (`fisilti-mesaj` → `Fısıltı Mesaj` değil, `Fisilti Mesaj`).
+ * Uygulama adının ekranda görünecek hali. Önce /brands'e bakar (CLAUDE.md §2.1:
+ * marka isimleri tek yerden yönetilir); kayıtlı değilse slug insanlaştırılır.
  */
 export function uygulamaAdi(slug: string): string {
+  const marka = markaAl(slug);
+  if (marka !== null) return marka.ad;
+
   return slug
     .split("-")
     .map((p) => p.charAt(0).toLocaleUpperCase("tr") + p.slice(1))
     .join(" ");
 }
 
-/** Uygulama ikonu için deterministik renk — marka değil, yer tutucu. */
+/** Uygulama ikonunun rengi — /brands'ten, yoksa slug'dan deterministik. */
 export function uygulamaRengi(slug: string): string {
+  const marka = markaAl(slug);
+  if (marka !== null) return marka.ikonRengi;
+
   let h = 2166136261;
   for (let i = 0; i < slug.length; i++) {
     h ^= slug.charCodeAt(i);

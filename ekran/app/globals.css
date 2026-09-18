@@ -19,3 +19,23 @@ body {
     transform: translateY(0);
   }
 }
+
+/* Beğeni gelince kalbin bir kez atması. */
+@keyframes kalpAt {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.32); }
+  60% { transform: scale(0.94); }
+  100% { transform: scale(1); }
+}
+
+/* Yeni yorumun listeye girişi. */
+@keyframes yorumGir {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Yeni postun feed'e düşmesi. */
+@keyframes postGir {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

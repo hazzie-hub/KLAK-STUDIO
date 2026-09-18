@@ -1,0 +1,23 @@
+{
+  "id": "elif-balkon",
+  "tur": "post",
+  "dizi": "eg",
+  "veri": {
+    "hesap": "elif-demir",
+    "gorsel": "balkon.svg",
+    "aciklama": "Balkonda kitap, arkada şehir.",
+    "tarih": "dün",
+    "begeniSayisi": 132,
+    "yorumlar": [
+      {
+        "hesap": "nergis",
+        "metin": "Çok güzel olmuş"
+      },
+      {
+        "hesap": "mert-kaya",
+        "metin": "Manzara kıskandırdı"
+      }
+    ],
+    "konum": "Moda"
+  }
+}

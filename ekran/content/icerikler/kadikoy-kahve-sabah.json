@@ -1,0 +1,19 @@
+{
+  "id": "kadikoy-kahve-sabah",
+  "tur": "post",
+  "dizi": "eg",
+  "veri": {
+    "hesap": "kadikoy-kahve",
+    "gorsel": "kahve.svg",
+    "aciklama": "Sabahın ilk demlemesi.",
+    "tarih": "08:12",
+    "begeniSayisi": 84,
+    "yorumlar": [
+      {
+        "hesap": "elif-demir",
+        "metin": "Geliyorum birazdan ☕"
+      }
+    ],
+    "konum": "Kadıköy"
+  }
+}

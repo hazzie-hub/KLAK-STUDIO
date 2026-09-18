@@ -33,12 +33,12 @@ npm install
   /engine     zaman çizelgesi motoru, tetikler
   /shell      cihaz kabukları: ios, android, desktop
   /system     bildirim bannerı, pil uyarısı, kapanma ekranı
-  /modules    kilit; sosyal ve diğerleri Adım 7'den sonra
+  /modules    kilit, sosyal; diğerleri Faz 3-4'te
   /durum      cihaz durumu katmanı: pil, sinyal, bağlantı, görsel yükleme
   /shared     medya bileşeni; ghost-typing, hotspot, derin-link (Adım 8)
   /platform   tarayıcıya özel API'ler                  (Adım 10)
   /icerik     dosyadan sahne/cihaz/hesap okuma
-/brands       kurgusal marka isimleri ve renkleri      (Adım 7)
+/brands       kurgusal marka isimleri ve renkleri
 /content      sahne ve içerik verisi (Faz 1–3 dosya tabanlı)
 /scripts      validate.ts
 /tests        şema testleri
@@ -95,6 +95,38 @@ Sahne için **kod yazılmaz** (CLAUDE.md §2.2). Mevcut aksiyonlarla yapılamaya
 - **Aksiyonlar:** `bildirim`, `yorumGeldi`, `begeniGeldi`, `takipGeldi`, `mesajGeldi`,
   `yaziyor`, `aramaGeldi`, `pilDegisti`, `baglantiDegisti`, `ekranAc`,
   `ghostTypingBaslat`, `postYukle`
+## Kurgusal markalar
+
+CLAUDE.md §2.1: gerçek marka yok. Uygulama adları ve renkleri **tek yerden**
+(`/brands`) yönetilir, hiçbir modüle elle yazılmaz.
+
+| Slug | Ad | Nerede |
+|---|---|---|
+| `akis` | **Akış** | `sosyal` modülü |
+| `mesaj` | **Mesaj** | bildirimler; `mesaj` modülü Faz 3'te |
+
+Bir test, `src/`, `brands/` ve `content/` altındaki **hiçbir dosyada** gerçek
+uygulama adının geçmediğini denetliyor — yorum satırlarında bile.
+
+## sosyal modülü (Akış)
+
+Ekranlar: feed, keşfet, gönderi detayı, yorumlar, profil, aktivite, post yükleme.
+
+**Modül kendi sayacını tutmaz.** Beğeni sayısı = temel sayı + gerçekleşen
+`begeniGeldi` olayları; yorumlar = kütüphanedeki yorumlar + gerçekleşen
+`yorumGeldi` olayları. Bu yüzden başa sar tek satır ve her tekrar birebir aynı.
+Türetme `src/modules/sosyal/veri.ts` içinde saf bir fonksiyon — React'siz test edilir.
+
+**Sahnede yüklenecek post feed'de görünmez** (`postYukle` gerçekleşene kadar),
+sonra en üstte belirir.
+
+**Dokunma hedefleri** (sahneler bunları `{ tur: "dokunma", hedef: ... }` ile kullanır):
+
+| Hedef | Ne zaman |
+|---|---|
+| `yeni-post-akisi-basladi` | + düğmesine basıldı |
+| `yeni-post-akisi-tamam` | "Paylaş"a basıldı |
+
 ## Gizli ayar paneli
 
 Sette operatörün kullandığı yer. CLAUDE.md §6.

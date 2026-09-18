@@ -62,6 +62,27 @@ export function icerikOku(id: string): Icerik | null {
   return jsonOku("icerikler", id, IcerikSchema);
 }
 
+function klasordekiler<T>(klasor: string, sema: ZodType<T>): T[] {
+  const yol = join(ICERIK_KOK, klasor);
+  if (!existsSync(yol)) return [];
+  return readdirSync(yol)
+    .filter((d) => d.endsWith(".json"))
+    .sort()
+    .flatMap((d) => {
+      const kayit = jsonOku(klasor, d.replace(/\.json$/, ""), sema);
+      return kayit === null ? [] : [kayit];
+    });
+}
+
+/** İçerik kütüphanesinin tamamı — modüller feed'i bundan kurar. */
+export function tumHesaplar(): Hesap[] {
+  return klasordekiler("hesaplar", HesapSchema);
+}
+
+export function tumIcerikler(): Icerik[] {
+  return klasordekiler("icerikler", IcerikSchema);
+}
+
 /** Tüm sahne kodları — önceden üretim (`generateStaticParams`) için. */
 export function tumSahneKodlari(): string[] {
   const yol = join(ICERIK_KOK, "sahneler");

@@ -1,0 +1,13 @@
+{
+  "id": "mert-yol",
+  "tur": "post",
+  "dizi": "eg",
+  "veri": {
+    "hesap": "mert-kaya",
+    "gorsel": "yol.svg",
+    "aciklama": "Yola çıkmadan son kare.",
+    "tarih": "dün",
+    "begeniSayisi": 47,
+    "yorumlar": []
+  }
+}

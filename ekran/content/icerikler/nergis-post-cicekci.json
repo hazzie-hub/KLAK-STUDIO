@@ -4,9 +4,10 @@
   "dizi": "eg",
   "veri": {
     "hesap": "nergis",
-    "gorsel": "post-cicekci.jpg",
+    "gorsel": "cicekci.svg",
     "aciklama": "Bugün burada başlıyoruz.",
     "konum": "Kadıköy",
+    "tarih": "şimdi",
     "begeniSayisi": 0,
     "yorumlar": []
   }
