@@ -41,5 +41,8 @@ export function durumEzmeleri(aramalar: Aramalar, temel: GorunenDurum): GorunenD
   const saat = tekDeger(aramalar, "saat");
   if (saat !== undefined && /^([01]\d|2[0-3]):[0-5]\d$/.test(saat)) sonuc.saat = saat;
 
+  const tarih = tekDeger(aramalar, "tarih");
+  if (tarih !== undefined && tarih.trim() !== "") sonuc.tarih = tarih;
+
   return sonuc;
 }

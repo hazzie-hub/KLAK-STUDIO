@@ -1,0 +1,27 @@
+{
+  "kod": "eg-b03-s71",
+  "cihaz": "sezai-telefon",
+  "baslangic": { "modul": "kilit", "ekran": "kilit" },
+  "durum": { "baglanti": "normal", "gorsel": "normal", "pil": 14 },
+  "olaylar": [
+    {
+      "id": "pil-dustu",
+      "ad": "Pil %5'e düşer",
+      "tetik": { "tur": "baslangic", "gecikme": 2500 },
+      "aksiyon": { "tur": "pilDegisti", "seviye": 5 }
+    },
+    {
+      "id": "pil-kritik",
+      "ad": "Pil %1'e düşer",
+      "tetik": { "tur": "sonra", "olayId": "pil-dustu", "gecikme": 7000 },
+      "aksiyon": { "tur": "pilDegisti", "seviye": 1 }
+    },
+    {
+      "id": "telefon-kapandi",
+      "ad": "Telefon kapanır",
+      "tetik": { "tur": "sonra", "olayId": "pil-kritik", "gecikme": 5000 },
+      "aksiyon": { "tur": "pilDegisti", "seviye": 0 }
+    }
+  ],
+  "talimat": "Telefon kilitli, pil %14. 2,5 sn sonra %5 (uyarı çıkar), 7 sn sonra %1, 5 sn sonra telefon kapanır. Kapanma anı elle tetiklenerek replikaya denk getirilebilir."
+}

@@ -32,8 +32,8 @@ npm install
   /schema     Zod şemaları — SAHNE VERİSİNİN TEK KAYNAĞI
   /engine     zaman çizelgesi motoru, tetikler
   /shell      cihaz kabukları: ios, android, desktop
-  /system     bildirim, arama ekranı, kilit, pil       (Adım 5)
-  /modules    kilit, sosyal, …                         (Adım 5, 7)
+  /system     bildirim bannerı, pil uyarısı, kapanma ekranı
+  /modules    kilit; sosyal ve diğerleri Adım 7'den sonra
   /durum      cihaz durumu katmanı: pil, sinyal, bağlantı, görsel yükleme
   /shared     medya bileşeni; ghost-typing, hotspot, derin-link (Adım 8)
   /platform   tarayıcıya özel API'ler                  (Adım 10)
@@ -53,6 +53,8 @@ npm run dev
 | Adres | Ne gösterir |
 |---|---|
 | `/p/eg-b03-s58` | Sahnenin kendi cihaz kabuğu, tam ekran (sette böyle çalışır) |
+| `/p/eg-b03-s12` | Kilit ekranına bildirim düşen sahne |
+| `/p/eg-b03-s71` | Pil bitip telefonun kapandığı sahne (Android) |
 | `/p/eg-b03-s58?onizleme=1` | Bilgisayarda bakmak için cihaz çerçevesi içinde |
 | `/p/eg-b03-s58?skin=ios` | Kabuğu ezer — `ios`, `android`, `desktop` |
 
@@ -68,6 +70,7 @@ Adım 6'da sette yapacak). Geçersiz değer sessizce yok sayılır:
 | `?pil=5` | Pil %5 (≤20 kırmızı) |
 | `?sarjda=1` | Şarjda (yeşil + şimşek) |
 | `?saat=07:30` | Saati değiştirir |
+| `?tarih=3 Mart Pazartesi` | Kilit ekranındaki tarihi değiştirir |
 | `?motor=1` | Geçici motor izleyicisi (olayları elle tetikle, başa sar) |
 
 **Önizleme modu neden var:** sette oynatıcı ekranı tamamen doldurur ve çentik
@@ -92,6 +95,25 @@ Sahne için **kod yazılmaz** (CLAUDE.md §2.2). Mevcut aksiyonlarla yapılamaya
 - **Aksiyonlar:** `bildirim`, `yorumGeldi`, `begeniGeldi`, `takipGeldi`, `mesajGeldi`,
   `yaziyor`, `aramaGeldi`, `pilDegisti`, `baglantiDegisti`, `ekranAc`,
   `ghostTypingBaslat`, `postYukle`
+## Sistem katmanı
+
+CLAUDE.md §3.1'in 4. katmanı: hangi modül açık olursa olsun üstte görünen şeyler.
+
+- **Bildirim bannerı** — açık uygulamanın üstüne düşer, 4,6 sn sonra kendiliğinden
+  kalkar. Kilit ekranı açıkken banner düşmez; bildirimler kilit ekranının kendi
+  listesinde birikir (gerçek telefonlarda olduğu gibi).
+- **Pil uyarısı** — %20, %10, %5 eşiklerinin altına YENİ düşüldüğünde çıkar.
+  Sahneye özel değil, genel bir yetenek (CLAUDE.md §2.2): sahne sadece pili
+  düşürür, uyarıyı sistem katmanı kendisi çıkarır.
+- **Kapanma ekranı** — pil %0 olunca ekran kararır, kısa süre boş pil işareti
+  görünür, sonra tamamen siyah kalır.
+
+## Modüller kabuğa ne söyler
+
+Bazı modüller ekranın tamamını ister. Kilit ekranında duvar kâğıdı en üste kadar
+uzanmalı ve saat/pil yazısı beyaz olmalı, yoksa üstte beyaz bir şerit kalır ve
+sahte durur. Bunu `src/modules/gorunum.ts` belirler.
+
 ## Zaman çizelgesi motoru
 
 Sahnenin kalbi `src/engine/motor.ts`. Görselden tamamen bağımsızdır: sahte saat
@@ -100,6 +122,9 @@ enjekte edilip test edilebilir, bu yüzden determinizmi gerçekten ölçülebili
 - **Elle tetik süreyi ezer** (CLAUDE.md §2.5, §5): kumandadan/panelden tetiklenen
   olay bekleyen zamanlayıcısını iptal eder ve zincir oradan devam eder.
 - **Aynı hotspot'a ikinci dokunuş olayı tekrar etmez** — sette çift post olmaz.
+- **Otomatik zincir gerçekleşmiş olayı tekrar etmez**: operatör zincirin sonuna
+  atladığında arkadan gelen zincir aynı bildirimi ikinci kez düşürmez. Operatörün
+  kendi isteğiyle tekrarlaması ayrı.
 - **Başa sar** olayları ve cihaz durumunu birebir ilk haline döndürür.
 - **Rastgelelik yok**; test bunu kaynak kodda da denetliyor.
 

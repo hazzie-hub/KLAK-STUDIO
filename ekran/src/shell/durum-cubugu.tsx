@@ -14,10 +14,13 @@ import { PilIkonu, SinyalIkonu, WifiIkonu } from "./ikonlar";
 export function DurumCubugu({
   skin,
   cerceveli,
+  yazi = "koyu",
 }: {
   skin: Skin;
   /** Önizleme çerçevesi içinde mi? Çentik payı buna göre verilir. */
   cerceveli: boolean;
+  /** Koyu zemin (kilit ekranı, duvar kâğıdı) üstünde yazı beyaz olur. */
+  yazi?: "koyu" | "acik";
 }) {
   const { durum } = useDurum();
 
@@ -25,6 +28,8 @@ export function DurumCubugu({
 
   const cubuk = sinyalCubugu(durum.baglanti);
   const wifiAcik = durum.baglanti !== "yok";
+  const renk = yazi === "acik" ? "#ffffff" : "var(--durum-cubugu-yazi)";
+  const golge = yazi === "acik" ? "0 1px 6px rgba(0,0,0,0.35)" : undefined;
 
   if (skin === "ios") {
     return (
@@ -32,7 +37,8 @@ export function DurumCubugu({
         className="relative z-30 flex shrink-0 items-end justify-between px-[26px] pb-[6px] text-[15px] font-semibold tabular-nums"
         style={{
           height: "var(--durum-cubugu-yukseklik)",
-          color: "var(--durum-cubugu-yazi)",
+          color: renk,
+          textShadow: golge,
           paddingTop: cerceveli ? "14px" : "max(14px, env(safe-area-inset-top))",
         }}
       >
@@ -52,7 +58,8 @@ export function DurumCubugu({
       className="relative z-30 flex shrink-0 items-center justify-between px-4 text-[13px] font-medium tabular-nums"
       style={{
         height: "var(--durum-cubugu-yukseklik)",
-        color: "var(--durum-cubugu-yazi)",
+        color: renk,
+        textShadow: golge,
         paddingTop: cerceveli ? "0" : "env(safe-area-inset-top)",
       }}
     >

@@ -69,6 +69,8 @@ export const DurumSchema = z.strictObject({
     .string()
     .regex(/^([01]\d|2[0-3]):[0-5]\d$/, { error: 'Saat "SS:DD" biçiminde olmalı (örn. 21:04).' })
     .optional(),
+  /** Kilit ekranında görünen tarih. Serbest metin: "18 Eylül Perşembe". */
+  tarih: z.string().min(1, { error: "Tarih boş olamaz." }).optional(),
 });
 
 export type Slug = z.infer<typeof SlugSchema>;

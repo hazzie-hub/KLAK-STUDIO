@@ -4,6 +4,7 @@ import type { Skin } from "@/schema";
 import { DurumCubugu } from "./durum-cubugu";
 import { GezinmeCubugu } from "./gezinme-cubugu";
 import { Pencere } from "./pencere";
+import { SkinSaglayici } from "./skin-baglami";
 import { temaStili } from "./temalar";
 
 /**
@@ -22,12 +23,18 @@ import { temaStili } from "./temalar";
 export function Kabuk({
   skin,
   onizleme = false,
+  ustKatman = "koyu",
+  icerikUste = false,
   adresMetni,
   sekmeBasligi,
   children,
 }: {
   skin: Skin;
   onizleme?: boolean;
+  /** Durum çubuğu ve alt çubuk yazısının rengi. Koyu duvar kâğıdı üstünde "acik". */
+  ustKatman?: "koyu" | "acik";
+  /** İçerik durum çubuğunun ALTINDAN geçsin mi? Kilit ekranı gibi tam ekranlarda evet. */
+  icerikUste?: boolean;
   adresMetni?: string;
   sekmeBasligi?: string;
   children: ReactNode;
@@ -37,14 +44,28 @@ export function Kabuk({
       <Pencere adresMetni={adresMetni} sekmeBasligi={sekmeBasligi}>
         {children}
       </Pencere>
+    ) : icerikUste ? (
+      // İçerik tüm ekranı kaplar; çubuklar üstüne biner (kilit ekranı, tam ekran fotoğraf).
+      <div className="relative h-full w-full overflow-hidden" style={{ background: "var(--zemin)" }}>
+        <div className="absolute inset-0">{children}</div>
+        {onizleme && <Centik skin={skin} />}
+        <div className="absolute inset-x-0 top-0">
+          <DurumCubugu skin={skin} cerceveli={onizleme} yazi={ustKatman} />
+        </div>
+        <div className="absolute inset-x-0 bottom-0">
+          <GezinmeCubugu skin={skin} cerceveli={onizleme} yazi={ustKatman} />
+        </div>
+      </div>
     ) : (
       <div className="flex h-full w-full flex-col" style={{ background: "var(--zemin)" }}>
         {onizleme && <Centik skin={skin} />}
-        <DurumCubugu skin={skin} cerceveli={onizleme} />
+        <DurumCubugu skin={skin} cerceveli={onizleme} yazi={ustKatman} />
         <div className="relative min-h-0 flex-1 overflow-hidden">{children}</div>
-        <GezinmeCubugu skin={skin} cerceveli={onizleme} />
+        <GezinmeCubugu skin={skin} cerceveli={onizleme} yazi={ustKatman} />
       </div>
     );
+
+  const sarilmis = <SkinSaglayici skin={skin}>{icerik}</SkinSaglayici>;
 
   if (!onizleme) {
     return (
@@ -52,7 +73,7 @@ export function Kabuk({
         className="fixed inset-0 overflow-hidden"
         style={{ ...temaStili(skin), fontFamily: "var(--yazi-tipi)", background: "var(--zemin)" }}
       >
-        {icerik}
+        {sarilmis}
       </div>
     );
   }
@@ -73,7 +94,7 @@ export function Kabuk({
           background: "var(--zemin)",
         }}
       >
-        {icerik}
+        {sarilmis}
       </div>
     </div>
   );

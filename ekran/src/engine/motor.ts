@@ -10,6 +10,9 @@ import type { Olay, Sahne } from "@/schema";
  *  - Her olay, tetiğinden bağımsız olarak HER ZAMAN elle de tetiklenebilir (§5).
  *  - Elle tetiklenen olay, bekleyen zamanlayıcısını iptal eder ve zinciri
  *    buradan devam ettirir (§5) — "elle tetik süreyi ezer" (§2.5).
+ *  - OTOMATİK zincir, daha önce gerçekleşmiş bir olayı TEKRAR ETMEZ. Operatör
+ *    zincirin sonuna atladığında arkadan gelen zincir aynı bildirimi ikinci kez
+ *    düşürmesin diye. Operatörün kendi isteğiyle tekrarlaması ayrı (elleTetikle).
  *  - Rastgelelik yok; aynı girdi her tekrarda aynı sonucu verir (§2.4).
  */
 
@@ -188,9 +191,11 @@ export class Motor {
     this.kayitlar.push({ olayId: olay.id, zaman: this.gecenSure(), kaynak });
     this.onAksiyon(olay, kaynak);
 
-    // Zincir buradan devam eder.
+    // Zincir buradan devam eder. Zaten gerçekleşmiş olay otomatik olarak
+    // tekrar kurulmaz — sette çift bildirim/çift post olmaz.
     for (const sonraki of this.zincir.get(olay.id) ?? []) {
       if (sonraki.tetik.tur !== "sonra") continue;
+      if (this.tetiklendiMi(sonraki.id)) continue;
       this.kur(sonraki, sonraki.tetik.gecikme);
     }
 

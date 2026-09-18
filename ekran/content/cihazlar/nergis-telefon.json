@@ -1,0 +1,10 @@
+{
+  "kod": "nergis-telefon",
+  "karakter": "nergis",
+  "skin": "ios",
+  "model": "iPhone",
+  "duvarKagidi": "gece-sahil",
+  "kilitEkrani": "gece-sahil",
+  "rehber": [{ "ad": "Sezai", "karakter": "sezai" }],
+  "varsayilanDurum": { "baglanti": "normal", "gorsel": "normal", "saat": "23:41", "tarih": "18 Eylül Perşembe", "pil": 42 }
+}

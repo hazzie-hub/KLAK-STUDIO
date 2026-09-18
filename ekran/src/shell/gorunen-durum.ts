@@ -11,10 +11,12 @@ import type { Cihaz, Durum, Sahne } from "@/schema";
  */
 
 const YEDEK_SAAT = "21:04";
+const YEDEK_TARIH = "18 Eylül Perşembe";
 const YEDEK_PIL = 68;
 
 export type GorunenDurum = Required<Pick<Durum, "baglanti" | "gorsel">> & {
   saat: string;
+  tarih: string;
   pil: number;
   sarjda: boolean;
 };
@@ -26,6 +28,7 @@ export function gorunenDurum(sahne: Sahne, cihaz: Cihaz | null): GorunenDurum {
     baglanti: sahne.durum.baglanti,
     gorsel: sahne.durum.gorsel,
     saat: sahne.durum.saat ?? varsayilan?.saat ?? YEDEK_SAAT,
+    tarih: sahne.durum.tarih ?? varsayilan?.tarih ?? YEDEK_TARIH,
     pil: sahne.durum.pil ?? varsayilan?.pil ?? YEDEK_PIL,
     sarjda: sahne.durum.sarjda ?? varsayilan?.sarjda ?? false,
   };

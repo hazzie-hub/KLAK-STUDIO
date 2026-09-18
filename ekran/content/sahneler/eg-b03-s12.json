@@ -1,0 +1,31 @@
+{
+  "kod": "eg-b03-s12",
+  "cihaz": "nergis-telefon",
+  "baslangic": { "modul": "kilit", "ekran": "kilit" },
+  "durum": { "baglanti": "normal", "gorsel": "normal" },
+  "olaylar": [
+    {
+      "id": "ilk-mesaj",
+      "ad": "Sezai'den ilk mesaj düşer",
+      "tetik": { "tur": "baslangic", "gecikme": 2500 },
+      "aksiyon": {
+        "tur": "bildirim",
+        "uygulama": "mesaj",
+        "baslik": "Sezai",
+        "metin": "Bu akşam konuşmamız lazım."
+      }
+    },
+    {
+      "id": "ikinci-mesaj",
+      "ad": "Sezai ısrar eder",
+      "tetik": { "tur": "sonra", "olayId": "ilk-mesaj", "gecikme": 4000 },
+      "aksiyon": {
+        "tur": "bildirim",
+        "uygulama": "mesaj",
+        "baslik": "Sezai",
+        "metin": "Uyuyor musun?"
+      }
+    }
+  ],
+  "talimat": "Telefon kilitli, masada duruyor. Sahne açıldıktan 2,5 sn sonra Sezai'den bildirim düşer, 4 sn sonra ikincisi gelir. Kumandadan elle de tetiklenebilir."
+}

@@ -7,6 +7,7 @@ const temel: GorunenDurum = {
   baglanti: "normal",
   gorsel: "normal",
   saat: "21:04",
+  tarih: "18 Eylül Perşembe",
   pil: 68,
   sarjda: false,
 };
@@ -83,6 +84,11 @@ describe("durumEzmeleri — adres çubuğundan test ezmeleri", () => {
   it("şarj durumunu 1/0 ile alır", () => {
     expect(durumEzmeleri({ sarjda: "1" }, temel).sarjda).toBe(true);
     expect(durumEzmeleri({ sarjda: "0" }, temel).sarjda).toBe(false);
+  });
+
+  it("tarihi serbest metin olarak alır", () => {
+    expect(durumEzmeleri({ tarih: "3 Mart Pazartesi" }, temel).tarih).toBe("3 Mart Pazartesi");
+    expect(durumEzmeleri({ tarih: "   " }, temel).tarih).toBe(temel.tarih);
   });
 
   it("GEÇERSİZ değerleri sessizce yok sayar, sahneyi bozmaz (CLAUDE.md §2.6)", () => {

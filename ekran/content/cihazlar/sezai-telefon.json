@@ -1,0 +1,10 @@
+{
+  "kod": "sezai-telefon",
+  "karakter": "sezai",
+  "skin": "android",
+  "model": "Android telefon",
+  "duvarKagidi": "sabah-tepe",
+  "kilitEkrani": "sabah-tepe",
+  "rehber": [{ "ad": "Nergis", "karakter": "nergis" }],
+  "varsayilanDurum": { "baglanti": "normal", "gorsel": "normal", "saat": "07:12", "tarih": "19 Eylül Cuma", "pil": 14 }
+}

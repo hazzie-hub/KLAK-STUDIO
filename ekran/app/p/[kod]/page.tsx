@@ -1,6 +1,7 @@
 import { DurumSaglayici, durumEzmeleri, tekDeger, type Aramalar } from "@/durum";
 import { MotorIzleyici, SahneSaglayici } from "@/engine";
-import { YerTutucu } from "@/modules/yer-tutucu";
+import { ModulSec, modulGorunumu } from "@/modules";
+import { SistemKatmani } from "@/system";
 import { Kabuk, gorunenDurum, skinSec } from "@/shell";
 import { cihazOku, sahneOku, tumSahneKodlari } from "@/icerik/yukle";
 
@@ -39,12 +40,19 @@ export default async function OynaticiSayfasi({
 
   // Sadece açıkça istenirse; asla kendiliğinden (CLAUDE.md §2.6).
   const motorIzleyici = tekDeger(aramalar, "motor") === "1";
+  const gorunum = modulGorunumu(sahne.baslangic.modul);
 
   return (
     <DurumSaglayici baslangic={durum}>
       <SahneSaglayici sahne={sahne}>
-        <Kabuk skin={skin} onizleme={onizleme}>
-          <YerTutucu modul={sahne.baslangic.modul} ekran={sahne.baslangic.ekran} />
+        <Kabuk
+          skin={skin}
+          onizleme={onizleme}
+          icerikUste={gorunum.icerikUste}
+          ustKatman={gorunum.ustKatman}
+        >
+          <ModulSec sahne={sahne} cihaz={cihaz} />
+          <SistemKatmani aktifModul={sahne.baslangic.modul} />
         </Kabuk>
         {motorIzleyici && <MotorIzleyici />}
       </SahneSaglayici>

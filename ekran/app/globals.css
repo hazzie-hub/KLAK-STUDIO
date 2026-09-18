@@ -7,3 +7,15 @@ body {
   margin: 0;
   padding: 0;
 }
+
+/* Bildirim bannerının üstten inişi. */
+@keyframes bannerIn {
+  from {
+    opacity: 0;
+    transform: translateY(-120%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -215,3 +215,27 @@ describe("determinizm — CLAUDE.md §2.4", () => {
     expect(kaynak).not.toContain("Math.random");
   });
 });
+
+describe("otomatik zincir gerçekleşmiş olayı tekrar etmez", () => {
+  it("operatör zincirin sonuna atlayınca arkadan gelen zincir tekrarlamaz", () => {
+    const { saat, motor } = kur();
+    motor.baslat();
+    motor.dokun("yeni-post-akisi-tamam"); // zincir başladı: begeni 5000'de, yorum sonra
+
+    saat.ilerlet(500);
+    motor.elleTetikle("sezai-yorum"); // operatör sona atladı
+
+    // begeni zamanı gelince ateşlenir ama yorumu TEKRAR kurmaz
+    saat.ilerlet(30_000);
+    expect(motor.log.filter((k) => k.olayId === "sezai-yorum")).toHaveLength(1);
+    expect(motor.tetiklendiMi("sezai-begeni")).toBe(true);
+  });
+
+  it("operatör isterse aynı olayı elle tekrar tetikleyebilir", () => {
+    const { motor } = kur();
+    motor.baslat();
+    motor.elleTetikle("sezai-yorum");
+    motor.elleTetikle("sezai-yorum");
+    expect(motor.log.filter((k) => k.olayId === "sezai-yorum")).toHaveLength(2);
+  });
+});
