@@ -83,6 +83,28 @@ export function tumIcerikler(): Icerik[] {
   return klasordekiler("icerikler", IcerikSchema);
 }
 
+/**
+ * Sahnenin sette ihtiyaç duyacağı TÜM varlıklar.
+ * Oynatıcı açılırken bunları önbelleğe alır; sonrası internetsiz çalışır
+ * (CLAUDE.md §2.3).
+ */
+export function sahneVarliklari(cihaz: Cihaz | null): string[] {
+  const varliklar = new Set<string>();
+
+  for (const icerik of tumIcerikler()) {
+    if (icerik.tur === "post") varliklar.add(`/ornek/${icerik.veri.gorsel}`);
+    if (icerik.tur === "foto") varliklar.add(`/ornek/${icerik.veri.dosya}`);
+  }
+  for (const hesap of tumHesaplar()) {
+    if (hesap.avatar !== undefined) varliklar.add(`/avatar/${hesap.avatar}`);
+  }
+  for (const duvar of [cihaz?.kilitEkrani, cihaz?.duvarKagidi]) {
+    if (duvar !== undefined) varliklar.add(`/duvar/${duvar}.svg`);
+  }
+
+  return [...varliklar].sort();
+}
+
 /** Tüm sahne kodları — önceden üretim (`generateStaticParams`) için. */
 export function tumSahneKodlari(): string[] {
   const yol = join(ICERIK_KOK, "sahneler");

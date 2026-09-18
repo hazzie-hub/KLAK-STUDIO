@@ -4,3 +4,8 @@ out/
 *.tsbuildinfo
 .env.local
 .DS_Store
+
+# Serwist derleme çıktısı
+public/sw.js
+public/sw.js.map
+public/swe-worker-*.js

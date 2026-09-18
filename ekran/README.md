@@ -36,7 +36,7 @@ npm install
   /modules    kilit, sosyal; diğerleri Faz 3-4'te
   /durum      cihaz durumu katmanı: pil, sinyal, bağlantı, görsel yükleme
   /shared     medya bileşeni, ghost-typing
-  /platform   tarayıcıya özel API'ler                  (Adım 10)
+  /platform   tarayıcıya özel API'ler, gizli dokunuş, hazırlık
   /icerik     dosyadan sahne/cihaz/hesap okuma
 /brands       kurgusal marka isimleri ve renkleri
 /content      sahne ve içerik verisi (Faz 1–3 dosya tabanlı)
@@ -96,6 +96,34 @@ Sahne için **kod yazılmaz** (CLAUDE.md §2.2). Mevcut aksiyonlarla yapılamaya
 - **Aksiyonlar:** `bildirim`, `yorumGeldi`, `begeniGeldi`, `takipGeldi`, `mesajGeldi`,
   `yaziyor`, `aramaGeldi`, `pilDegisti`, `baglantiDegisti`, `ekranAc`,
   `ghostTypingBaslat`, `postYukle`
+## Offline çalışma
+
+CLAUDE.md §2.3: oynatıcı bir kez yüklendikten sonra internetsiz çalışır.
+
+Service worker (Serwist) derleme anında **55 dosyayı** önbelleğe alır: sahne
+sayfaları, JS, CSS, gömülü fontlar ve `/public` altındaki tüm görseller.
+Sahne dosyası değişirse içerik özeti değişir ve önbellek kendiliğinden yenilenir.
+
+Tarayıcıda ölçüldü — internet kesildikten sonra:
+
+| Ne | Sonuç |
+|---|---|
+| Sayfa yeniden yüklendi | açıldı, 11/11 görsel geldi |
+| Başka bir sahneye geçildi | açıldı, duvar kâğıdı geldi |
+| Sahne baştan sona oynatıldı | post yüklendi, +5 sn beğeni, yorum düştü |
+| Hata metni | yok |
+
+> Geliştirme sırasında (`npm run dev`) service worker **kapalıdır**, yoksa
+> yaptığın değişiklikler görünmez.
+
+## Hazır göstergesi
+
+CLAUDE.md §6: tüm varlıklar inince operatöre sadece onun anlayacağı bir işaret
+verilir — **saatin iki noktası bir kez yanıp söner**. Desktop kabuğunda durum
+çubuğu olmadığı için işaret adres çubuğundaki kilit ikonunda görünür.
+
+Kameraya fark edilir hiçbir şey çıkmaz: yükleniyor çarkı, yüzde, metin yok.
+
 ## Ghost typing
 
 CLAUDE.md §7. Tüm yazma alanları `src/shared/ghost-typing` üzerinden geçer.
@@ -230,7 +258,8 @@ gibi sade bir gri alan durur.
 
 - **Denetimler:** benzersiz olay id'leri, var olmayan olaya bağlanan zincir,
   kendi kendini bekleyen olay, zincirde döngü, dosyalar arası referanslar
-  (sahne → cihaz, olay → hesap, post → içerik)
+  (sahne → cihaz, olay → hesap, post → içerik) ve **görsel dosyalarının
+  gerçekten var olması** — sette kırık görsel çıkmasın diye
 
 ## Şema notu
 

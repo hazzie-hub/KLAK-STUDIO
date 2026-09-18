@@ -1,4 +1,8 @@
+"use client";
+
 import type { ReactNode } from "react";
+
+import { useHazirlik } from "@/platform/hazirlik";
 
 /**
  * Desktop kabuğu: KURGUSAL tarayıcı penceresi. CLAUDE.md §3.1
@@ -17,6 +21,10 @@ export function Pencere({
   sekmeBasligi?: string;
   children: ReactNode;
 }) {
+  // Hazır göstergesi (CLAUDE.md §6): desktop'ta durum çubuğu yok, işaret
+  // adres çubuğundaki kilit ikonunda bir kez yanıp söner.
+  const { isaretVer } = useHazirlik();
+
   return (
     <div className="flex h-full w-full flex-col" style={{ background: "var(--zemin-ikincil)" }}>
       {/* Sekme şeridi */}

@@ -234,7 +234,47 @@ for (const { dosya, deger } of sahneler) {
   }
 }
 
-// ─── 3. Hiç okunamayan dosyalar ───────────────────────────────────────────────
+// ─── 3. Varlık dosyaları gerçekten var mı? ────────────────────────────────────
+//
+// Sahne olmayan bir fotoğrafa atıfta bulunursa sette KIRIK GÖRSEL çıkar.
+// Burada yakalanırsa orada çıkmaz.
+
+const GENEL = join(KOK, "public");
+
+function varlikKontrol(dosya: string, yol: string, gosterim: string, ne: string): void {
+  if (existsSync(join(GENEL, gosterim))) return;
+  hata(dosya, yol, `${ne} dosyası yok: public${gosterim}`);
+}
+
+baslik("Varlık dosyaları");
+const oncekiHata = hataSayisi;
+
+for (const { dosya, deger } of icerikler) {
+  if (deger.tur === "post") {
+    varlikKontrol(dosya, "veri.gorsel", `/ornek/${deger.veri.gorsel}`, "Post görseli");
+  } else if (deger.tur === "foto") {
+    varlikKontrol(dosya, "veri.dosya", `/ornek/${deger.veri.dosya}`, "Fotoğraf");
+  }
+}
+for (const { dosya, deger } of hesaplar) {
+  if (deger.avatar !== undefined) {
+    varlikKontrol(dosya, "avatar", `/avatar/${deger.avatar}`, "Avatar");
+  }
+}
+for (const { dosya, deger } of cihazlar) {
+  if (deger.duvarKagidi !== undefined) {
+    varlikKontrol(dosya, "duvarKagidi", `/duvar/${deger.duvarKagidi}.svg`, "Duvar kâğıdı");
+  }
+  if (deger.kilitEkrani !== undefined) {
+    varlikKontrol(dosya, "kilitEkrani", `/duvar/${deger.kilitEkrani}.svg`, "Kilit ekranı");
+  }
+}
+
+if (hataSayisi === oncekiHata) {
+  console.log(`  ${c.yesil("✓")} tüm görseller yerinde`);
+}
+
+// ─── 4. Hiç okunamayan dosyalar ───────────────────────────────────────────────
 
 if (bozukJson.length > 0) {
   baslik("Okunamayan dosyalar");
@@ -247,7 +287,7 @@ if (bozukJson.length > 0) {
   }
 }
 
-// ─── 4. Özet ──────────────────────────────────────────────────────────────────
+// ─── 5. Özet ──────────────────────────────────────────────────────────────────
 
 console.log("");
 if (hataSayisi === 0) {

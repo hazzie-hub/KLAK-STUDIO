@@ -1,6 +1,7 @@
 "use client";
 
 import { sinyalCubugu, useDurum } from "@/durum";
+import { useHazirlik } from "@/platform/hazirlik";
 import type { Skin } from "@/schema";
 import { PilIkonu, SinyalIkonu, WifiIkonu } from "./ikonlar";
 
@@ -23,6 +24,7 @@ export function DurumCubugu({
   yazi?: "koyu" | "acik";
 }) {
   const { durum } = useDurum();
+  const { isaretVer } = useHazirlik();
 
   if (skin === "desktop") return null;
 
@@ -42,7 +44,9 @@ export function DurumCubugu({
           paddingTop: cerceveli ? "14px" : "max(14px, env(safe-area-inset-top))",
         }}
       >
-        <span className="tracking-tight">{durum.saat}</span>
+        <span className="tracking-tight">
+          <Saat saat={durum.saat} isaretVer={isaretVer} />
+        </span>
         <div className="flex items-center gap-[5px]">
           <SinyalIkonu cubuk={cubuk} />
           <WifiIkonu acik={wifiAcik} />
@@ -63,12 +67,31 @@ export function DurumCubugu({
         paddingTop: cerceveli ? "0" : "env(safe-area-inset-top)",
       }}
     >
-      <span>{durum.saat}</span>
+      <span>
+        <Saat saat={durum.saat} isaretVer={isaretVer} />
+      </span>
       <div className="flex items-center gap-[6px]">
         <WifiIkonu acik={wifiAcik} />
         <SinyalIkonu cubuk={cubuk} />
         <PilIkonu seviye={durum.pil} sarjda={durum.sarjda} skin={skin} />
       </div>
     </div>
+  );
+}
+
+/**
+ * Saat — hazır göstergesi burada. CLAUDE.md §6
+ *
+ * Tüm varlıklar önbelleğe alınınca iki nokta BİR KEZ yanıp söner. Operatör
+ * bunu bilir; kameranın gördüğü şey normal bir saattir.
+ */
+function Saat({ saat, isaretVer }: { saat: string; isaretVer: boolean }) {
+  const [sa, dk] = saat.split(":");
+  return (
+    <>
+      {sa}
+      <span className={isaretVer ? "animate-[hazirIsareti_900ms_ease-in-out]" : undefined}>:</span>
+      {dk}
+    </>
   );
 }

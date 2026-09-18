@@ -11,10 +11,12 @@ import { Kabuk, gorunenDurum, skinSec } from "@/shell";
 import {
   cihazOku,
   sahneOku,
+  sahneVarliklari,
   tumHesaplar,
   tumIcerikler,
   tumSahneKodlari,
 } from "@/icerik/yukle";
+import { HazirlikSaglayici } from "@/platform/hazirlik";
 import { KutuphaneSaglayici } from "@/icerik/kutuphane";
 
 /** Sahneler derleme anında üretilir — sette internet gerekmez (CLAUDE.md §2.3). */
@@ -55,21 +57,23 @@ export default async function OynaticiSayfasi({
   const gorunum = modulGorunumu(sahne.baslangic.modul);
 
   return (
-    <DurumSaglayici baslangic={durum}>
-      <KutuphaneSaglayici hesaplar={tumHesaplar()} icerikler={tumIcerikler()}>
-        <SahneSaglayici sahne={sahne}>
-          <Kabuk
-            skin={skin}
-            onizleme={onizleme}
-            icerikUste={gorunum.icerikUste}
-            ustKatman={gorunum.ustKatman}
-          >
-            <ModulSec sahne={sahne} cihaz={cihaz} />
-            <SistemKatmani aktifModul={sahne.baslangic.modul} />
-            <GizliKatman />
-          </Kabuk>
-        </SahneSaglayici>
-      </KutuphaneSaglayici>
-    </DurumSaglayici>
+    <HazirlikSaglayici varliklar={sahneVarliklari(cihaz)}>
+      <DurumSaglayici baslangic={durum}>
+        <KutuphaneSaglayici hesaplar={tumHesaplar()} icerikler={tumIcerikler()}>
+          <SahneSaglayici sahne={sahne}>
+            <Kabuk
+              skin={skin}
+              onizleme={onizleme}
+              icerikUste={gorunum.icerikUste}
+              ustKatman={gorunum.ustKatman}
+            >
+              <ModulSec sahne={sahne} cihaz={cihaz} />
+              <SistemKatmani aktifModul={sahne.baslangic.modul} />
+              <GizliKatman />
+            </Kabuk>
+          </SahneSaglayici>
+        </KutuphaneSaglayici>
+      </DurumSaglayici>
+    </HazirlikSaglayici>
   );
 }

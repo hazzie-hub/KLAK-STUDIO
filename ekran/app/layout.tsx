@@ -26,6 +26,8 @@ export const metadata: Metadata = {
   // Açıkça bildirilmezse tarayıcı /favicon.ico ister ve konsola 404 düşer.
   // CLAUDE.md §2.6 gereği konsolun temiz kalması hata ayıklamayı kolaylaştırır.
   icons: { icon: "/icon.svg" },
+  // CLAUDE.md §4: iOS'ta ana ekrana eklenince tam ekran açılsın.
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Ekran" },
 };
 
 export const viewport: Viewport = {
