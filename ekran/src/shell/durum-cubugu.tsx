@@ -1,30 +1,35 @@
+"use client";
+
+import { sinyalCubugu, useDurum } from "@/durum";
 import type { Skin } from "@/schema";
-import type { GorunenDurum } from "./gorunen-durum";
 import { PilIkonu, SinyalIkonu, WifiIkonu } from "./ikonlar";
 
 /**
- * Durum çubuğu. CLAUDE.md §3.1 — 1. ve 2. katmanın görünen yüzü.
- * `desktop` skin'inde durum çubuğu yoktur; onun yerine pencere çerçevesi gelir.
+ * Durum çubuğu. CLAUDE.md §3.1
+ *
+ * Değerleri prop olarak almaz — cihaz durumu katmanından okur. Böylece
+ * zaman çizelgesi pili ya da bağlantıyı değiştirdiğinde kendiliğinden güncellenir.
+ * `desktop` kabuğunda durum çubuğu yoktur; onun yerine pencere çerçevesi gelir.
  */
 export function DurumCubugu({
   skin,
-  durum,
   cerceveli,
 }: {
   skin: Skin;
-  durum: GorunenDurum;
   /** Önizleme çerçevesi içinde mi? Çentik payı buna göre verilir. */
   cerceveli: boolean;
 }) {
+  const { durum } = useDurum();
+
   if (skin === "desktop") return null;
 
-  const sinyalCubuk = durum.baglanti === "yok" ? 0 : durum.baglanti === "yavas" ? 2 : 4;
+  const cubuk = sinyalCubugu(durum.baglanti);
   const wifiAcik = durum.baglanti !== "yok";
 
   if (skin === "ios") {
     return (
       <div
-        className="relative z-30 flex shrink-0 items-end justify-between px-[26px] pb-[6px] pt-[14px] text-[15px] font-semibold tabular-nums"
+        className="relative z-30 flex shrink-0 items-end justify-between px-[26px] pb-[6px] text-[15px] font-semibold tabular-nums"
         style={{
           height: "var(--durum-cubugu-yukseklik)",
           color: "var(--durum-cubugu-yazi)",
@@ -33,7 +38,7 @@ export function DurumCubugu({
       >
         <span className="tracking-tight">{durum.saat}</span>
         <div className="flex items-center gap-[5px]">
-          <SinyalIkonu cubuk={sinyalCubuk} />
+          <SinyalIkonu cubuk={cubuk} />
           <WifiIkonu acik={wifiAcik} />
           <PilIkonu seviye={durum.pil} sarjda={durum.sarjda} skin={skin} />
         </div>
@@ -54,7 +59,7 @@ export function DurumCubugu({
       <span>{durum.saat}</span>
       <div className="flex items-center gap-[6px]">
         <WifiIkonu acik={wifiAcik} />
-        <SinyalIkonu cubuk={sinyalCubuk} />
+        <SinyalIkonu cubuk={cubuk} />
         <PilIkonu seviye={durum.pil} sarjda={durum.sarjda} skin={skin} />
       </div>
     </div>

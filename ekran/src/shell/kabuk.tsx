@@ -3,12 +3,14 @@ import type { ReactNode } from "react";
 import type { Skin } from "@/schema";
 import { DurumCubugu } from "./durum-cubugu";
 import { GezinmeCubugu } from "./gezinme-cubugu";
-import type { GorunenDurum } from "./gorunen-durum";
 import { Pencere } from "./pencere";
 import { temaStili } from "./temalar";
 
 /**
  * Cihaz kabuğu — oynatıcının en alt katmanı. CLAUDE.md §3.1
+ *
+ * Durum değerlerini prop olarak almaz; cihaz durumu katmanından okunur
+ * (bkz. `src/durum`), böylece sahne içinde değiştiğinde kendiliğinden güncellenir.
  *
  * İKİ MOD:
  *  - Sette (varsayılan): ekranı tamamen doldurur. Çentik ÇİZİLMEZ, çünkü
@@ -19,14 +21,12 @@ import { temaStili } from "./temalar";
  */
 export function Kabuk({
   skin,
-  durum,
   onizleme = false,
   adresMetni,
   sekmeBasligi,
   children,
 }: {
   skin: Skin;
-  durum: GorunenDurum;
   onizleme?: boolean;
   adresMetni?: string;
   sekmeBasligi?: string;
@@ -40,7 +40,7 @@ export function Kabuk({
     ) : (
       <div className="flex h-full w-full flex-col" style={{ background: "var(--zemin)" }}>
         {onizleme && <Centik skin={skin} />}
-        <DurumCubugu skin={skin} durum={durum} cerceveli={onizleme} />
+        <DurumCubugu skin={skin} cerceveli={onizleme} />
         <div className="relative min-h-0 flex-1 overflow-hidden">{children}</div>
         <GezinmeCubugu skin={skin} cerceveli={onizleme} />
       </div>

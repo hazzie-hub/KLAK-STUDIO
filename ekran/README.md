@@ -34,7 +34,8 @@ npm install
   /shell      cihaz kabukları: ios, android, desktop
   /system     bildirim, arama ekranı, kilit, pil       (Adım 5)
   /modules    kilit, sosyal, …                         (Adım 5, 7)
-  /shared     ghost-typing, hotspot, medya, derin-link (Adım 3, 8)
+  /durum      cihaz durumu katmanı: pil, sinyal, bağlantı, görsel yükleme
+  /shared     medya bileşeni; ghost-typing, hotspot, derin-link (Adım 8)
   /platform   tarayıcıya özel API'ler                  (Adım 10)
   /icerik     dosyadan sahne/cihaz/hesap okuma
 /brands       kurgusal marka isimleri ve renkleri      (Adım 7)
@@ -54,6 +55,19 @@ npm run dev
 | `/p/eg-b03-s58` | Sahnenin kendi cihaz kabuğu, tam ekran (sette böyle çalışır) |
 | `/p/eg-b03-s58?onizleme=1` | Bilgisayarda bakmak için cihaz çerçevesi içinde |
 | `/p/eg-b03-s58?skin=ios` | Kabuğu ezer — `ios`, `android`, `desktop` |
+
+Cihaz durumunu **test için** adres çubuğundan ezebilirsin (gizli panel bunu
+Adım 6'da sette yapacak). Geçersiz değer sessizce yok sayılır:
+
+| Ezme | Ne olur |
+|---|---|
+| `?baglanti=yavas` | Sinyal 2 çubuğa düşer, görseller gecikir |
+| `?baglanti=yok` | Sinyal 0, wifi söner, görseller hiç gelmez |
+| `?gorsel=gec` | Görseller gecikerek gelir |
+| `?gorsel=yuklenmez` | Görseller kırık kalır |
+| `?pil=5` | Pil %5 (≤20 kırmızı) |
+| `?sarjda=1` | Şarjda (yeşil + şimşek) |
+| `?saat=07:30` | Saati değiştirir |
 
 **Önizleme modu neden var:** sette oynatıcı ekranı tamamen doldurur ve çentik
 çizilmez — gerçek cihazın çentiği zaten fiziksel olarak oradadır. Bilgisayarda
@@ -77,6 +91,22 @@ Sahne için **kod yazılmaz** (CLAUDE.md §2.2). Mevcut aksiyonlarla yapılamaya
 - **Aksiyonlar:** `bildirim`, `yorumGeldi`, `begeniGeldi`, `takipGeldi`, `mesajGeldi`,
   `yaziyor`, `aramaGeldi`, `pilDegisti`, `baglantiDegisti`, `ekranAc`,
   `ghostTypingBaslat`, `postYukle`
+## Görsel yükleme kuralı
+
+Hiçbir modül kendi "yavaş yükleme" mantığını yazmaz (CLAUDE.md §3.1). Tüm
+görseller `src/shared/medya.tsx` üzerinden geçer, o da cihaz durumu katmanını okur:
+
+- Bağlantı **yok** → görseller hiç gelmez, sahne ne derse desin
+- Bağlantı **yavaş** ve sahne görsel için bir şey demediyse → görseller gecikir
+- Sahne görsel için açıkça bir şey dediyse → o kazanır
+
+Gecikme **deterministiktir**: görselin kendi adresinden hesaplanır, yani aynı
+görsel her tekrarda aynı süre sonra gelir (CLAUDE.md §2.4). Hepsi aynı anda
+düşmez, ama rastgele de değildir.
+
+Beklerken **dönen çark yoktur** (CLAUDE.md §2.6) — gerçek telefonlarda olduğu
+gibi sade bir gri alan durur.
+
 - **Denetimler:** benzersiz olay id'leri, var olmayan olaya bağlanan zincir,
   kendi kendini bekleyen olay, zincirde döngü, dosyalar arası referanslar
   (sahne → cihaz, olay → hesap, post → içerik)
