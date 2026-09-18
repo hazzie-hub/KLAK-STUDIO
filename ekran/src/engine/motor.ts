@@ -47,7 +47,12 @@ export class Motor {
   private readonly olaylar: Map<string, Olay>;
   /** Hangi olaydan sonra hangi olaylar geliyor. */
   private readonly zincir: Map<string, Olay[]>;
-  private readonly bekleyen = new Map<string, { kimlik: ZamanlayiciKimligi; hedefZaman: number }>();
+  private readonly bekleyen = new Map<
+    string,
+    { kimlik: ZamanlayiciKimligi; hedefZaman: number; kurulmaZamani: number }
+  >();
+  /** Gizli panelden ayarlanan gecikmeler. Sahne dosyasını değiştirmez. */
+  private readonly gecikmeEzmeleri = new Map<string, number>();
   private readonly aboneler = new Set<() => void>();
 
   private kayitlar: OlayKaydi[] = [];
@@ -117,7 +122,10 @@ export class Motor {
     this.ates(olay, "elle");
   }
 
-  /** CLAUDE.md §6: sahne birebir baştan başlar. */
+  /**
+   * CLAUDE.md §6: sahne birebir baştan başlar.
+   * Panelden ayarlanan gecikmeler KORUNUR — operatör ayarlayıp tekrar çeker.
+   */
   basaSar(): void {
     for (const { kimlik } of this.bekleyen.values()) this.iptal(kimlik);
     this.bekleyen.clear();
@@ -166,18 +174,60 @@ export class Motor {
     return this.simdi() - this.baslangicZamani;
   }
 
+  /** Olayın geçerli gecikmesi: panelden ayarlandıysa o, yoksa sahnedeki. */
+  gecikmeAl(olayId: string): number {
+    const ezme = this.gecikmeEzmeleri.get(olayId);
+    if (ezme !== undefined) return ezme;
+    const olay = this.olaylar.get(olayId);
+    if (olay === undefined) return 0;
+    if (olay.tetik.tur === "baslangic" || olay.tetik.tur === "sonra") return olay.tetik.gecikme;
+    return 0;
+  }
+
+  /**
+   * Gizli panelden gecikme ayarı (CLAUDE.md §6, 250 ms adım).
+   * Olay o an bekliyorsa hedefi hemen kaydırılır; süresi geçmişse hemen ateşlenir.
+   * Sahne dosyasına dokunmaz — ayar bu oturumda geçerlidir.
+   */
+  gecikmeAyarla(olayId: string, gecikme: number): void {
+    const olay = this.olaylar.get(olayId);
+    if (olay === undefined) return;
+    if (olay.tetik.tur !== "baslangic" && olay.tetik.tur !== "sonra") return;
+
+    const yeni = Math.max(0, Math.round(gecikme));
+    this.gecikmeEzmeleri.set(olayId, yeni);
+
+    const bekleyen = this.bekleyen.get(olayId);
+    if (bekleyen === undefined) {
+      this.duyur();
+      return;
+    }
+
+    // Bekliyorsa yeniden kur: hedef, kurulduğu andan itibaren yeni gecikme kadar sonra.
+    this.iptal(bekleyen.kimlik);
+    this.bekleyen.delete(olayId);
+    const hedefZaman = bekleyen.kurulmaZamani + yeni;
+    const kalan = Math.max(0, hedefZaman - this.gecenSure());
+    this.kurHam(olay, kalan, bekleyen.kurulmaZamani);
+    this.duyur();
+  }
+
   /** Olayı zamanlayıcıya bağlar. Aynı olayın bekleyen zamanlayıcısı varsa iptal eder. */
-  private kur(olay: Olay, gecikme: number): void {
+  private kur(olay: Olay, _gecikme: number): void {
+    this.kurHam(olay, this.gecikmeAl(olay.id), this.gecenSure());
+  }
+
+  private kurHam(olay: Olay, kalan: number, kurulmaZamani: number): void {
     const eski = this.bekleyen.get(olay.id);
     if (eski !== undefined) this.iptal(eski.kimlik);
 
-    const hedefZaman = this.gecenSure() + gecikme;
+    const hedefZaman = this.gecenSure() + kalan;
     const kimlik = this.zamanla(() => {
       this.bekleyen.delete(olay.id);
       this.ates(olay, "otomatik");
-    }, gecikme);
+    }, kalan);
 
-    this.bekleyen.set(olay.id, { kimlik, hedefZaman });
+    this.bekleyen.set(olay.id, { kimlik, hedefZaman, kurulmaZamani });
   }
 
   private ates(olay: Olay, kaynak: Kaynak): void {

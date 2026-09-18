@@ -36,13 +36,18 @@ type SahneBaglami = {
   dokun: (hedef: string) => void;
   elleTetikle: (olayId: string) => void;
   basaSar: () => void;
+  /** Gizli panelin gecikme ayarı (CLAUDE.md §6). */
+  gecikmeAl: (olayId: string) => number;
+  gecikmeAyarla: (olayId: string, gecikme: number) => void;
 };
 
 const Baglam = createContext<SahneBaglami | null>(null);
 
 export function SahneSaglayici({ sahne, children }: { sahne: Sahne; children: ReactNode }) {
   const { guncelle, basaSar: durumuBasaSar } = useDurum();
-  const [, yenile] = useState(0);
+  // Motor her duyuruda bunu artırır; bağlam değerinin kimliği buna bağlı,
+  // yoksa gecikme ayarı gibi log'u değiştirmeyen işlemler ekrana yansımıyor.
+  const [surum, yenile] = useState(0);
   const olanlarRef = useRef<Olay[]>([]);
 
   const motor = useMemo(() => {
@@ -78,6 +83,11 @@ export function SahneSaglayici({ sahne, children }: { sahne: Sahne; children: Re
 
   const dokun = useCallback((hedef: string) => motor.dokun(hedef), [motor]);
   const elleTetikle = useCallback((olayId: string) => motor.elleTetikle(olayId), [motor]);
+  const gecikmeAl = useCallback((olayId: string) => motor.gecikmeAl(olayId), [motor]);
+  const gecikmeAyarla = useCallback(
+    (olayId: string, gecikme: number) => motor.gecikmeAyarla(olayId, gecikme),
+    [motor],
+  );
 
   // CLAUDE.md §6: başa sar hem olayları hem cihaz durumunu ilk haline döndürür.
   const basaSar = useCallback(() => {
@@ -96,10 +106,12 @@ export function SahneSaglayici({ sahne, children }: { sahne: Sahne; children: Re
       dokun,
       elleTetikle,
       basaSar,
+      gecikmeAl,
+      gecikmeAyarla,
     }),
-    // motor.log ve olanlar mutasyonla değiştiği için yenile sayacı da bağımlılık:
+    // motor içeride mutasyonla değişiyor; `surum` her duyuruda artar.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [sahne, motor, dokun, elleTetikle, basaSar, motor.log.length],
+    [sahne, motor, dokun, elleTetikle, basaSar, gecikmeAl, gecikmeAyarla, surum],
   );
 
   return <Baglam.Provider value={deger}>{children}</Baglam.Provider>;

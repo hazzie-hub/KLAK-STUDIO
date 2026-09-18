@@ -71,7 +71,7 @@ Adım 6'da sette yapacak). Geçersiz değer sessizce yok sayılır:
 | `?sarjda=1` | Şarjda (yeşil + şimşek) |
 | `?saat=07:30` | Saati değiştirir |
 | `?tarih=3 Mart Pazartesi` | Kilit ekranındaki tarihi değiştirir |
-| `?motor=1` | Geçici motor izleyicisi (olayları elle tetikle, başa sar) |
+
 
 **Önizleme modu neden var:** sette oynatıcı ekranı tamamen doldurur ve çentik
 çizilmez — gerçek cihazın çentiği zaten fiziksel olarak oradadır. Bilgisayarda
@@ -95,6 +95,31 @@ Sahne için **kod yazılmaz** (CLAUDE.md §2.2). Mevcut aksiyonlarla yapılamaya
 - **Aksiyonlar:** `bildirim`, `yorumGeldi`, `begeniGeldi`, `takipGeldi`, `mesajGeldi`,
   `yaziyor`, `aramaGeldi`, `pilDegisti`, `baglantiDegisti`, `ekranAc`,
   `ghostTypingBaslat`, `postYukle`
+## Gizli ayar paneli
+
+Sette operatörün kullandığı yer. CLAUDE.md §6.
+
+| Nasıl açılır | |
+|---|---|
+| Sağ üst köşeye **2 sn içinde 5 dokunuş** | Panel açılır |
+| `Ctrl+Shift+.` | Panel açılır/kapanır (masaüstü) |
+| Sol üst köşeye **2 sn içinde 5 dokunuş** | Panelsiz **başa sar** |
+
+İçinde: olay listesi + her olay için "Şimdi", süreli olaylarda gecikme ±250 ms,
+dokunma hedefleri, cihaz durumu (bağlantı/görsel/pil/şarj), kabuk değiştirme,
+başa sar.
+
+**Başka hiçbir hareket paneli açmaz.** Kaydırma, uzun basma ve yavaş yapılan
+5 dokunuş sayılmaz; ekrana görünmez katman konmaz, dokunuşlar yalnızca dinlenir
+(altındaki modül normal çalışmaya devam eder). Tarayıcıda ölçüldü: ortaya 5
+dokunuş, köşeye yavaş 5 dokunuş ve köşede 5 kaydırma paneli **açmıyor**.
+
+**Gecikme ayarları başa sardıktan sonra da geçerli kalır** — operatör ayarlar,
+sonra tekrar çeker. Sahne dosyasına dokunulmaz, ayar o oturumda yaşar.
+
+CLAUDE.md §6'daki "bu ayarları kalıcı yap" burada **yok**: Stüdyo'ya geri
+yazması gerekiyor, Stüdyo Faz 4'te geliyor. Çalışmayan buton sette yanıltır.
+
 ## Sistem katmanı
 
 CLAUDE.md §3.1'in 4. katmanı: hangi modül açık olursa olsun üstte görünen şeyler.

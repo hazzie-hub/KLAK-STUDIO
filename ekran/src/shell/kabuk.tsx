@@ -70,6 +70,7 @@ export function Kabuk({
   if (!onizleme) {
     return (
       <div
+        data-oynatici
         className="fixed inset-0 overflow-hidden"
         style={{ ...temaStili(skin), fontFamily: "var(--yazi-tipi)", background: "var(--zemin)" }}
       >
@@ -85,6 +86,7 @@ export function Kabuk({
       style={{ ...temaStili(skin), fontFamily: "var(--yazi-tipi)" }}
     >
       <div
+        data-oynatici
         className="relative overflow-hidden shadow-2xl"
         style={{
           height: olculer.yukseklik,

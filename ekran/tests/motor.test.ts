@@ -239,3 +239,77 @@ describe("otomatik zincir gerçekleşmiş olayı tekrar etmez", () => {
     expect(motor.log.filter((k) => k.olayId === "sezai-yorum")).toHaveLength(2);
   });
 });
+
+describe("gecikme ayarı — gizli panel (CLAUDE.md §6)", () => {
+  it("bekleyen olayın hedefini kaydırır", () => {
+    const { saat, motor } = kur();
+    motor.baslat();
+    motor.dokun("yeni-post-akisi-tamam"); // sezai-begeni 5000'de bekliyor
+    expect(motor.siradaki).toMatchObject({ olayId: "sezai-begeni", hedefZaman: 5_000 });
+
+    motor.gecikmeAyarla("sezai-begeni", 3_000);
+    expect(motor.siradaki).toMatchObject({ olayId: "sezai-begeni", hedefZaman: 3_000 });
+
+    saat.ilerlet(2_999);
+    expect(motor.tetiklendiMi("sezai-begeni")).toBe(false);
+    saat.ilerlet(1);
+    expect(motor.tetiklendiMi("sezai-begeni")).toBe(true);
+  });
+
+  it("süresi geçmiş bir değere ayarlanırsa hemen ateşlenir", () => {
+    const { saat, motor } = kur();
+    motor.baslat();
+    motor.dokun("yeni-post-akisi-tamam");
+    saat.ilerlet(2_000);
+
+    motor.gecikmeAyarla("sezai-begeni", 500); // 2 sn geçti, hedef 0,5 sn'ydi
+    saat.ilerlet(0);
+    expect(motor.tetiklendiMi("sezai-begeni")).toBe(true);
+  });
+
+  it("henüz kurulmamış olayın gecikmesi de ayarlanabilir", () => {
+    const { saat, motor } = kur();
+    motor.baslat();
+    motor.gecikmeAyarla("sezai-yorum", 2_000);
+    expect(motor.gecikmeAl("sezai-yorum")).toBe(2_000);
+
+    motor.dokun("yeni-post-akisi-tamam");
+    saat.ilerlet(5_000); // begeni geldi, yorum artık 2000 sonra
+    saat.ilerlet(1_999);
+    expect(motor.tetiklendiMi("sezai-yorum")).toBe(false);
+    saat.ilerlet(1);
+    expect(motor.tetiklendiMi("sezai-yorum")).toBe(true);
+  });
+
+  it("BAŞA SAR ayarları korur — operatör ayarlayıp tekrar çeker", () => {
+    const { saat, motor } = kur();
+    motor.baslat();
+    motor.gecikmeAyarla("sezai-begeni", 1_000);
+    motor.basaSar();
+    expect(motor.gecikmeAl("sezai-begeni")).toBe(1_000);
+
+    motor.dokun("yeni-post-akisi-tamam");
+    saat.ilerlet(1_000);
+    expect(motor.tetiklendiMi("sezai-begeni")).toBe(true);
+  });
+
+  it("negatif gecikme 0'a çekilir", () => {
+    const { motor } = kur();
+    motor.baslat();
+    motor.gecikmeAyarla("sezai-begeni", -5_000);
+    expect(motor.gecikmeAl("sezai-begeni")).toBe(0);
+  });
+
+  it("dokunma ve elle tetikli olaylarda gecikme ayarı yok sayılır", () => {
+    const { motor } = kur();
+    motor.baslat();
+    motor.gecikmeAyarla("post-yuklendi", 3_000); // tetiği "dokunma"
+    expect(motor.gecikmeAl("post-yuklendi")).toBe(0);
+  });
+
+  it("olmayan olayda çökmez", () => {
+    const { motor } = kur();
+    motor.baslat();
+    expect(() => motor.gecikmeAyarla("yok-boyle", 1_000)).not.toThrow();
+  });
+});

@@ -7,6 +7,7 @@ import { PilUyarisi } from "./pil-uyarisi";
 
 export { BildirimKarti } from "./bildirim-karti";
 export { useBildirimler, uygulamaAdi, uygulamaRengi, type Bildirim } from "./bildirimler";
+export { GizliKatman } from "./gizli-panel";
 
 /**
  * Sistem katmanı. CLAUDE.md §3.1 (4. katman)
