@@ -1,0 +1,27 @@
+{
+  "kod": "eg-b03-s58",
+  "cihaz": "nergis-pc",
+  "baslangic": { "modul": "sosyal", "ekran": "feed", "hesap": "nergis" },
+  "durum": { "baglanti": "normal", "gorsel": "normal" },
+  "olaylar": [
+    {
+      "id": "post-yuklendi",
+      "ad": "Nergis post yükler",
+      "tetik": { "tur": "dokunma", "hedef": "yeni-post-akisi-tamam" },
+      "aksiyon": { "tur": "postYukle", "icerikRef": "nergis-post-cicekci" }
+    },
+    {
+      "id": "sezai-begeni",
+      "ad": "Sezai (sahte hesap) beğenir",
+      "tetik": { "tur": "sonra", "olayId": "post-yuklendi", "gecikme": 5000 },
+      "aksiyon": { "tur": "begeniGeldi", "hesap": "gonul-yolcusu" }
+    },
+    {
+      "id": "sezai-yorum",
+      "ad": "Sezai yorum yapar",
+      "tetik": { "tur": "sonra", "olayId": "sezai-begeni", "gecikme": 800 },
+      "aksiyon": { "tur": "yorumGeldi", "hesap": "gonul-yolcusu", "metin": "..." }
+    }
+  ],
+  "talimat": "F11 ile tam ekran. + ile post yükleme akışı. Post yüklendikten 5 sn sonra Sezai'nin sahte hesabından beğeni ve yorum gelir."
+}
