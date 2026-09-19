@@ -105,6 +105,14 @@ export function sahneVarliklari(cihaz: Cihaz | null): string[] {
   return [...varliklar].sort();
 }
 
+/** Sahne listesi — ana sayfadaki seçim ekranı için. */
+export function tumSahneler(): Array<{ sahne: Sahne; cihaz: Cihaz | null }> {
+  return tumSahneKodlari().flatMap((kod) => {
+    const sahne = sahneOku(kod);
+    return sahne === null ? [] : [{ sahne, cihaz: cihazOku(sahne.cihaz) }];
+  });
+}
+
 /** Tüm sahne kodları — önceden üretim (`generateStaticParams`) için. */
 export function tumSahneKodlari(): string[] {
   const yol = join(ICERIK_KOK, "sahneler");

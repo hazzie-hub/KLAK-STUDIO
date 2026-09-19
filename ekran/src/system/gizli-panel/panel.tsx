@@ -3,6 +3,7 @@
 import { useDurum } from "@/durum";
 import { useSahne } from "@/engine";
 import type { BaglantiProfili, GorselYukleme, Skin } from "@/schema";
+import { useHazirlik } from "@/platform/hazirlik";
 import { useSkin } from "@/shell";
 
 /** Gecikme ayar adımı. CLAUDE.md §6 */
@@ -22,6 +23,7 @@ export function GizliPanel({ kapat }: { kapat: () => void }) {
     useSahne();
   const { durum, guncelle } = useDurum();
   const skin = useSkin();
+  const hazirlik = useHazirlik();
 
   const gerceklesenler = new Set(olanlar.map((o) => o.id));
   const bekleyenKume = new Map(bekleyenler.map((b) => [b.olayId, b]));
@@ -59,6 +61,34 @@ export function GizliPanel({ kapat }: { kapat: () => void }) {
       </div>
 
       <div className="min-h-0 flex-1 overflow-auto px-4 py-3">
+        <Baslik>Sete hazır mı?</Baslik>
+        <div
+          className={`mb-1 rounded-xl border px-3 py-[10px] ${
+            hazirlik.hazir && hazirlik.swDevrede
+              ? "border-emerald-400/40 bg-emerald-400/10"
+              : "border-amber-400/40 bg-amber-400/10"
+          }`}
+        >
+          <div className="font-medium text-white">
+            {hazirlik.hazir && hazirlik.swDevrede
+              ? "Hazır — internet kesilebilir"
+              : hazirlik.hazir
+                ? "Görseller indi, ama çevrimdışı desteği yok"
+                : "İndiriliyor…"}
+          </div>
+          <div className="mt-[2px] text-[11px] text-white/55">
+            {hazirlik.inen}/{hazirlik.toplam} görsel ·{" "}
+            {hazirlik.swDevrede ? "çevrimdışı hazır" : "çevrimdışı HAZIR DEĞİL"}
+          </div>
+          {!hazirlik.swDevrede && (
+            <div className="mt-[6px] text-[11px] leading-snug text-white/45">
+              Sayfayı bir kez yenileyin ve birkaç saniye bekleyin. iOS&apos;ta
+              uygulamayı ana ekrana ekledikten sonra İNTERNETLİ olarak bir kez
+              açın; çevrimdışı desteği o zaman kurulur.
+            </div>
+          )}
+        </div>
+
         <Baslik>Olaylar</Baslik>
         <div className="flex flex-col gap-[6px]">
           {sahne.olaylar.map((olay) => {
