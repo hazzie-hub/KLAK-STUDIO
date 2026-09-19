@@ -23,6 +23,11 @@ export type KanalSecenekleri = {
   sahneKodu: string;
   onMesaj: (mesaj: KumandaMesaji) => void;
   onBaglanti?: (bagli: boolean) => void;
+  /**
+   * Taşıyıcının ham durumu — bağlantı kurulamazsa SEBEBİNİ görmek için.
+   * Sette "kanal kapalı" demek yetmez, neden kapalı olduğu lazım.
+   */
+  onTeshis?: (teshis: string) => void;
 };
 
 /** Aynı cihazdaki sekmeler arası — Supabase yokken. */
@@ -31,6 +36,7 @@ class YerelKanal implements Kanal {
   private readonly bc: BroadcastChannel;
 
   constructor(private readonly secenekler: KanalSecenekleri) {
+    secenekler.onTeshis?.("yerel kanal");
     this.bc = new BroadcastChannel(`sahne:${secenekler.sahneKodu}`);
     this.bc.onmessage = (olay) => {
       const mesaj = mesajCoz(olay.data);
@@ -72,6 +78,7 @@ class SupabaseKanal implements Kanal {
       // takılmaz: kumanda susar, oynatıcı süreli tetikleriyle devam eder.
       console.error("[ekran] Kumanda kütüphanesi yüklenemedi; sahne kumandasız devam ediyor.");
       this.secenekler.onBaglanti?.(false);
+      this.secenekler.onTeshis?.("kütüphane yüklenemedi");
       return;
     }
     if (this.kapandi) return;
@@ -89,8 +96,14 @@ class SupabaseKanal implements Kanal {
       if (mesaj !== null) this.secenekler.onMesaj(mesaj);
     });
 
-    kanal.subscribe((durum) => {
+    kanal.subscribe((durum, hata) => {
       this.secenekler.onBaglanti?.(durum === "SUBSCRIBED");
+
+      const ayrinti = hata instanceof Error ? `: ${hata.message}` : "";
+      this.secenekler.onTeshis?.(`${durum}${ayrinti}`);
+      if (durum !== "SUBSCRIBED") {
+        console.error(`[ekran] Kumanda kanalı: ${durum}${ayrinti}`);
+      }
     });
 
     this.kanal = kanal as unknown as { send: (a: unknown) => unknown; unsubscribe: () => void };

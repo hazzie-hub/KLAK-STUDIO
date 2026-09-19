@@ -33,6 +33,7 @@ export function Kumanda({ sahne }: { sahne: Sahne }) {
   const [oynatici, setOynatici] = useState<OynaticiDurumu | null>(null);
   const [kanalBagli, setKanalBagli] = useState(false);
   const [kanalTuru, setKanalTuru] = useState<Kanal["tur"]>("yerel");
+  const [teshis, setTeshis] = useState<string | null>(null);
   const [simdi, setSimdi] = useState(() => Date.now());
   /**
    * Gecikmenin YEREL tahmini. Oynatıcı durumunu 2 saniyede bir yayınlıyor;
@@ -50,6 +51,7 @@ export function Kumanda({ sahne }: { sahne: Sahne }) {
     const kanal = kanalAc({
       sahneKodu: sahne.kod,
       onBaglanti: setKanalBagli,
+      onTeshis: setTeshis,
       onMesaj: (mesaj) => {
         if (mesaj.tur !== "buradayim") return;
         if (!defter.yeniMi(mesaj.nonce)) return;
@@ -134,6 +136,9 @@ export function Kumanda({ sahne }: { sahne: Sahne }) {
         <div className="mt-[7px] flex items-center gap-3 text-[12px] text-white/45">
           <span>{kanalTuru === "supabase" ? "Supabase" : "aynı cihaz (yerel)"}</span>
           {kanalTuru === "supabase" && <span>{kanalBagli ? "kanal açık" : "kanal kapalı"}</span>}
+          {kanalTuru === "supabase" && !kanalBagli && teshis !== null && (
+            <span className="truncate text-amber-300/80">{teshis}</span>
+          )}
           {cevrimici && <span className="ml-auto">pil %{oynatici?.pil}</span>}
         </div>
       </header>
