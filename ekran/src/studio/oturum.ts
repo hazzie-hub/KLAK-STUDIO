@@ -17,8 +17,8 @@
 
 export const OTURUM_CEREZI = "klak_oturum";
 
-/** Ortam değişkeni yoksa geçerli olan parola. */
-export const VARSAYILAN_PAROLA = "klak-studyo-2026";
+/** Ortam değişkeni yoksa geçerli olan parola. Kullanıcının seçtiği parola. */
+export const VARSAYILAN_PAROLA = "1234";
 
 /** Çerez ömrü: 90 gün. Sette her açılışta yeniden giriş istenmesin. */
 export const OTURUM_SURESI = 60 * 60 * 24 * 90;

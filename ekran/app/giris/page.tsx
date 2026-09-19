@@ -39,9 +39,8 @@ export default async function GirisSayfasi({
 
         {varsayilan && (
           <p className="mt-4 rounded-[14px] border border-[#f0cdc8] bg-[#fdf5f4] px-4 py-3 text-[12px] leading-snug text-[#8a3b30]">
-            Parola henüz kuruluma özel değil: koddaki varsayılan geçerli. Kendi
-            parolanızı istediğinizde söyleyin, yalnızca size özel olanla
-            değiştirelim.
+            Parola basit ve kodun içinde yazılı: depoyu görebilen biri okuyabilir.
+            Daha güçlü bir parola istediğinizde söyleyin, değiştirelim.
           </p>
         )}
       </div>

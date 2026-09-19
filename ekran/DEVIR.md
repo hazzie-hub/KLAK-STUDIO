@@ -59,10 +59,10 @@ bizim işimizi etkilemiyor, kapatılabilir.)
 > **Oynatıcı ve kumanda parola SORMAZ** ve asla sormamalı: sette oyuncunun ve
 > operatörün eline verilen linkler onlar. `tests/oturum.test.ts` bunu denetler.
 >
-> Parola şu an `klak-studyo-2026` — koddaki varsayılan, giriş ekranı bunu
-> kırmızı kutuyla söylüyor. Kullanıcıya özel parola istendiğinde ya kod
-> değiştirilir ya da yayında `STUDIO_PAROLA` ortam değişkeni tanımlanır
-> (tanımlıysa o geçerli olur, uyarı da kalkar).
+> Parola `1234` — kullanıcının kendi seçimi. Kodda yazılı olduğu için depoyu
+> görebilen biri okuyabilir; giriş ekranı bunu kırmızı kutuyla söylüyor.
+> Güçlü parola istendiğinde ya kod değiştirilir ya da yayında `STUDIO_PAROLA`
+> ortam değişkeni tanımlanır (tanımlıysa o geçerli olur, uyarı da kalkar).
 
 ### Sahneler
 
@@ -227,9 +227,9 @@ edilmeye devam eder. Yeniden başlatırken portu boşalt.
 - `npm audit` 4 açık bildiriyor; hepsi Next.js'in içindeki postcss'ten.
   Düzeltmesi Next majör yükseltmesi istiyor, ayrı bir iş.
 - Operatör sayfaları açık temaya sabitlendi (`.acik-sayfa`); koyu mod desteği yok.
-- **Stüdyo parolası koddaki varsayılan.** Giriş var ve çalışıyor ama parola
-  depoyu görebilen herkesçe bilinebilir. Kullanıcıya özel parola konulunca
-  kapanır.
+- **Stüdyo parolası zayıf ve kodda yazılı** (`1234`, kullanıcının seçimi).
+  Giriş çalışıyor ama parola depoyu görebilen herkesçe bilinebilir. Kullanıcı
+  güçlü parola isterse kapanır.
 - **Dizi ekleme arayüzü yok.** Liste birden çok diziyi gösteriyor ama yeni dizi
   şimdilik içerik dosyasıyla ekleniyor; Stüdyo'dan ekleme formu yapılmadı.
 - `npm run validate` 3 uyarı veriyor; üçü de "bu olaya zincir bağlı değil,
