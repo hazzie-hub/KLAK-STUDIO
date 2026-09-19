@@ -11,12 +11,16 @@ import type { ZodType } from "zod";
 
 import {
   CihazSchema,
+  DiziSchema,
   HesapSchema,
   IcerikSchema,
+  KarakterSchema,
   SahneSchema,
   type Cihaz,
+  type Dizi,
   type Hesap,
   type Icerik,
+  type Karakter,
   type Sahne,
 } from "@/schema";
 
@@ -62,6 +66,14 @@ export function icerikOku(id: string): Icerik | null {
   return jsonOku("icerikler", id, IcerikSchema);
 }
 
+export function diziOku(kod: string): Dizi | null {
+  return jsonOku("diziler", kod, DiziSchema);
+}
+
+export function karakterOku(id: string): Karakter | null {
+  return jsonOku("karakterler", id, KarakterSchema);
+}
+
 function klasordekiler<T>(klasor: string, sema: ZodType<T>): T[] {
   const yol = join(ICERIK_KOK, klasor);
   if (!existsSync(yol)) return [];
@@ -81,6 +93,10 @@ export function tumHesaplar(): Hesap[] {
 
 export function tumIcerikler(): Icerik[] {
   return klasordekiler("icerikler", IcerikSchema);
+}
+
+export function tumDiziler(): Dizi[] {
+  return klasordekiler("diziler", DiziSchema);
 }
 
 /**

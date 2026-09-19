@@ -3,8 +3,8 @@
 Bu dosya, yeni bir oturuma başlarken okunacak. `CLAUDE.md` projenin anayasası;
 bu dosya ise **nerede kaldığımızı** anlatır.
 
-Son güncelleme: **Faz 3 BİTTİ.** Dört modülün dördü de yazıldı.
-Sıradaki Faz 4 (Stüdyo) — ya da kullanıcının istediği harita/Akış-web.
+Son güncelleme: Faz 3 bitti. **Faz 4 başladı**: 4.1 (Stüdyo iskeleti +
+teslim paketi) bitti. Sıradaki 4.2 — Supabase tabloları.
 
 ---
 
@@ -31,6 +31,8 @@ aittir (creative-assistant / workflow builder). Ona dokunulmadı, dokunulmayacak
 | `/` | Sahne listesi (operatör buradan seçer) |
 | `/p/{kod}` | Oynatıcı — oyuncunun eline verilen cihaz |
 | `/k/{kod}` | Kumanda — operatörün telefonu |
+| `/studio` | Stüdyo — sahne ağacı (dizi → bölüm → sahne) |
+| `/studio/{kod}` | Teslim paketi — link, QR kod, sete gönderilecek hazır metin |
 
 Sahneler: `eg-b03-s12` (kilit+bildirim), `eg-b03-s13` (mesajlaşma),
 `eg-b03-s44` (gelen arama), `eg-b03-s58` (sosyal, CLAUDE.md §5'teki örnek),
@@ -50,10 +52,10 @@ denemek için açıldı. Yapımdan gerçek sahne numaraları gelince dosya adlar
 | **Faz 1** | 10 adımın 10'u bitti. Kabul testi geçiyor. Gerçek iPhone'da test edildi, çıkan 3 sorun düzeltildi. |
 | **Faz 2** (kumanda) | **BİTTİ.** Supabase kanalı yayında açık, çift yönlü doğrulandı (§3). |
 | **Faz 3** (modüller) | **BİTTİ** — `mesaj`, `arama` (LOOK), `web`, `telefon`. |
-| **Faz 4** (Stüdyo) | Başlanmadı. Supabase veritabanı gerekiyor. |
+| **Faz 4** (Stüdyo) | 4.1 bitti (aşağıdaki plan). 4.2'de Supabase gerekiyor. |
 | **Faz 5** | Başlanmadı. |
 
-Doğrulama: `npm test` (204 test), `npm run validate` (32 dosya),
+Doğrulama: `npm test` (222 test), `npm run validate` (32 dosya),
 `npm run kabul` (3 kabuk × 6 sahne × 20 tur, internet kesik).
 
 ---
@@ -88,6 +90,27 @@ değişkenin adı yapıştırıldı, sonra maskeli görüntü. Her ikisinde de e
 yalnızca anlamsız `transport failure` yazdı. `tasiyiciSec` şu an sadece "boş mu"
 diye bakıyor. Anahtarın JWT biçiminde olup olmadığı denetlenip sade bir Türkçe
 uyarı gösterilebilir. **Kullanıcıya soruldu, karar vermedi — tekrar sorulabilir.**
+
+---
+
+## 3.5 Faz 4 planı ve verilen mimari karar
+
+| # | Adım | Durum |
+|---|---|---|
+| 4.1 | Stüdyo iskeleti + teslim paketi (link, QR, hazır metin) | **BİTTİ** |
+| 4.2 | Supabase tabloları, verinin dosyadan veritabanına taşınması | sıradaki |
+| 4.3 | Sahne oluşturma/düzenleme formları | — |
+| 4.4 | Sahne şablonları + kopyala-düzenle | — |
+| 4.5 | Kilit + versiyon | — |
+| 4.6 | `galeri`, `harita`, `anaekran` modülleri | — |
+
+**Yayınlama modeli (kullanıcıya anlatıldı, itiraz gelmedi):** Stüdyo'da sahne
+kaydedilir, "Yayınla" sitenin yeniden kurulmasını tetikler (~2 dk), sahne
+sayfası STATİK kalır. Oynatıcının veritabanına canlı bağlanması REDDEDİLDİ:
+CLAUDE.md §2.3 sette internetsiz çalışmayı şart koşuyor.
+
+4.2'de kullanıcıdan tek bir şey istenecek: Supabase panelindeki SQL
+düzenleyicisine hazır SQL'i yapıştırıp çalıştırmak.
 
 ---
 
@@ -197,6 +220,15 @@ edilmeye devam ediyor (bu tuzağa bir kez düşüldü).
   offline'da parametreli adres açılmıyordu, telefonda 5 dokunuş çalışmıyordu,
   ve son olarak Supabase anahtarı maskeli kopyalanmıştı.
 - Bulunan her hatayı commit mesajında açıkça anlatmak.
+
+### Bilinen, henüz çözülmemiş küçük konular
+
+- `npm audit` 4 açık bildiriyor; hepsi Next.js'in içindeki postcss'ten geliyor,
+  bizim eklediğimiz paketlerden değil. Düzeltmesi Next majör sürüm yükseltmesi
+  istiyor — ayrı bir iş olarak ele alınmalı.
+- Operatör sayfaları (`/`, `/studio`) açık temaya sabitlendi (`.acik-sayfa`).
+  Renkler doğrudan yazılı olduğu için koyu mod desteği yok; sette okunabilirlik
+  bu şekilde garanti altına alındı.
 
 ---
 

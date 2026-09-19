@@ -67,3 +67,17 @@ body {
   0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
   30% { opacity: 0.9; transform: translateY(-3px); }
 }
+
+/*
+ * Operatör sayfaları: sahne listesi ve Stüdyo.
+ *
+ * Bunlar açık temaya göre tasarlandı (renkler doğrudan yazıldı). Telefon koyu
+ * moddayken tarayıcı zemini siyah boyuyor, yazılar da koyu olduğu için sayfa
+ * OKUNMAZ hale geliyordu — sette operatörün telefonu çoğunlukla koyu moddadır.
+ * Bu sayfalar temayı açıkça sabitler. Oynatıcı bundan etkilenmez; o kendi
+ * zeminini zaten çiziyor (bkz. src/shell/temalar.ts).
+ */
+.acik-sayfa {
+  color-scheme: light;
+  background: #fff;
+}

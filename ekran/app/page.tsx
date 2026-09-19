@@ -18,7 +18,7 @@ export default function AnaSayfa() {
   };
 
   return (
-    <main className="mx-auto min-h-dvh max-w-[680px] px-5 py-8 text-[#1d1d1f]">
+    <main className="acik-sayfa mx-auto min-h-dvh max-w-[680px] px-5 py-8 text-[#1d1d1f]">
       <h1 className="text-[22px] font-semibold tracking-tight">Ekran</h1>
       <p className="mt-1 text-[14px] text-[#6e6e73]">
         Set ekran sistemi · {sahneler.length} sahne
