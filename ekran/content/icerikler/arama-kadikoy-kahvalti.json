@@ -1,0 +1,40 @@
+{
+  "id": "arama-kadikoy-kahvalti",
+  "tur": "aramaSonucu",
+  "dizi": "eg",
+  "veri": {
+    "sorgu": "kadıköy sahilde kahvaltı",
+    "bilgi": "Yaklaşık 214.000 sonuç (0,38 saniye)",
+    "sonuclar": [
+      {
+        "baslik": "Kıyıda Sabah — deniz kenarında serpme kahvaltı",
+        "adres": "kiyidasabah.com › kahvalti",
+        "ozet": "Sahil yürüyüş yolunun hemen üstünde, sabah 07.00'den öğlene kadar açık. Rezervasyon hafta sonu için öneriliyor.",
+        "gorsel": "kahve.svg"
+      },
+      {
+        "baslik": "Kadıköy'de kahvaltı: sahile bakan 12 adres",
+        "adres": "gezginnotu.net › istanbul › kadikoy",
+        "ozet": "Moda'dan başlayıp sahil boyunca devam eden rotada, denize bakan masası olan yerleri derledik.",
+        "gorsel": "deniz.svg"
+      },
+      {
+        "baslik": "Kadıköy Kahvaltıcı — menü ve çalışma saatleri",
+        "adres": "kadikoykahvaltici.com",
+        "ozet": "Serpme kahvaltı, kahvaltı tabağı, çay servisi. Her gün 08.00 – 14.00.",
+        "gorsel": "masa.svg"
+      },
+      {
+        "baslik": "Sahilde kahvaltı nerede yapılır? — okur önerileri",
+        "adres": "rehberdefteri.net › forum › istanbul",
+        "ozet": "Forumda paylaşılan öneriler, fiyat aralıkları ve yürüme mesafesindeki alternatifler."
+      }
+    ],
+    "gorseller": ["kahve.svg", "deniz.svg", "masa.svg", "sokak.svg", "balkon.svg", "pencere.svg"],
+    "oneriler": [
+      "kadıköy sahil kahvaltı fiyatları",
+      "moda sahilde kahvaltı",
+      "kadıköy sabah 7 açık kahvaltı"
+    ]
+  }
+}

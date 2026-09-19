@@ -1,0 +1,42 @@
+{
+  "kod": "eg-b03-s62",
+  "cihaz": "nergis-telefon",
+  "baslangic": { "modul": "arama", "ekran": "ana", "icerikRef": "arama-kadikoy-kahvalti" },
+  "durum": { "baglanti": "normal", "gorsel": "normal" },
+  "olaylar": [
+    {
+      "id": "yazmaya-basla",
+      "ad": "Nergis arama çubuğuna dokunur, klavye açılır",
+      "tetik": { "tur": "dokunma", "hedef": "arama-alani" },
+      "aksiyon": {
+        "tur": "ghostTypingBaslat",
+        "hedef": "arama-cubugu",
+        "metin": "kadıköy sahilde kahvaltı",
+        "mod": "senaryolu"
+      }
+    },
+    {
+      "id": "sonuclar-gelir",
+      "ad": "Arama yapılır, sonuç sayfası açılır",
+      "tetik": { "tur": "dokunma", "hedef": "arama-yapildi" },
+      "aksiyon": {
+        "tur": "ekranAc",
+        "modul": "arama",
+        "ekran": "sonuclar",
+        "icerikRef": "arama-kadikoy-kahvalti"
+      }
+    },
+    {
+      "id": "gorsellere-gec",
+      "ad": "Görseller sekmesi açılır",
+      "tetik": { "tur": "elle" },
+      "aksiyon": {
+        "tur": "ekranAc",
+        "modul": "arama",
+        "ekran": "gorseller",
+        "icerikRef": "arama-kadikoy-kahvalti"
+      }
+    }
+  ],
+  "talimat": "LOOK arama sayfası açık. Oyuncu arama çubuğuna dokunur, klavye açılır; KLAVYEDE İSTEDİĞİ TUŞLARA BASAR — senaryodaki metin kendiliğinden yazılır. Metin bitince alttaki ara düğmesi aktifleşir; basınca sonuç sayfası gelir. Görseller sekmesi gerekiyorsa kumandadan tetiklenir. Aranan metin ve sonuçlar senaryodan alınmalı; buradakiler yer tutucudur. SAHNE NUMARASI GEÇİCİ: gerçek numara yapımdan gelince değiştirilecek."
+}

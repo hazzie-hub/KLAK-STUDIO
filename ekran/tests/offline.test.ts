@@ -7,16 +7,24 @@ import { cihazOku, sahneVarliklari, tumHesaplar, tumIcerikler, tumSahneKodlari }
 const KOK = join(import.meta.dirname, "..");
 
 describe("sahneVarliklari — sette ne indirilecek (CLAUDE.md §2.3)", () => {
-  it("tüm post görsellerini, fotoğrafları ve avatarları listeler", () => {
+  it("tüm post görsellerini, fotoğrafları, arama görsellerini ve avatarları listeler", () => {
     const varliklar = sahneVarliklari(cihazOku("nergis-telefon"));
     const icerikler = tumIcerikler();
 
     // Post ve foto görselleri aynı klasörde; aynı dosyayı paylaşabilirler,
     // bu yüzden benzersiz dosya adı üzerinden sayıyoruz.
     const beklenenGorseller = new Set(
-      icerikler.flatMap((i) =>
-        i.tur === "post" ? [i.veri.gorsel] : i.tur === "foto" ? [i.veri.dosya] : [],
-      ),
+      icerikler.flatMap((i) => {
+        if (i.tur === "post") return [i.veri.gorsel];
+        if (i.tur === "foto") return [i.veri.dosya];
+        if (i.tur === "aramaSonucu") {
+          return [
+            ...i.veri.sonuclar.flatMap((s) => (s.gorsel === undefined ? [] : [s.gorsel])),
+            ...i.veri.gorseller,
+          ];
+        }
+        return [];
+      }),
     );
     const avatarSayisi = new Set(
       tumHesaplar().flatMap((h) => (h.avatar === undefined ? [] : [h.avatar])),

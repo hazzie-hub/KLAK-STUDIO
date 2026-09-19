@@ -52,6 +52,34 @@ export const SohbetVerisiSchema = z.strictObject({
     .default([]),
 });
 
+/**
+ * Arama motoru sonuç sayfası — `arama` modülü (Faz 3).
+ *
+ * `adres` kameraya çıkar: gerçek bir alan adı YAZILMAZ, kurgusal olmalı.
+ * `siteRef` ileride `web` modülündeki sahte siteye derin link olacak.
+ */
+export const AramaSonucuVerisiSchema = z.strictObject({
+  sorgu: z.string().min(1, { error: "Aranan metin boş olamaz." }),
+  /** Sonuç sayısı satırı: "Yaklaşık 214.000 sonuç (0,38 saniye)". */
+  bilgi: z.string().optional(),
+  sonuclar: z
+    .array(
+      z.strictObject({
+        baslik: z.string().min(1, { error: "Sonuç başlığı boş olamaz." }),
+        adres: z.string().min(1, { error: "Sonucun görünen adresi boş olamaz." }),
+        ozet: z.string().default(""),
+        siteRef: SlugSchema.optional(),
+        /** Sonucun yanındaki küçük görsel — /ornek altındaki dosya. */
+        gorsel: z.string().optional(),
+      }),
+    )
+    .default([]),
+  /** "Görseller" sekmesi — /ornek altındaki dosyalar. */
+  gorseller: z.array(z.string()).default([]),
+  /** Sayfanın altındaki ilgili aramalar. */
+  oneriler: z.array(z.string()).default([]),
+});
+
 /** Tek fotoğraf — `galeri` (Faz 4) ve mesaj ekleri. */
 export const FotoVerisiSchema = z.strictObject({
   dosya: z.string().min(1, { error: "Fotoğrafın dosyası belirtilmeli." }),
@@ -65,7 +93,7 @@ export const IcerikSchema = z.discriminatedUnion(
     z.strictObject({ tur: z.literal("post"), id: SlugSchema, dizi: SlugSchema.optional(), veri: PostVerisiSchema }),
     z.strictObject({ tur: z.literal("foto"), id: SlugSchema, dizi: SlugSchema.optional(), veri: FotoVerisiSchema }),
     z.strictObject({ tur: z.literal("sohbet"), id: SlugSchema, dizi: SlugSchema.optional(), veri: SohbetVerisiSchema }),
-    z.strictObject({ tur: z.literal("aramaSonucu"), id: SlugSchema, dizi: SlugSchema.optional(), veri: IleridekiFazVerisi }),
+    z.strictObject({ tur: z.literal("aramaSonucu"), id: SlugSchema, dizi: SlugSchema.optional(), veri: AramaSonucuVerisiSchema }),
     z.strictObject({ tur: z.literal("webSayfasi"), id: SlugSchema, dizi: SlugSchema.optional(), veri: IleridekiFazVerisi }),
     z.strictObject({ tur: z.literal("konum"), id: SlugSchema, dizi: SlugSchema.optional(), veri: IleridekiFazVerisi }),
   ],
@@ -79,3 +107,5 @@ export type Icerik = z.infer<typeof IcerikSchema>;
 export type PostVerisi = z.infer<typeof PostVerisiSchema>;
 export type FotoVerisi = z.infer<typeof FotoVerisiSchema>;
 export type SohbetVerisi = z.infer<typeof SohbetVerisiSchema>;
+export type AramaSonucuVerisi = z.infer<typeof AramaSonucuVerisiSchema>;
+export type AramaSonucu = AramaSonucuVerisi["sonuclar"][number];

@@ -254,6 +254,15 @@ for (const { dosya, deger } of icerikler) {
     varlikKontrol(dosya, "veri.gorsel", `/ornek/${deger.veri.gorsel}`, "Post görseli");
   } else if (deger.tur === "foto") {
     varlikKontrol(dosya, "veri.dosya", `/ornek/${deger.veri.dosya}`, "Fotoğraf");
+  } else if (deger.tur === "aramaSonucu") {
+    deger.veri.sonuclar.forEach((s, i) => {
+      if (s.gorsel !== undefined) {
+        varlikKontrol(dosya, `veri.sonuclar[${i}].gorsel`, `/ornek/${s.gorsel}`, "Sonuç görseli");
+      }
+    });
+    deger.veri.gorseller.forEach((g, i) => {
+      varlikKontrol(dosya, `veri.gorseller[${i}]`, `/ornek/${g}`, "Görsel sonuç");
+    });
   }
 }
 for (const { dosya, deger } of hesaplar) {

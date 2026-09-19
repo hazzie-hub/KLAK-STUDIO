@@ -30,6 +30,16 @@ export const markalar = {
     renkAcik: "#3fa6ab",
     ikonRengi: "#0f6f74",
   },
+  /**
+   * Arama motoru. Tanıdık bir arama sayfası hissi verir ama hiçbir motorun
+   * kopyası değildir: ad, renk ve yerleşim bize ait.
+   */
+  look: {
+    ad: "LOOK",
+    renk: "#5f4bb6",
+    renkAcik: "#9a89e0",
+    ikonRengi: "#5f4bb6",
+  },
   /** Mesajlaşma. Türk telefonlarında yerleşik uygulama da "Mesajlar" diye geçer. */
   mesaj: {
     ad: "Mesaj",
@@ -45,6 +55,7 @@ export type MarkaAnahtari = keyof typeof markalar;
 export const modulMarkasi = {
   sosyal: "akis",
   mesaj: "mesaj",
+  arama: "look",
 } as const;
 
 export function markaAl(anahtar: string): Marka | null {

@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { useSkin } from "@/shell";
 import { Klavye } from "./klavye";
+import { useFizikselKlavye } from "./fiziksel-klavye";
 import { useGhostTyping } from "./kullan";
 
 export { harflereBol, harfSayisi, ilkHarfler } from "./harfler";
 export { useGhostTyping, type GhostDurumu } from "./kullan";
+export { useFizikselKlavye } from "./fiziksel-klavye";
 export { Klavye } from "./klavye";
 
 /**
@@ -45,31 +47,8 @@ export function GhostYaziAlani({
   const gonderilebilir = serbest ? serbestMetin.trim() !== "" : ghost.tamamlandi;
   const klavyeGoster = ghost.aktif && !serbest && skin !== "desktop" && ghost.mod !== "otomatik";
 
-  // Masaüstünde fiziksel klavye: hangi tuş olduğu önemsiz (CLAUDE.md §7).
-  useEffect(() => {
-    if (!ghost.aktif || serbest || skin !== "desktop" || ghost.mod === "otomatik") return;
-
-    const basildi = (e: KeyboardEvent) => {
-      if (e.ctrlKey || e.metaKey || e.altKey) return;
-      if (e.key === "Backspace") {
-        e.preventDefault();
-        ghost.geriAl();
-        return;
-      }
-      if (e.key === "Enter") {
-        e.preventDefault();
-        if (ghost.tamamlandi) onGonder?.(ghost.yazilan);
-        return;
-      }
-      if (e.key.length === 1) {
-        e.preventDefault();
-        ghost.tusaBas();
-      }
-    };
-
-    window.addEventListener("keydown", basildi);
-    return () => window.removeEventListener("keydown", basildi);
-  }, [ghost, serbest, skin, onGonder]);
+  // Masaüstünde fiziksel klavye — mantık `fiziksel-klavye.ts`'te (CLAUDE.md §7).
+  useFizikselKlavye(ghost, onGonder);
 
   return (
     <div className="shrink-0">

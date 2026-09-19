@@ -94,6 +94,12 @@ export function sahneVarliklari(cihaz: Cihaz | null): string[] {
   for (const icerik of tumIcerikler()) {
     if (icerik.tur === "post") varliklar.add(`/ornek/${icerik.veri.gorsel}`);
     if (icerik.tur === "foto") varliklar.add(`/ornek/${icerik.veri.dosya}`);
+    if (icerik.tur === "aramaSonucu") {
+      for (const sonuc of icerik.veri.sonuclar) {
+        if (sonuc.gorsel !== undefined) varliklar.add(`/ornek/${sonuc.gorsel}`);
+      }
+      for (const g of icerik.veri.gorseller) varliklar.add(`/ornek/${g}`);
+    }
   }
   for (const hesap of tumHesaplar()) {
     if (hesap.avatar !== undefined) varliklar.add(`/avatar/${hesap.avatar}`);
