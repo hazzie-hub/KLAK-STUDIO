@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { sahneKaydet } from "../src/studio/eylemler";
+import { sahneKaydet, yayinla } from "../src/studio/eylemler";
 
 /**
  * Formdan gelen veri kaydedilmeden önce Zod'dan geçer. Buradaki testler
@@ -82,5 +82,25 @@ describe("sahneKaydet — doğrulama", () => {
     const sonuc = await sahneKaydet({});
     expect(sonuc.ok).toBe(false);
     if (!sonuc.ok) expect(sonuc.hatalar.length).toBeGreaterThan(0);
+  });
+});
+
+describe("yayınla", () => {
+  it("kanca tanımlı değilse ne yapılacağını söyler", async () => {
+    const onceki = process.env.VERCEL_DEPLOY_HOOK_URL;
+    delete process.env.VERCEL_DEPLOY_HOOK_URL;
+    const sonuc = await yayinla();
+    expect(sonuc.ok).toBe(false);
+    if (!sonuc.ok) expect(sonuc.mesaj).toContain("Deploy Hook");
+    if (onceki !== undefined) process.env.VERCEL_DEPLOY_HOOK_URL = onceki;
+  });
+
+  it("boş metin kurulmuş sayılmaz", async () => {
+    const onceki = process.env.VERCEL_DEPLOY_HOOK_URL;
+    process.env.VERCEL_DEPLOY_HOOK_URL = "   ";
+    const sonuc = await yayinla();
+    expect(sonuc.ok).toBe(false);
+    if (onceki === undefined) delete process.env.VERCEL_DEPLOY_HOOK_URL;
+    else process.env.VERCEL_DEPLOY_HOOK_URL = onceki;
   });
 });

@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { cihazGetir, diziGetir, karakterGetir, sahneGetir } from "@/icerik/kaynak";
 import { TeslimPaketi } from "@/studio/teslim-paketi";
+import { YayinlaDugmesi } from "@/studio/yayinla-dugmesi";
 import { kodCoz } from "@/studio/teslim";
 
 /** Teslim paketi her zaman taze okunur; sahne düzenlenince anında güncellenir. */
@@ -44,6 +45,9 @@ export default async function TeslimSayfasi({ params }: { params: Promise<{ kod:
         </Link>
       </div>
       <TeslimPaketi sahne={sahne} cihaz={cihaz} dizi={dizi} karakter={karakter} />
+      <div className="mt-5">
+        <YayinlaDugmesi />
+      </div>
     </main>
   );
 }

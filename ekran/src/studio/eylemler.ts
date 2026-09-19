@@ -45,6 +45,40 @@ export async function sahneKaydet(ham: unknown): Promise<KayitSonucu> {
   return { ok: true, kod: sonuc.data.kod };
 }
 
+/**
+ * Yayınla: siteyi yeniden kurdurur. CLAUDE.md §2.3
+ *
+ * Sahne sayfaları STATİK üretilir; yeni kayıt ancak yeniden kurulunca yayına
+ * çıkar. Oynatıcının veritabanına canlı bağlanması bilinçli olarak tercih
+ * EDİLMEDİ: sette internet kesildiğinde sahne açılmak zorunda.
+ *
+ * Kurulum 1–2 dakika sürer; bu fonksiyon yalnızca başlatır, beklemez.
+ */
+export type YayinSonucu = { ok: true } | { ok: false; mesaj: string };
+
+export async function yayinla(): Promise<YayinSonucu> {
+  const kanca = process.env.VERCEL_DEPLOY_HOOK_URL;
+  if (typeof kanca !== "string" || kanca.trim() === "") {
+    return {
+      ok: false,
+      mesaj:
+        "Yayınlama kurulmamış. Vercel'de bir Deploy Hook oluşturup adresini VERCEL_DEPLOY_HOOK_URL değişkenine girin.",
+    };
+  }
+
+  try {
+    const cevap = await fetch(kanca, { method: "POST" });
+    if (!cevap.ok) {
+      return { ok: false, mesaj: `Yayın başlatılamadı (${cevap.status}).` };
+    }
+  } catch (hata) {
+    console.error("[ekran] yayinla:", hata);
+    return { ok: false, mesaj: "Yayın başlatılamadı. Ağ bağlantısını kontrol edin." };
+  }
+
+  return { ok: true };
+}
+
 export async function sahneyiSil(kod: string): Promise<KayitSonucu> {
   try {
     await sahneSil(kod);

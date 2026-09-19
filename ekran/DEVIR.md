@@ -3,8 +3,8 @@
 Bu dosya, yeni bir oturuma başlarken okunacak. `CLAUDE.md` projenin anayasası;
 bu dosya ise **nerede kaldığımızı** anlatır.
 
-Son güncelleme: Faz 4 sürüyor. **4.1 ve 4.2 bitti** — yayındaki site artık
-sahneleri Supabase'ten okuyor. Sıradaki 4.3 (sahne formları).
+Son güncelleme: Faz 4 sürüyor. **4.1, 4.2, 4.3 bitti** — sahneler artık
+Stüdyo'dan formla kurulup düzenlenebiliyor. Sıradaki 4.4 (şablonlar).
 
 ---
 
@@ -32,7 +32,9 @@ aittir (creative-assistant / workflow builder). Ona dokunulmadı, dokunulmayacak
 | `/p/{kod}` | Oynatıcı — oyuncunun eline verilen cihaz |
 | `/k/{kod}` | Kumanda — operatörün telefonu |
 | `/studio` | Stüdyo — sahne ağacı (dizi → bölüm → sahne) |
-| `/studio/{kod}` | Teslim paketi — link, QR kod, sete gönderilecek hazır metin |
+| `/studio/{kod}` | Teslim paketi — link, QR kod, hazır metin, Yayınla |
+| `/studio/yeni` | Yeni sahne formu |
+| `/studio/{kod}/duzenle` | Sahne düzenleme formu |
 
 Sahneler: `eg-b03-s12` (kilit+bildirim), `eg-b03-s13` (mesajlaşma),
 `eg-b03-s44` (gelen arama), `eg-b03-s58` (sosyal, CLAUDE.md §5'teki örnek),
@@ -55,7 +57,7 @@ denemek için açıldı. Yapımdan gerçek sahne numaraları gelince dosya adlar
 | **Faz 4** (Stüdyo) | 4.1 bitti (aşağıdaki plan). 4.2'de Supabase gerekiyor. |
 | **Faz 5** | Başlanmadı. |
 
-Doğrulama: `npm test` (230 test), `npm run validate` (32 dosya),
+Doğrulama: `npm test` (245 test), `npm run validate` (32 dosya),
 `npm run kabul` (3 kabuk × 6 sahne × 20 tur, internet kesik).
 
 ---
@@ -99,7 +101,7 @@ uyarı gösterilebilir. **Kullanıcıya soruldu, karar vermedi — tekrar sorula
 |---|---|---|
 | 4.1 | Stüdyo iskeleti + teslim paketi (link, QR, hazır metin) | **BİTTİ** |
 | 4.2 | Supabase tabloları, verinin dosyadan veritabanına taşınması | **BİTTİ** |
-| 4.3 | Sahne oluşturma/düzenleme formları | — |
+| 4.3 | Sahne oluşturma/düzenleme formları | **BİTTİ** |
 | 4.4 | Sahne şablonları + kopyala-düzenle | — |
 | 4.5 | Kilit + versiyon | — |
 | 4.6 | `galeri`, `harita`, `anaekran` modülleri | — |
@@ -145,6 +147,23 @@ Kurulumda yaşananlar (tekrarlanırsa diye):
 Şema TEK KAYNAK Zod'da; tablolarda kaydın tamamı `veri` (jsonb) sütununda durur,
 yazmadan önce ve okuduktan sonra Zod'dan geçer. Sorgulanan alanlar (kod, dizi,
 bölüm, tür) ayrıca sütun.
+
+---
+
+### 4.3 nasıl kuruldu
+
+- Form, 13 aksiyon türü için 13 ayrı form DEĞİL: her türün alanları
+  `src/studio/alanlar.ts`'te veri olarak duruyor, form onu okuyup kendini
+  kuruyor. Yeni aksiyon = tabloya bir satır.
+- `tests/alanlar.test.ts` bu tablonun şemadan ayrışmasını engelliyor: alan
+  adları Zod şemasıyla BİREBİR aynı olmalı, zorunluluklar uyuşmalı.
+- Doğrulama tek yerde: form serbest taslak tutar, kaydederken `SahneSchema`
+  çalışır, hatalar alan alan gösterilir.
+- Stüdyo sayfaları `force-dynamic`. Oynatıcı sayfaları STATİK kalır.
+- **Yayınla** düğmesi `VERCEL_DEPLOY_HOOK_URL` değişkenini kullanır.
+  HENÜZ TANIMLI DEĞİL — kurulmadan düğme "Yayınlama kurulmamış" der.
+  Kullanıcıdan istenecek: Vercel → Settings → Git → Deploy Hooks'tan bir kanca
+  oluşturup adresini bu değişkene girmek.
 
 ---
 
