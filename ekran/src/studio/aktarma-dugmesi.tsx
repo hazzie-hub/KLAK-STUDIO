@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
 import { iceriginiAktar, type AktarimSonucu } from "./eylemler";
+import { Dugme, Kart } from "./panel";
 
 /**
  * Depodaki içeriği veritabanına aktarır. Faz 4.6
@@ -19,20 +20,14 @@ export function AktarmaDugmesi() {
   const [sonuc, setSonuc] = useState<AktarimSonucu | null>(null);
 
   return (
-    <section className="mt-8 rounded-2xl border border-[#e8e8ed] bg-[#fbfbfd] p-4">
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="min-w-0 flex-1">
-          <h2 className="text-[13px] font-semibold uppercase tracking-wide text-[#6e6e73]">
-            Depodaki içeriği aktar
-          </h2>
-          <p className="mt-1 text-[12px] leading-relaxed text-[#6e6e73]">
-            Koda yeni sahne ya da içerik eklendiyse bu düğme onları veritabanına taşır.
-            Hiçbir şey silmez ve onaylanmış (kilitli) sahnelere dokunmaz. Ama dikkat:
-            depoda karşılığı olan ve kilitli OLMAYAN bir sahneyi Stüdyo'dan
-            düzenlediyseniz, bu aktarım o düzenlemenin üstüne yazar. Önce onaylayın.
-          </p>
-        </div>
-        <button
+    <Kart
+      baslik="Depodaki içeriği aktar"
+      aciklama="Koda yeni sahne ya da içerik eklendiyse veritabanına taşır. Hiçbir şey silmez, onaylanmış sahnelere dokunmaz. Depoda karşılığı olan ve onaylanmamış bir sahneyi burada düzenlediyseniz üstüne yazar."
+      sag={
+        <Dugme
+          tur="ikincil"
+          kucuk
+          disabled={bekliyor}
           onClick={() => {
             setSonuc(null);
             basla(async () => {
@@ -41,15 +36,13 @@ export function AktarmaDugmesi() {
               if (cevap.ok) router.refresh();
             });
           }}
-          disabled={bekliyor}
-          className="shrink-0 rounded-full border border-[#d2d2d7] bg-white px-5 py-[9px] text-[14px] font-medium active:bg-[#f5f5f7] disabled:opacity-50"
         >
           {bekliyor ? "Aktarılıyor…" : "Aktar"}
-        </button>
-      </div>
-
+        </Dugme>
+      }
+    >
       {sonuc !== null && (
-        <p className={`mt-3 text-[13px] ${sonuc.ok ? "text-[#1d6b3f]" : "text-[#8c2820]"}`}>
+        <p className={`text-[13px] ${sonuc.ok ? "text-[#1d6b3f]" : "text-[#c7392e]"}`}>
           {sonuc.ok
             ? `Aktarıldı — ${Object.entries(sonuc.sayim)
                 .map(([tablo, n]) => `${tablo}: ${n}`)
@@ -57,6 +50,6 @@ export function AktarmaDugmesi() {
             : sonuc.mesaj}
         </p>
       )}
-    </section>
+    </Kart>
   );
 }

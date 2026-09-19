@@ -1,11 +1,9 @@
-import Link from "next/link";
-
 import { cihazGetir, diziGetir, karakterGetir, sahneGetir } from "@/icerik/kaynak";
-import { TeslimPaketi } from "@/studio/teslim-paketi";
-import { YayinlaDugmesi } from "@/studio/yayinla-dugmesi";
-import { KilitKutusu } from "@/studio/kilit-kutusu";
 import { sahneDurumu } from "@/icerik/yazma";
-import { kodCoz } from "@/studio/teslim";
+import { KilitKutusu } from "@/studio/kilit-kutusu";
+import { DugmeBaglanti, Panel, PanelUst, Yigin } from "@/studio/panel";
+import { KABUK_ADI, kodCoz, sahneBasligi } from "@/studio/teslim";
+import { TeslimPaketi } from "@/studio/teslim-paketi";
 
 /** Teslim paketi her zaman taze okunur; sahne düzenlenince anında güncellenir. */
 export const dynamic = "force-dynamic";
@@ -17,21 +15,19 @@ export default async function TeslimSayfasi({ params }: { params: Promise<{ kod:
 
   if (sahne === null) {
     return (
-      <main className="acik-sayfa mx-auto min-h-dvh max-w-[760px] px-5 py-8 text-[#1d1d1f]">
-        <Link href="/studio" className="text-[13px] text-[#0071e3]">
-          ← Stüdyo
-        </Link>
-        <p className="mt-6 text-[15px]">
-          <strong className="font-mono">{kod}</strong> diye bir sahne yok.
-        </p>
-      </main>
+      <Panel>
+        <PanelUst geri="/studio" geriEtiketi="Stüdyo" baslik="Sahne bulunamadı" aciklama={kod} />
+      </Panel>
     );
   }
 
   const cihaz = await cihazGetir(sahne.cihaz);
+  const parca = kodCoz(sahne.kod);
+  const dizi = parca === null ? null : await diziGetir(parca.dizi);
+  const karakter = cihaz?.karakter === undefined ? null : await karakterGetir(cihaz.karakter);
 
   // Kilit/versiyon yalnızca veritabanı varken anlamlı; yerelde dosya
-  // kaynağıyla çalışırken kutu hiç gösterilmez.
+  // kaynağıyla çalışırken kart hiç gösterilmez.
   let kilitDurumu: { kilitli: boolean; versiyon: number } | null = null;
   try {
     const d = await sahneDurumu(kod);
@@ -39,40 +35,39 @@ export default async function TeslimSayfasi({ params }: { params: Promise<{ kod:
   } catch {
     kilitDurumu = null;
   }
-  const parca = kodCoz(sahne.kod);
-  const dizi = parca === null ? null : await diziGetir(parca.dizi);
-  const karakter = cihaz?.karakter === undefined ? null : await karakterGetir(cihaz.karakter);
+
+  const cihazSatiri = [karakter?.ad ?? cihaz?.karakter, cihaz === null ? null : KABUK_ADI[cihaz.skin]]
+    .filter((x) => x !== null && x !== undefined)
+    .join(" · ");
 
   return (
-    <main className="acik-sayfa mx-auto min-h-dvh max-w-[760px] px-5 py-8 text-[#1d1d1f]">
-      <div className="flex items-center gap-3">
-        <Link href="/studio" className="text-[13px] text-[#0071e3]">
-          ← Stüdyo
-        </Link>
-        <Link
-          href={`/studio/yeni?kopya=${kod}`}
-          className="ml-auto rounded-full border border-[#d2d2d7] px-4 py-[6px] text-[13px] font-medium text-[#1d1d1f] active:bg-[#f5f5f7]"
-        >
-          Kopyala
-        </Link>
-        <Link
-          href={`/studio/${kod}/duzenle`}
-          className="rounded-full border border-[#d2d2d7] px-4 py-[6px] text-[13px] font-medium text-[#1d1d1f] active:bg-[#f5f5f7]"
-        >
-          Düzenle
-        </Link>
-      </div>
-      <TeslimPaketi sahne={sahne} cihaz={cihaz} dizi={dizi} karakter={karakter} />
-      <div className="mt-5 flex flex-col gap-5">
+    <Panel>
+      <PanelUst
+        geri="/studio"
+        geriEtiketi="Stüdyo"
+        baslik={sahneBasligi(sahne, dizi)}
+        aciklama={cihazSatiri === "" ? sahne.cihaz : cihazSatiri}
+        eylemler={
+          <>
+            <DugmeBaglanti href={`/p/${kod}?onizleme=1`} tur="sessiz" kucuk>
+              Önizle
+            </DugmeBaglanti>
+            <DugmeBaglanti href={`/studio/yeni?kopya=${kod}`} tur="ikincil" kucuk>
+              Kopyala
+            </DugmeBaglanti>
+            <DugmeBaglanti href={`/studio/${kod}/duzenle`} tur="birincil" kucuk>
+              Düzenle
+            </DugmeBaglanti>
+          </>
+        }
+      />
+
+      <Yigin>
+        <TeslimPaketi sahne={sahne} cihaz={cihaz} dizi={dizi} karakter={karakter} />
         {kilitDurumu !== null && (
-          <KilitKutusu
-            kod={kod}
-            kilitli={kilitDurumu.kilitli}
-            versiyon={kilitDurumu.versiyon}
-          />
+          <KilitKutusu kod={kod} kilitli={kilitDurumu.kilitli} versiyon={kilitDurumu.versiyon} />
         )}
-        <YayinlaDugmesi kod={kod} />
-      </div>
-    </main>
+      </Yigin>
+    </Panel>
   );
 }

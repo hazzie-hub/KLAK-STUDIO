@@ -3,14 +3,18 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
-import { sahneyiKilitle, yeniVersiyon, type KayitSonucu } from "./eylemler";
+import { sahneyiKilitle, yayinla, yeniVersiyon, type KayitSonucu } from "./eylemler";
+import { Dugme, Kart } from "./panel";
 
 /**
- * Onay ve versiyon kutusu. CLAUDE.md §8
+ * Onay ve versiyon. CLAUDE.md §8
  *
  * Kilitli = onaylanmış. Kilitli sahne değiştirilemez; revizyon YENİ VERSİYON
  * açar ve önceki hali arşivlenir. Sahnenin linki hiç değişmez — sete
  * gönderilen QR ve adres geçerliliğini korur.
+ *
+ * "Sayfaları tazele" buraya sessiz bir bağlantı olarak kondu: kaydetmek zaten
+ * sayfaları tazeliyor, bu yalnızca emin olmak isteyenler için.
  */
 export function KilitKutusu({
   kod,
@@ -23,57 +27,61 @@ export function KilitKutusu({
 }) {
   const router = useRouter();
   const [bekliyor, basla] = useTransition();
-  const [sonuc, setSonuc] = useState<KayitSonucu | null>(null);
+  const [hata, setHata] = useState<string | null>(null);
+  const [tazelendi, setTazelendi] = useState(false);
 
   const calistir = (is: () => Promise<KayitSonucu>) => {
-    setSonuc(null);
+    setHata(null);
     basla(async () => {
       const cevap = await is();
-      setSonuc(cevap);
       if (cevap.ok) router.refresh();
+      else setHata(cevap.hatalar[0]?.mesaj ?? "İşlem tamamlanamadı.");
     });
   };
 
   return (
-    <div
-      className={`rounded-2xl border p-4 ${
-        kilitli ? "border-[#cfe4d4] bg-[#f2f9f4]" : "border-[#d2d2d7]"
-      }`}
-    >
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="min-w-0 flex-1">
-          <h3 className="text-[13px] font-semibold uppercase tracking-wide text-[#6e6e73]">
-            Onay · versiyon {versiyon}
-          </h3>
-          <p className="mt-1 text-[12px] leading-relaxed text-[#6e6e73]">
-            {kilitli
-              ? "Sahne onaylandı ve kilitli. Değiştirmek için yeni versiyon açın; önceki hali arşivde kalır, link değişmez."
-              : "Sahne henüz onaylanmadı. Onaylayınca kilitlenir ve yanlışlıkla değiştirilemez."}
-          </p>
-        </div>
-
-        {kilitli ? (
-          <button
-            onClick={() => calistir(() => yeniVersiyon(kod))}
-            disabled={bekliyor}
-            className="shrink-0 rounded-full border border-[#d2d2d7] bg-white px-5 py-[9px] text-[14px] font-medium active:bg-[#f5f5f7] disabled:opacity-50"
-          >
+    <Kart
+      vurgu={kilitli ? "yesil" : undefined}
+      baslik={kilitli ? `Onaylandı · versiyon ${versiyon}` : `Onaylanmadı · versiyon ${versiyon}`}
+      aciklama={
+        kilitli
+          ? "Sahne kilitli, yanlışlıkla değişmez. Düzeltmek için yeni versiyon açın; önceki hali arşivde kalır ve link değişmez."
+          : "Onaylayınca sahne kilitlenir ve yanlışlıkla değiştirilemez."
+      }
+      sag={
+        kilitli ? (
+          <Dugme tur="ikincil" kucuk disabled={bekliyor} onClick={() => calistir(() => yeniVersiyon(kod))}>
             {bekliyor ? "Açılıyor…" : `Yeni versiyon (${versiyon + 1})`}
-          </button>
+          </Dugme>
         ) : (
-          <button
-            onClick={() => calistir(() => sahneyiKilitle(kod))}
-            disabled={bekliyor}
-            className="shrink-0 rounded-full bg-[#1d6b3f] px-5 py-[9px] text-[14px] font-medium text-white active:opacity-80 disabled:opacity-50"
-          >
-            {bekliyor ? "Onaylanıyor…" : "Onayla ve kilitle"}
-          </button>
-        )}
+          <Dugme tur="onay" kucuk disabled={bekliyor} onClick={() => calistir(() => sahneyiKilitle(kod))}>
+            {bekliyor ? "Onaylanıyor…" : "Onayla"}
+          </Dugme>
+        )
+      }
+    >
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <button
+          onClick={() => {
+            setHata(null);
+            basla(async () => {
+              const cevap = await yayinla(kod);
+              if (cevap.ok) {
+                setTazelendi(true);
+                setTimeout(() => setTazelendi(false), 2500);
+              } else setHata(cevap.mesaj);
+            });
+          }}
+          disabled={bekliyor}
+          className="text-[12px] font-medium text-[#0071e3] disabled:opacity-45"
+        >
+          {tazelendi ? "Sahne sayfaları tazelendi" : "Sahne sayfalarını tazele"}
+        </button>
+        <span className="text-[11px] text-[#8e8e93]">
+          Kaydedince zaten tazelenir; bu yalnızca emin olmak içindir.
+        </span>
       </div>
-
-      {sonuc !== null && !sonuc.ok && (
-        <p className="mt-3 text-[13px] text-[#8c2820]">{sonuc.hatalar[0]?.mesaj}</p>
-      )}
-    </div>
+      {hata !== null && <p className="mt-3 text-[13px] text-[#c7392e]">{hata}</p>}
+    </Kart>
   );
 }

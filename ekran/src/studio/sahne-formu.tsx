@@ -3,35 +3,46 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
-import type { AksiyonTuru, TetikTuru } from "@/schema";
+import type { AksiyonTuru, Modul, TetikTuru } from "@/schema";
 import { AlanGirdisi, type Secenekler } from "./alan-girdisi";
 import {
   AKSIYON_ADLARI,
   AKSIYON_ALANLARI,
+  EKRANLAR,
+  EKRAN_ADLARI,
+  MODUL_ADLARI,
   TETIK_ADLARI,
   TETIK_ALANLARI,
   type Alan,
 } from "./alanlar";
 import { sahneKaydet, type KayitSonucu } from "./eylemler";
+import { Alan as AlanKutusu, Dugme, GIRDI_SINIFI, Kart, Yigin } from "./panel";
 
 /**
  * Sahne formu. CLAUDE.md §8 (Faz 4.3)
  *
- * Amaç: sahneyi JSON yazmadan kurmak. Form serbest bir taslak tutar (alanlar
- * yarım olabilir); KAYDEDERKEN Zod'dan geçer ve hatalar Türkçe olarak
- * şemadan gelir. Böylece doğruluk tek yerde tanımlı kalır.
+ * Form serbest bir taslak tutar (alanlar yarım olabilir); KAYDEDERKEN Zod'dan
+ * geçer ve hatalar Türkçe olarak şemadan gelir. Doğruluk tek yerde tanımlı.
+ *
+ * Arayüz sadeleştirildi: başlıklar soru cümlesi, teknik slug'lar yerine
+ * okunur adlar, nadiren dokunulan cihaz durumu katlanır bir bölümde.
  */
 type Taslak = Record<string, unknown>;
-
-function bosOlaylar(): Taslak[] {
-  return [];
-}
 
 function varsayilanlar(alanlar: readonly Alan[]): Taslak {
   const o: Taslak = {};
   for (const a of alanlar) if (a.varsayilan !== undefined) o[a.ad] = a.varsayilan;
   return o;
 }
+
+const BOS_SAHNE: Taslak = {
+  kod: "",
+  cihaz: "",
+  baslangic: { modul: "kilit", ekran: "kilit" },
+  durum: { baglanti: "normal", gorsel: "normal" },
+  olaylar: [],
+  talimat: "",
+};
 
 export function SahneFormu({
   baslangicTaslak,
@@ -49,18 +60,10 @@ export function SahneFormu({
   const router = useRouter();
   const [bekliyor, basla] = useTransition();
   const [sonuc, setSonuc] = useState<KayitSonucu | null>(null);
+  const [gelismis, setGelismis] = useState(false);
 
   const [sahne, setSahne] = useState<Taslak>(() =>
-    baslangicTaslak === null
-      ? {
-          kod: "",
-          cihaz: "",
-          baslangic: { modul: "kilit", ekran: "kilit" },
-          durum: { baglanti: "normal", gorsel: "normal" },
-          olaylar: bosOlaylar(),
-          talimat: "",
-        }
-      : structuredClone(baslangicTaslak),
+    baslangicTaslak === null ? structuredClone(BOS_SAHNE) : structuredClone(baslangicTaslak),
   );
 
   const yaz = (yol: string[], deger: unknown) => {
@@ -78,9 +81,12 @@ export function SahneFormu({
     });
   };
 
+  const baslangic = (sahne.baslangic as Taslak | undefined) ?? {};
+  const durum = (sahne.durum as Taslak | undefined) ?? {};
   const olaylar = (sahne.olaylar as Taslak[] | undefined) ?? [];
+  const modul = String(baslangic.modul ?? "kilit") as Modul;
 
-  const olayYaz = (i: number, guncelle: (o: Taslak) => Taslak) => {
+  const olayYaz = (i: number, guncelle: (o: Taslak) => Taslak) =>
     setSahne((onceki) => {
       const kopya = structuredClone(onceki) as Taslak;
       const liste = [...((kopya.olaylar as Taslak[] | undefined) ?? [])];
@@ -88,44 +94,13 @@ export function SahneFormu({
       kopya.olaylar = liste;
       return kopya;
     });
-  };
 
-  const olayEkle = () => {
+  const olayListesi = (islem: (liste: Taslak[]) => Taslak[]) =>
     setSahne((onceki) => {
       const kopya = structuredClone(onceki) as Taslak;
-      const liste = [...((kopya.olaylar as Taslak[] | undefined) ?? [])];
-      liste.push({
-        id: "",
-        ad: "",
-        tetik: { tur: "baslangic", ...varsayilanlar(TETIK_ALANLARI.baslangic) },
-        aksiyon: { tur: "bildirim" },
-      });
-      kopya.olaylar = liste;
+      kopya.olaylar = islem([...((kopya.olaylar as Taslak[] | undefined) ?? [])]);
       return kopya;
     });
-  };
-
-  const olaySil = (i: number) => {
-    setSahne((onceki) => {
-      const kopya = structuredClone(onceki) as Taslak;
-      const liste = [...((kopya.olaylar as Taslak[] | undefined) ?? [])];
-      liste.splice(i, 1);
-      kopya.olaylar = liste;
-      return kopya;
-    });
-  };
-
-  const olayTasi = (i: number, yon: -1 | 1) => {
-    setSahne((onceki) => {
-      const kopya = structuredClone(onceki) as Taslak;
-      const liste = [...((kopya.olaylar as Taslak[] | undefined) ?? [])];
-      const hedef = i + yon;
-      if (hedef < 0 || hedef >= liste.length) return onceki;
-      [liste[i], liste[hedef]] = [liste[hedef]!, liste[i]!];
-      kopya.olaylar = liste;
-      return kopya;
-    });
-  };
 
   const kaydet = () => {
     setSonuc(null);
@@ -133,6 +108,7 @@ export function SahneFormu({
       const cevap = await sahneKaydet(sahne);
       setSonuc(cevap);
       if (cevap.ok) router.push(`/studio/${cevap.kod}`);
+      else window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
     });
   };
 
@@ -141,92 +117,81 @@ export function SahneFormu({
     return sonuc.hatalar.find((h) => h.yol === yol)?.mesaj ?? null;
   };
 
-  const kutu = "rounded-2xl border border-[#d2d2d7] p-4";
-  const girdi =
-    "w-full rounded-lg border border-[#d2d2d7] px-3 py-[7px] text-[14px] outline-none focus:border-[#0071e3]";
-
   return (
-    <div className="mt-6 flex flex-col gap-5">
-      <section className={kutu}>
-        <h2 className="mb-3 text-[15px] font-semibold">Sahne</h2>
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label className="block">
-            <span className="mb-[3px] block text-[12px] font-medium text-[#3a3a3c]">
-              Sahne kodu <span className="text-[#c7392e]">*</span>
-            </span>
+    <Yigin>
+      <Kart baslik="Sahne nerede geçiyor?">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <AlanKutusu
+            etiket="Sahne kodu"
+            zorunlu
+            hata={hataAlani("kod")}
+            ipucu={
+              yeniMi ? "Örnek: eg-b03-s58 (dizi-bölüm-sahne)" : "Değiştirilemez; sete giden link buna bağlı."
+            }
+          >
             <input
               value={String(sahne.kod ?? "")}
               onChange={(e) => yaz(["kod"], e.target.value)}
               disabled={!yeniMi}
               placeholder="eg-b03-s58"
-              className={`${girdi} font-mono ${yeniMi ? "" : "bg-[#f5f5f7] text-[#6e6e73]"}`}
+              className={`${GIRDI_SINIFI} font-mono ${yeniMi ? "" : "bg-[#f5f5f7] text-[#8e8e93]"}`}
             />
-            <span className="mt-[3px] block text-[11px] text-[#86868b]">
-              {yeniMi
-                ? "{dizi}-b{bölüm}-s{sahne} — örn. eg-b03-s58"
-                : "Kod sonradan değiştirilemez; link buna bağlı."}
-            </span>
-          </label>
+          </AlanKutusu>
 
-          <label className="block">
-            <span className="mb-[3px] block text-[12px] font-medium text-[#3a3a3c]">
-              Cihaz <span className="text-[#c7392e]">*</span>
-            </span>
+          <AlanKutusu etiket="Hangi cihaz?" zorunlu hata={hataAlani("cihaz")}>
             <select
               value={String(sahne.cihaz ?? "")}
               onChange={(e) => yaz(["cihaz"], e.target.value)}
-              className={girdi}
+              className={GIRDI_SINIFI}
             >
-              <option value="">—</option>
+              <option value="">Seçin…</option>
               {secenekler.cihaz.map((c) => (
                 <option key={c.deger} value={c.deger}>
                   {c.etiket}
                 </option>
               ))}
             </select>
-          </label>
-        </div>
+          </AlanKutusu>
 
-        <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          <label className="block">
-            <span className="mb-[3px] block text-[12px] font-medium text-[#3a3a3c]">
-              Açılış modülü <span className="text-[#c7392e]">*</span>
-            </span>
+          <AlanKutusu etiket="Sahne hangi uygulamayla açılsın?" zorunlu>
             <select
-              value={String((sahne.baslangic as Taslak)?.modul ?? "")}
-              onChange={(e) => yaz(["baslangic", "modul"], e.target.value)}
-              className={girdi}
+              value={modul}
+              onChange={(e) => {
+                const yeni = e.target.value as Modul;
+                yaz(["baslangic", "modul"], yeni);
+                yaz(["baslangic", "ekran"], EKRANLAR[yeni][0] ?? "");
+              }}
+              className={GIRDI_SINIFI}
             >
               {secenekler.modul.map((m) => (
                 <option key={m.deger} value={m.deger}>
-                  {m.etiket}
+                  {MODUL_ADLARI[m.deger as Modul] ?? m.etiket}
                 </option>
               ))}
             </select>
-          </label>
+          </AlanKutusu>
 
-          <label className="block">
-            <span className="mb-[3px] block text-[12px] font-medium text-[#3a3a3c]">
-              Açılış ekranı <span className="text-[#c7392e]">*</span>
-            </span>
-            <input
-              value={String((sahne.baslangic as Taslak)?.ekran ?? "")}
-              onChange={(e) => yaz(["baslangic", "ekran"], e.target.value)}
-              placeholder="kilit"
-              className={`${girdi} font-mono text-[13px]`}
-            />
-          </label>
-
-          <label className="block">
-            <span className="mb-[3px] block text-[12px] font-medium text-[#3a3a3c]">
-              Açılış hesabı
-            </span>
+          <AlanKutusu etiket="Hangi ekranda başlasın?" zorunlu hata={hataAlani("baslangic.ekran")}>
             <select
-              value={String((sahne.baslangic as Taslak)?.hesap ?? "")}
+              value={String(baslangic.ekran ?? "")}
+              onChange={(e) => yaz(["baslangic", "ekran"], e.target.value)}
+              className={GIRDI_SINIFI}
+            >
+              {(EKRANLAR[modul] ?? []).map((e) => (
+                <option key={e} value={e}>
+                  {EKRAN_ADLARI[e] ?? e}
+                </option>
+              ))}
+            </select>
+          </AlanKutusu>
+
+          <AlanKutusu etiket="Kimin hesabı? (gerekiyorsa)">
+            <select
+              value={String(baslangic.hesap ?? "")}
               onChange={(e) =>
                 yaz(["baslangic", "hesap"], e.target.value === "" ? undefined : e.target.value)
               }
-              className={girdi}
+              className={GIRDI_SINIFI}
             >
               <option value="">—</option>
               {secenekler.hesap.map((h) => (
@@ -235,18 +200,18 @@ export function SahneFormu({
                 </option>
               ))}
             </select>
-          </label>
+          </AlanKutusu>
 
-          <label className="block">
-            <span className="mb-[3px] block text-[12px] font-medium text-[#3a3a3c]">
-              Açılış içeriği
-            </span>
+          <AlanKutusu
+            etiket="Hangi içerik açılsın? (gerekiyorsa)"
+            ipucu="Sohbet, post, arama sonucu, site, konum ya da fotoğraf."
+          >
             <select
-              value={String((sahne.baslangic as Taslak)?.icerikRef ?? "")}
+              value={String(baslangic.icerikRef ?? "")}
               onChange={(e) =>
                 yaz(["baslangic", "icerikRef"], e.target.value === "" ? undefined : e.target.value)
               }
-              className={girdi}
+              className={GIRDI_SINIFI}
             >
               <option value="">—</option>
               {secenekler.icerik.map((i) => (
@@ -255,172 +220,184 @@ export function SahneFormu({
                 </option>
               ))}
             </select>
-          </label>
+          </AlanKutusu>
         </div>
 
-        <label className="mt-3 block">
-          <span className="mb-[3px] block text-[12px] font-medium text-[#3a3a3c]">
-            Sete gidecek talimat <span className="text-[#c7392e]">*</span>
-          </span>
-          <textarea
-            value={String(sahne.talimat ?? "")}
-            rows={3}
-            onChange={(e) => yaz(["talimat"], e.target.value)}
-            className={girdi}
-          />
-          <span className="mt-[3px] block text-[11px] text-[#86868b]">
-            Teslim paketinde &quot;NE OLACAK&quot; başlığı altında aynen çıkar.
-          </span>
-        </label>
-        {hataAlani("talimat") !== null && (
-          <p className="mt-2 text-[12px] text-[#c7392e]">{hataAlani("talimat")}</p>
-        )}
-      </section>
-
-      <section className={kutu}>
-        <h2 className="mb-3 text-[15px] font-semibold">Cihaz durumu</h2>
-        <div className="grid gap-3 sm:grid-cols-3">
-          <label className="block">
-            <span className="mb-[3px] block text-[12px] font-medium text-[#3a3a3c]">Bağlantı</span>
-            <select
-              value={String((sahne.durum as Taslak)?.baglanti ?? "normal")}
-              onChange={(e) => yaz(["durum", "baglanti"], e.target.value)}
-              className={girdi}
-            >
-              {["normal", "yavas", "yok"].map((x) => (
-                <option key={x}>{x}</option>
-              ))}
-            </select>
-          </label>
-          <label className="block">
-            <span className="mb-[3px] block text-[12px] font-medium text-[#3a3a3c]">
-              Görsel yükleme
-            </span>
-            <select
-              value={String((sahne.durum as Taslak)?.gorsel ?? "normal")}
-              onChange={(e) => yaz(["durum", "gorsel"], e.target.value)}
-              className={girdi}
-            >
-              {["normal", "gec", "yuklenmez"].map((x) => (
-                <option key={x}>{x}</option>
-              ))}
-            </select>
-          </label>
-          <label className="block">
-            <span className="mb-[3px] block text-[12px] font-medium text-[#3a3a3c]">Saat</span>
-            <input
-              value={String((sahne.durum as Taslak)?.saat ?? "")}
-              onChange={(e) =>
-                yaz(["durum", "saat"], e.target.value === "" ? undefined : e.target.value)
-              }
-              placeholder="23:41"
-              className={girdi}
-            />
-          </label>
-          <label className="block">
-            <span className="mb-[3px] block text-[12px] font-medium text-[#3a3a3c]">Tarih</span>
-            <input
-              value={String((sahne.durum as Taslak)?.tarih ?? "")}
-              onChange={(e) =>
-                yaz(["durum", "tarih"], e.target.value === "" ? undefined : e.target.value)
-              }
-              placeholder="18 Eylül Perşembe"
-              className={girdi}
-            />
-          </label>
-          <label className="block">
-            <span className="mb-[3px] block text-[12px] font-medium text-[#3a3a3c]">Pil</span>
-            <input
-              type="number"
-              min={0}
-              max={100}
-              value={String((sahne.durum as Taslak)?.pil ?? "")}
-              onChange={(e) =>
-                yaz(["durum", "pil"], e.target.value === "" ? undefined : Number(e.target.value))
-              }
-              className={girdi}
-            />
-          </label>
-          <label className="flex items-end gap-2 pb-2 text-[13px]">
-            <input
-              type="checkbox"
-              checked={(sahne.durum as Taslak)?.sarjda === true}
-              onChange={(e) =>
-                yaz(["durum", "sarjda"], e.target.checked ? true : undefined)
-              }
-              className="h-4 w-4"
-            />
-            Şarjda
-          </label>
-        </div>
-      </section>
-
-      <section className={kutu}>
-        <div className="mb-3 flex items-center">
-          <h2 className="text-[15px] font-semibold">Olaylar</h2>
-          <span className="ml-2 text-[12px] text-[#86868b]">{olaylar.length} olay</span>
-          <button
-            onClick={olayEkle}
-            className="ml-auto rounded-full bg-[#0071e3] px-4 py-[6px] text-[13px] font-medium text-white active:opacity-80"
+        <div className="mt-4">
+          <AlanKutusu
+            etiket="Sete gidecek talimat"
+            zorunlu
+            hata={hataAlani("talimat")}
+            ipucu="Teslim paketinde “NE OLACAK” başlığı altında aynen çıkar."
           >
-            + Olay ekle
-          </button>
-        </div>
-
-        {olaylar.length === 0 && (
-          <p className="text-[13px] text-[#6e6e73]">
-            Henüz olay yok. Sahne açılınca hiçbir şey olmaz; kumandadan da tetiklenecek bir şey
-            bulunmaz.
-          </p>
-        )}
-
-        <div className="flex flex-col gap-4">
-          {olaylar.map((olay, i) => (
-            <OlayKarti
-              key={i}
-              sira={i}
-              toplam={olaylar.length}
-              olay={olay}
-              secenekler={secenekler}
-              hata={(yol) => hataAlani(`olaylar.${i}.${yol}`)}
-              degistir={(g) => olayYaz(i, g)}
-              sil={() => olaySil(i)}
-              tasi={(yon) => olayTasi(i, yon)}
+            <textarea
+              value={String(sahne.talimat ?? "")}
+              rows={3}
+              onChange={(e) => yaz(["talimat"], e.target.value)}
+              placeholder="Telefon kilitli, masada duruyor. 2,5 sn sonra bildirim düşer…"
+              className={GIRDI_SINIFI}
             />
-          ))}
+          </AlanKutusu>
         </div>
-      </section>
+      </Kart>
+
+      <Kart
+        baslik="Sahnede neler oluyor?"
+        aciklama={
+          olaylar.length === 0
+            ? "Henüz olay yok. Olaylar sahnenin akışıdır: bildirim düşer, telefon çalar, mesaj gelir."
+            : `${olaylar.length} olay, sırayla`
+        }
+        sag={
+          <Dugme
+            tur="birincil"
+            kucuk
+            onClick={() =>
+              olayListesi((liste) => [
+                ...liste,
+                {
+                  id: "",
+                  ad: "",
+                  tetik: { tur: "baslangic", ...varsayilanlar(TETIK_ALANLARI.baslangic) },
+                  aksiyon: { tur: "bildirim" },
+                },
+              ])
+            }
+          >
+            Olay ekle
+          </Dugme>
+        }
+      >
+        {olaylar.length > 0 && (
+          <div className="flex flex-col gap-3">
+            {olaylar.map((olay, i) => (
+              <OlayKarti
+                key={i}
+                sira={i}
+                toplam={olaylar.length}
+                olay={olay}
+                secenekler={secenekler}
+                hata={(yol) => hataAlani(`olaylar.${i}.${yol}`)}
+                degistir={(g) => olayYaz(i, g)}
+                sil={() => olayListesi((l) => l.filter((_, j) => j !== i))}
+                tasi={(yon) =>
+                  olayListesi((l) => {
+                    const hedef = i + yon;
+                    if (hedef < 0 || hedef >= l.length) return l;
+                    const kopya = [...l];
+                    [kopya[i], kopya[hedef]] = [kopya[hedef]!, kopya[i]!];
+                    return kopya;
+                  })
+                }
+              />
+            ))}
+          </div>
+        )}
+      </Kart>
+
+      <Kart
+        baslik="Cihazın hali"
+        aciklama="Saat, pil, bağlantı. Çoğu sahnede dokunmaya gerek yok."
+        sag={
+          <Dugme tur="sessiz" kucuk onClick={() => setGelismis((x) => !x)}>
+            {gelismis ? "Gizle" : "Göster"}
+          </Dugme>
+        }
+      >
+        {gelismis && (
+          <div className="grid gap-4 sm:grid-cols-3">
+            <AlanKutusu etiket="Saat">
+              <input
+                value={String(durum.saat ?? "")}
+                onChange={(e) =>
+                  yaz(["durum", "saat"], e.target.value === "" ? undefined : e.target.value)
+                }
+                placeholder="23:41"
+                className={GIRDI_SINIFI}
+              />
+            </AlanKutusu>
+            <AlanKutusu etiket="Tarih (kilit ekranı)">
+              <input
+                value={String(durum.tarih ?? "")}
+                onChange={(e) =>
+                  yaz(["durum", "tarih"], e.target.value === "" ? undefined : e.target.value)
+                }
+                placeholder="18 Eylül Perşembe"
+                className={GIRDI_SINIFI}
+              />
+            </AlanKutusu>
+            <AlanKutusu etiket="Pil %">
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={String(durum.pil ?? "")}
+                onChange={(e) =>
+                  yaz(["durum", "pil"], e.target.value === "" ? undefined : Number(e.target.value))
+                }
+                className={GIRDI_SINIFI}
+              />
+            </AlanKutusu>
+            <AlanKutusu etiket="Bağlantı">
+              <select
+                value={String(durum.baglanti ?? "normal")}
+                onChange={(e) => yaz(["durum", "baglanti"], e.target.value)}
+                className={GIRDI_SINIFI}
+              >
+                <option value="normal">Normal</option>
+                <option value="yavas">Yavaş</option>
+                <option value="yok">Yok</option>
+              </select>
+            </AlanKutusu>
+            <AlanKutusu etiket="Görseller">
+              <select
+                value={String(durum.gorsel ?? "normal")}
+                onChange={(e) => yaz(["durum", "gorsel"], e.target.value)}
+                className={GIRDI_SINIFI}
+              >
+                <option value="normal">Normal yüklenir</option>
+                <option value="gec">Geç yüklenir</option>
+                <option value="yuklenmez">Hiç yüklenmez</option>
+              </select>
+            </AlanKutusu>
+            <label className="flex items-end gap-[9px] pb-[10px] text-[13px] text-[#1d1d1f]">
+              <input
+                type="checkbox"
+                checked={durum.sarjda === true}
+                onChange={(e) => yaz(["durum", "sarjda"], e.target.checked ? true : undefined)}
+                className="h-[15px] w-[15px] accent-[#0071e3]"
+              />
+              Şarjda
+            </label>
+          </div>
+        )}
+      </Kart>
 
       {sonuc !== null && !sonuc.ok && (
-        <section className="rounded-2xl border border-[#f3c9c5] bg-[#fdf2f1] p-4">
-          <h3 className="text-[13px] font-semibold text-[#8c2820]">Kaydedilemedi</h3>
-          <ul className="mt-2 flex flex-col gap-1">
+        <Kart vurgu="kirmizi" baslik="Kaydedilemedi" aciklama="Şunları düzeltin:">
+          <ul className="flex list-disc flex-col gap-[6px] pl-5">
             {sonuc.hatalar.map((h, i) => (
               <li key={i} className="text-[13px] text-[#8c2820]">
-                {h.yol !== "" && <span className="font-mono text-[11px] opacity-70">{h.yol} · </span>}
                 {h.mesaj}
               </li>
             ))}
           </ul>
-        </section>
+        </Kart>
       )}
 
-      <div className="flex items-center gap-3">
-        <button
-          onClick={kaydet}
-          disabled={bekliyor}
-          className="rounded-full bg-[#0071e3] px-5 py-[9px] text-[14px] font-medium text-white active:opacity-80 disabled:opacity-50"
-        >
+      <div className="sticky bottom-4 flex items-center gap-3 rounded-full border border-[#e4e4e7] bg-white/95 px-4 py-[10px] shadow-[0_2px_14px_rgba(0,0,0,0.07)] backdrop-blur">
+        <Dugme tur="birincil" disabled={bekliyor} onClick={kaydet}>
           {bekliyor ? "Kaydediliyor…" : "Kaydet"}
-        </button>
-        <span className="text-[12px] text-[#86868b]">
+        </Dugme>
+        <span className="text-[12px] text-[#8e8e93]">
           Kaydedince sahne linki kendiliğinden güncellenir.
         </span>
       </div>
-    </div>
+    </Yigin>
   );
 }
 
+/** Tek olay: “ne zaman” ve “ne olsun” yan yana. */
 function OlayKarti({
   sira,
   toplam,
@@ -445,24 +422,23 @@ function OlayKarti({
   const tetikTuru = String(tetik.tur ?? "elle") as TetikTuru;
   const aksiyonTuru = String(aksiyon.tur ?? "bildirim") as AksiyonTuru;
 
-  const girdi =
-    "w-full rounded-lg border border-[#d2d2d7] px-3 py-[7px] text-[14px] outline-none focus:border-[#0071e3]";
-
   return (
-    <div className="rounded-xl border border-[#e8e8ed] bg-[#fbfbfd] p-3">
-      <div className="mb-3 flex items-center gap-2">
-        <span className="text-[12px] font-semibold text-[#6e6e73]">{sira + 1}.</span>
+    <div className="rounded-[14px] border border-[#e8e8ec] bg-[#fbfbfd]">
+      <div className="flex items-center gap-2 px-4 pt-3">
+        <span className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-full bg-[#eeeef0] text-[11px] font-semibold text-[#6e6e73]">
+          {sira + 1}
+        </span>
         <input
           value={String(olay.ad ?? "")}
           onChange={(e) => degistir((o) => ({ ...o, ad: e.target.value }))}
-          placeholder="Olayın adı * — kumandada bu görünür"
-          className="min-w-0 flex-1 rounded-lg border border-transparent bg-transparent px-2 py-1 text-[14px] font-medium outline-none focus:border-[#d2d2d7] focus:bg-white"
+          placeholder="Olayın adı — kumandada bu görünür"
+          className="min-w-0 flex-1 rounded-[8px] border border-transparent bg-transparent px-2 py-1 text-[14px] font-medium text-[#1d1d1f] outline-none placeholder:font-normal placeholder:text-[#b4b4b8] focus:border-[#d8d8dc] focus:bg-white"
         />
         <button
           onClick={() => tasi(-1)}
           disabled={sira === 0}
           aria-label="Yukarı taşı"
-          className="px-2 text-[15px] text-[#6e6e73] disabled:opacity-25"
+          className="px-[6px] text-[14px] text-[#8e8e93] disabled:opacity-25"
         >
           ↑
         </button>
@@ -470,36 +446,27 @@ function OlayKarti({
           onClick={() => tasi(1)}
           disabled={sira === toplam - 1}
           aria-label="Aşağı taşı"
-          className="px-2 text-[15px] text-[#6e6e73] disabled:opacity-25"
+          className="px-[6px] text-[14px] text-[#8e8e93] disabled:opacity-25"
         >
           ↓
         </button>
-        <button onClick={sil} aria-label="Olayı sil" className="px-2 text-[13px] text-[#c7392e]">
+        <button
+          onClick={sil}
+          aria-label="Olayı sil"
+          className="rounded-full px-[9px] py-[3px] text-[12px] font-medium text-[#c7392e] hover:bg-[#fdf0ef]"
+        >
           Sil
         </button>
       </div>
 
-      <label className="mb-3 block">
-        <span className="mb-[3px] block text-[12px] font-medium text-[#3a3a3c]">
-          Kimlik <span className="text-[#c7392e]">*</span>
-        </span>
-        <input
-          value={String(olay.id ?? "")}
-          onChange={(e) => degistir((o) => ({ ...o, id: e.target.value }))}
-          placeholder="ilk-mesaj"
-          className={`${girdi} font-mono text-[13px]`}
-        />
-        {hata("id") !== null && (
-          <span className="mt-1 block text-[12px] text-[#c7392e]">{hata("id")}</span>
-        )}
-      </label>
-
-      {hata("ad") !== null && (
-        <p className="mb-3 text-[12px] text-[#c7392e]">{hata("ad")}</p>
+      {(hata("ad") !== null || hata("id") !== null) && (
+        <p className="px-4 pt-2 text-[12px] font-medium text-[#c7392e]">
+          {hata("ad") ?? hata("id")}
+        </p>
       )}
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="rounded-lg bg-white p-3">
+      <div className="grid gap-3 p-4 sm:grid-cols-2">
+        <Bolme etiket="NE ZAMAN">
           <select
             value={tetikTuru}
             onChange={(e) => {
@@ -509,7 +476,7 @@ function OlayKarti({
                 tetik: { tur: yeni, ...varsayilanlar(TETIK_ALANLARI[yeni]) },
               }));
             }}
-            className={`${girdi} mb-3 font-medium`}
+            className={`${GIRDI_SINIFI} font-medium`}
           >
             {Object.entries(TETIK_ADLARI).map(([deger, etiket]) => (
               <option key={deger} value={deger}>
@@ -517,25 +484,20 @@ function OlayKarti({
               </option>
             ))}
           </select>
-          <div className="flex flex-col gap-3">
-            {TETIK_ALANLARI[tetikTuru].map((alan) => (
-              <AlanGirdisi
-                key={alan.ad}
-                alan={alan}
-                deger={tetik[alan.ad]}
-                secenekler={secenekler}
-                degistir={(yeni) =>
-                  degistir((o) => ({
-                    ...o,
-                    tetik: { ...(o.tetik as Taslak), [alan.ad]: yeni },
-                  }))
-                }
-              />
-            ))}
-          </div>
-        </div>
+          {TETIK_ALANLARI[tetikTuru].map((alan) => (
+            <AlanGirdisi
+              key={alan.ad}
+              alan={alan}
+              deger={tetik[alan.ad]}
+              secenekler={secenekler}
+              degistir={(yeni) =>
+                degistir((o) => ({ ...o, tetik: { ...(o.tetik as Taslak), [alan.ad]: yeni } }))
+              }
+            />
+          ))}
+        </Bolme>
 
-        <div className="rounded-lg bg-white p-3">
+        <Bolme etiket="NE OLSUN">
           <select
             value={aksiyonTuru}
             onChange={(e) => {
@@ -545,7 +507,7 @@ function OlayKarti({
                 aksiyon: { tur: yeni, ...varsayilanlar(AKSIYON_ALANLARI[yeni]) },
               }));
             }}
-            className={`${girdi} mb-3 font-medium`}
+            className={`${GIRDI_SINIFI} font-medium`}
           >
             {Object.entries(AKSIYON_ADLARI).map(([deger, etiket]) => (
               <option key={deger} value={deger}>
@@ -553,24 +515,41 @@ function OlayKarti({
               </option>
             ))}
           </select>
-          <div className="flex flex-col gap-3">
-            {AKSIYON_ALANLARI[aksiyonTuru].map((alan) => (
-              <AlanGirdisi
-                key={alan.ad}
-                alan={alan}
-                deger={aksiyon[alan.ad]}
-                secenekler={secenekler}
-                degistir={(yeni) =>
-                  degistir((o) => ({
-                    ...o,
-                    aksiyon: { ...(o.aksiyon as Taslak), [alan.ad]: yeni },
-                  }))
-                }
-              />
-            ))}
-          </div>
-        </div>
+          {AKSIYON_ALANLARI[aksiyonTuru].map((alan) => (
+            <AlanGirdisi
+              key={alan.ad}
+              alan={alan}
+              deger={aksiyon[alan.ad]}
+              secenekler={secenekler}
+              degistir={(yeni) =>
+                degistir((o) => ({ ...o, aksiyon: { ...(o.aksiyon as Taslak), [alan.ad]: yeni } }))
+              }
+            />
+          ))}
+        </Bolme>
       </div>
+
+      <div className="px-4 pb-4">
+        <AlanKutusu etiket="Kimlik" zorunlu ipucu="Kısa ve benzersiz: ilk-mesaj, sezai-arar">
+          <input
+            value={String(olay.id ?? "")}
+            onChange={(e) => degistir((o) => ({ ...o, id: e.target.value }))}
+            placeholder="ilk-mesaj"
+            className={`${GIRDI_SINIFI} font-mono text-[13px]`}
+          />
+        </AlanKutusu>
+      </div>
+    </div>
+  );
+}
+
+function Bolme({ etiket, children }: { etiket: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-3 rounded-[11px] bg-white p-3">
+      <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#8e8e93]">
+        {etiket}
+      </span>
+      {children}
     </div>
   );
 }

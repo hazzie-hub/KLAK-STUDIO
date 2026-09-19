@@ -1,119 +1,104 @@
 import Link from "next/link";
 
-import { kodCoz } from "@/studio/teslim";
-import { AktarmaDugmesi } from "@/studio/aktarma-dugmesi";
 import { tumDizileriGetir, tumSahneleriGetir } from "@/icerik/kaynak";
+import { AktarmaDugmesi } from "@/studio/aktarma-dugmesi";
+import { DugmeBaglanti, Kart, Panel, PanelUst, Rozet, Yigin } from "@/studio/panel";
+import { kodCoz } from "@/studio/teslim";
 
-/**
- * Stüdyo — sahne listesi. CLAUDE.md §8
- *
- * Bizim sayfamız; kameraya girmez, teknik bilgi göstermesi sorun değil.
- * Faz 4.1'de yalnızca OKUR: veri hâlâ `content/` altındaki dosyalardan gelir.
- * Düzenleme ekranları Supabase'e geçişten sonra (4.2–4.3).
- */
 /** Stüdyo her zaman taze veri gösterir — kaydedilen sahne anında görünmeli. */
 export const dynamic = "force-dynamic";
 
+/**
+ * Stüdyo — sahne ağacı. CLAUDE.md §8
+ *
+ * Bizim sayfamız; kameraya girmez. Yine de sade tutuldu: sette acele
+ * ederken okunacak.
+ */
 export default async function StudioSayfasi() {
   const sahneler = await tumSahneleriGetir();
   const diziler = await tumDizileriGetir();
   const diziAdi = (kod: string) => diziler.find((d) => d.kod === kod)?.ad ?? kod;
 
-  // Diziye ve bölüme göre grupla — Stüdyo'nun ana ağacı bu (dizi → bölüm → sahne).
   const gruplar = new Map<string, typeof sahneler>();
   for (const kayit of sahneler) {
     const parca = kodCoz(kayit.sahne.kod);
     const anahtar =
-      parca === null ? "tanımsız" : `${parca.dizi}|${String(parca.bolum).padStart(3, "0")}`;
-    const mevcut = gruplar.get(anahtar) ?? [];
-    mevcut.push(kayit);
-    gruplar.set(anahtar, mevcut);
+      parca === null ? "tanımsız|000" : `${parca.dizi}|${String(parca.bolum).padStart(3, "0")}`;
+    gruplar.set(anahtar, [...(gruplar.get(anahtar) ?? []), kayit]);
   }
 
+  const onayli = sahneler.filter((s) => s.kilitli === true).length;
+
   return (
-    <main className="acik-sayfa mx-auto min-h-dvh max-w-[760px] px-5 py-8 text-[#1d1d1f]">
-      <div className="flex items-baseline gap-3">
-        <h1 className="text-[22px] font-semibold tracking-tight">Stüdyo</h1>
-        <Link href="/" className="ml-auto text-[13px] text-[#0071e3]">
-          Sahne listesi →
-        </Link>
-        <Link
-          href="/studio/yeni"
-          className="rounded-full bg-[#0071e3] px-4 py-[6px] text-[13px] font-medium text-white active:opacity-80"
-        >
-          + Yeni sahne
-        </Link>
-      </div>
-      <p className="mt-1 text-[14px] text-[#6e6e73]">
-        {sahneler.length} sahne · {gruplar.size} bölüm
-      </p>
+    <Panel>
+      <PanelUst
+        baslik="Stüdyo"
+        aciklama={
+          onayli > 0
+            ? `${sahneler.length} sahne · ${onayli} tanesi onaylı`
+            : `${sahneler.length} sahne`
+        }
+        eylemler={
+          <DugmeBaglanti href="/studio/yeni" tur="birincil">
+            Yeni sahne
+          </DugmeBaglanti>
+        }
+      />
 
-      {[...gruplar.entries()]
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([anahtar, kayitlar]) => {
-          const [dizi, bolum] = anahtar.split("|");
-          return (
-            <section key={anahtar} className="mt-7">
-              <h2 className="text-[15px] font-semibold">
-                {diziAdi(dizi ?? "")}
-                <span className="ml-2 font-normal text-[#6e6e73]">
-                  Bölüm {Number(bolum ?? 0)}
-                </span>
-              </h2>
-
-              <ul className="mt-3 flex flex-col gap-2">
-                {kayitlar.map(({ sahne, cihaz, kilitli, versiyon }) => {
-                  const parca = kodCoz(sahne.kod);
-                  return (
-                    <li key={sahne.kod} className="rounded-2xl border border-[#d2d2d7]">
-                      <Link
-                        href={`/studio/${sahne.kod}`}
-                        className="block px-4 py-[13px] active:bg-[#f5f5f7]"
+      <Yigin>
+        {[...gruplar.entries()]
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([anahtar, kayitlar]) => {
+            const [dizi, bolum] = anahtar.split("|");
+            return (
+              <Kart
+                key={anahtar}
+                baslik={diziAdi(dizi ?? "")}
+                aciklama={`Bölüm ${Number(bolum ?? 0)} · ${kayitlar.length} sahne`}
+              >
+                <ul className="-mx-5 -mb-5">
+                  {kayitlar.map(({ sahne, cihaz, kilitli, versiyon }, i) => {
+                    const parca = kodCoz(sahne.kod);
+                    return (
+                      <li
+                        key={sahne.kod}
+                        className={i === 0 ? "" : "border-t border-[#f0f0f2]"}
                       >
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-[15px] font-semibold">
-                            Sahne {parca?.sahne ?? sahne.kod}
-                          </span>
-                          <span className="font-mono text-[11px] text-[#86868b]">{sahne.kod}</span>
-                          <span className="ml-auto shrink-0 text-[12px] text-[#6e6e73]">
-                            {sahne.baslangic.modul}
-                          </span>
-                          {kilitli === true && (
-                            <span className="shrink-0 rounded-full bg-[#e6f4ea] px-[8px] py-[2px] text-[11px] font-medium text-[#1d6b3f]">
-                              onaylı v{versiyon}
-                            </span>
-                          )}
-                        </div>
-                        <p className="mt-[5px] line-clamp-2 text-[13px] leading-snug text-[#3a3a3c]">
-                          {sahne.talimat}
-                        </p>
-                        <p className="mt-[6px] text-[12px] text-[#86868b]">
-                          {cihaz?.kod ?? sahne.cihaz} · {sahne.olaylar.length} olay
-                        </p>
-                      </Link>
-                      <div className="flex border-t border-[#e8e8ed] text-[13px]">
-                        <Link
-                          href={`/studio/${sahne.kod}`}
-                          className="flex-1 py-[10px] text-center font-medium text-[#0071e3] active:bg-[#f5f5f7]"
-                        >
-                          Teslim paketi
-                        </Link>
-                        <Link
-                          href={`/p/${sahne.kod}?onizleme=1`}
-                          className="flex-1 border-l border-[#e8e8ed] py-[10px] text-center font-medium text-[#0071e3] active:bg-[#f5f5f7]"
-                        >
-                          Önizleme
-                        </Link>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          );
-        })}
+                        <div className="flex items-start gap-3 px-5 py-[13px]">
+                          <Link href={`/studio/${sahne.kod}`} className="min-w-0 flex-1">
+                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                              <span className="text-[15px] font-semibold text-[#1d1d1f]">
+                                Sahne {parca?.sahne ?? sahne.kod}
+                              </span>
+                              <Rozet>{sahne.baslangic.modul}</Rozet>
+                              {kilitli === true && <Rozet renk="yesil">onaylı v{versiyon}</Rozet>}
+                            </div>
+                            <p className="mt-[5px] line-clamp-2 text-[13px] leading-snug text-[#48484a]">
+                              {sahne.talimat}
+                            </p>
+                            <p className="mt-[5px] text-[11px] text-[#8e8e93]">
+                              {cihaz?.kod ?? sahne.cihaz} · {sahne.olaylar.length} olay ·{" "}
+                              <span className="font-mono">{sahne.kod}</span>
+                            </p>
+                          </Link>
 
-      <AktarmaDugmesi />
-    </main>
+                          <Link
+                            href={`/p/${sahne.kod}?onizleme=1`}
+                            className="shrink-0 rounded-full px-[11px] py-[5px] text-[12px] font-medium text-[#0071e3] transition-colors hover:bg-[#ecf3fd]"
+                          >
+                            Önizle
+                          </Link>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </Kart>
+            );
+          })}
+
+        <AktarmaDugmesi />
+      </Yigin>
+    </Panel>
   );
 }

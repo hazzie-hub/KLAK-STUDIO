@@ -172,6 +172,23 @@ bölüm, tür) ayrıca sütun.
 - Bununla birlikte içerik türlerinin HEPSİNİN şeması tamamlandı; "ileriki faz"
   serbest kaydı kaldırıldı.
 
+### Stüdyo arayüzü
+
+Kullanıcı "panel arayüzü çok karışık" dedi; sadeleştirildi.
+
+- Ortak parçalar `src/studio/panel.tsx`'te: `Panel`, `PanelUst`, `Kart`,
+  `Alan`, `Dugme`, `Rozet`. Sayfalar kendi ölçülerini uydurmuyor.
+- Başlıklar soru cümlesi: "Sahne nerede geçiyor?", "Sahnede neler oluyor?".
+- Teknik slug'lar arayüzde GÖRÜNMÜYOR: `MODUL_ADLARI` ve `EKRAN_ADLARI`
+  (`alanlar.ts`) okunur karşılıklarını veriyor — `sosyal` yerine
+  "Akış (sosyal medya)", `gecmis` yerine "Son aramalar".
+- Açılış ekranı artık elle yazılmıyor, `EKRANLAR` listesinden seçiliyor.
+  Yanlış yazılan ekran adı sessizce varsayılana düşüyordu; sette fark edilmezdi.
+- Olay kartı "NE ZAMAN" / "NE OLSUN" diye ikiye ayrıldı.
+- Cihaz durumu (saat, pil, bağlantı) katlanır bölüme alındı; çoğu sahnede
+  dokunulmuyor.
+- Kaydet düğmesi sayfanın altına sabitlendi.
+
 ### 4.5 — kilit ve versiyon nasıl çalışıyor
 
 - **Kilitli = onaylandı.** Kilitli sahne kaydedilemez; `sahneYaz` reddeder,

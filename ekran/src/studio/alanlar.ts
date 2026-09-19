@@ -1,4 +1,4 @@
-import type { AksiyonTuru, TetikTuru } from "@/schema";
+import type { AksiyonTuru, Modul, TetikTuru } from "@/schema";
 
 /**
  * Form alanlarının tanımı. CLAUDE.md §8 (Faz 4.3)
@@ -189,4 +189,66 @@ export const TETIK_ADLARI: Record<TetikTuru, string> = {
   sonra: "Başka bir olaydan sonra",
   dokunma: "Oyuncu bir yere dokununca",
   elle: "Sadece kumandadan",
+};
+
+/**
+ * Modüllerin insan okunur adları. Formda `sosyal`, `kilit` gibi teknik
+ * kelimeler yerine bunlar görünür; kullanıcı yazılımcı değil.
+ */
+export const MODUL_ADLARI: Record<Modul, string> = {
+  kilit: "Kilit ekranı",
+  sosyal: "Akış (sosyal medya)",
+  mesaj: "Mesaj",
+  arama: "LOOK (arama motoru)",
+  web: "Web sitesi",
+  telefon: "Telefon",
+  galeri: "Galeri",
+  harita: "Harita",
+  anaekran: "Ana ekran",
+};
+
+/**
+ * Her modülün tanıdığı ekranlar. Açılış ekranını elle yazdırmak yerine
+ * listeden seçtirmek için; yanlış yazılan bir ekran adı sessizce varsayılana
+ * düşer ve sette fark edilmez.
+ *
+ * Modüller tanımadıkları ekran adını kendi varsayılanlarına çevirir, yani bu
+ * liste bir kısıt değil kolaylıktır; yine de bir test sahne dosyalarındaki
+ * ekranların burada bulunduğunu denetler.
+ */
+export const EKRANLAR: Record<Modul, readonly string[]> = {
+  kilit: ["kilit"],
+  sosyal: ["feed", "kesfet", "aktivite", "profil", "post", "yorumlar", "yukle"],
+  mesaj: ["liste", "sohbet"],
+  arama: ["ana", "sonuclar", "gorseller"],
+  web: ["sayfa"],
+  telefon: ["gecmis", "rehber", "tus"],
+  galeri: ["izgara", "foto"],
+  harita: ["harita"],
+  anaekran: ["anaekran"],
+};
+
+/** Ekran adlarının okunur karşılığı — yalnızca birden çok ekranı olanlar için. */
+export const EKRAN_ADLARI: Record<string, string> = {
+  feed: "Akış (ana sayfa)",
+  kesfet: "Keşfet",
+  aktivite: "Bildirimler",
+  profil: "Profil",
+  post: "Post detayı",
+  yorumlar: "Yorumlar",
+  yukle: "Post yükleme",
+  liste: "Sohbet listesi",
+  sohbet: "Sohbet",
+  ana: "Arama sayfası",
+  sonuclar: "Sonuçlar",
+  gorseller: "Görseller",
+  gecmis: "Son aramalar",
+  rehber: "Rehber",
+  tus: "Tuş takımı",
+  izgara: "Fotoğraf ızgarası",
+  foto: "Tek fotoğraf",
+  kilit: "Kilit ekranı",
+  sayfa: "Sayfa",
+  harita: "Harita",
+  anaekran: "Ana ekran",
 };

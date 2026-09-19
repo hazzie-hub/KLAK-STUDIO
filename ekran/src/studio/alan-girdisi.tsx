@@ -1,6 +1,7 @@
 "use client";
 
 import type { Alan } from "./alanlar";
+import { Alan as AlanKutusu, GIRDI_SINIFI } from "./panel";
 
 export type Secenekler = {
   hesap: Array<{ deger: string; etiket: string }>;
@@ -27,29 +28,29 @@ export function AlanGirdisi({
   secenekler: Secenekler;
 }) {
   const metin = deger === undefined || deger === null ? "" : String(deger);
-  const ortak =
-    "w-full rounded-lg border border-[#d2d2d7] px-3 py-[7px] text-[14px] outline-none focus:border-[#0071e3]";
 
-  return (
-    <label className="block">
-      <span className="mb-[3px] block text-[12px] font-medium text-[#3a3a3c]">
-        {alan.etiket}
-        {alan.zorunlu === true && <span className="ml-1 text-[#c7392e]">*</span>}
-      </span>
-
-      {alan.tur === "onay" ? (
+  if (alan.tur === "onay") {
+    return (
+      <label className="flex items-center gap-[9px] text-[13px] text-[#1d1d1f]">
         <input
           type="checkbox"
           checked={deger === true}
           onChange={(e) => degistir(e.target.checked ? true : undefined)}
-          className="h-4 w-4"
+          className="h-[15px] w-[15px] accent-[#0071e3]"
         />
-      ) : alan.tur === "uzunMetin" ? (
+        {alan.etiket}
+      </label>
+    );
+  }
+
+  return (
+    <AlanKutusu etiket={alan.etiket} zorunlu={alan.zorunlu} ipucu={alan.ipucu}>
+      {alan.tur === "uzunMetin" ? (
         <textarea
           value={metin}
           rows={2}
           onChange={(e) => degistir(e.target.value === "" ? undefined : e.target.value)}
-          className={ortak}
+          className={GIRDI_SINIFI}
         />
       ) : alan.tur === "sayi" ? (
         <input
@@ -57,16 +58,14 @@ export function AlanGirdisi({
           value={metin}
           min={alan.en_az}
           max={alan.en_cok}
-          onChange={(e) =>
-            degistir(e.target.value === "" ? undefined : Number(e.target.value))
-          }
-          className={ortak}
+          onChange={(e) => degistir(e.target.value === "" ? undefined : Number(e.target.value))}
+          className={GIRDI_SINIFI}
         />
       ) : alan.tur === "secim" ? (
         <select
           value={metin}
           onChange={(e) => degistir(e.target.value === "" ? undefined : e.target.value)}
-          className={ortak}
+          className={GIRDI_SINIFI}
         >
           <option value="">—</option>
           {(alan.secenekler ?? []).map((s) => (
@@ -86,13 +85,9 @@ export function AlanGirdisi({
           type="text"
           value={metin}
           onChange={(e) => degistir(e.target.value === "" ? undefined : e.target.value)}
-          className={`${ortak} ${alan.tur === "slug" ? "font-mono text-[13px]" : ""}`}
+          className={`${GIRDI_SINIFI} ${alan.tur === "slug" ? "font-mono text-[13px]" : ""}`}
         />
       )}
-
-      {alan.ipucu !== undefined && (
-        <span className="mt-[3px] block text-[11px] text-[#86868b]">{alan.ipucu}</span>
-      )}
-    </label>
+    </AlanKutusu>
   );
 }
