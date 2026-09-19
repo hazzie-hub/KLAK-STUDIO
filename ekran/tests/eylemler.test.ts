@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { sahneKaydet, yayinla } from "../src/studio/eylemler";
+import { sahneKaydet, sahneyiKilitle, yeniVersiyon, yayinla } from "../src/studio/eylemler";
 
 /**
  * Formdan gelen veri kaydedilmeden önce Zod'dan geçer. Buradaki testler
@@ -90,5 +90,27 @@ describe("yayınla", () => {
     const sonuc = await yayinla("");
     expect(sonuc.ok).toBe(false);
     if (!sonuc.ok) expect(sonuc.mesaj).toContain("belli değil");
+  });
+});
+
+describe("kilit ve versiyon — veritabanı yokken", () => {
+  /**
+   * Bu eylemler veritabanı ister. Testte veritabanı yok; beklenen davranış
+   * ÇÖKMEK DEĞİL, ne eksik olduğunu söyleyen bir sonuç dönmek. Stüdyo'nun
+   * hiçbir düğmesi kullanıcıya boş ekran göstermemeli.
+   */
+  it("kilitleme, bağlantı yokken açıklayıcı hata döner", async () => {
+    const sonuc = await sahneyiKilitle("eg-b03-s12");
+    expect(sonuc.ok).toBe(false);
+    if (!sonuc.ok) {
+      expect(sonuc.hatalar).toHaveLength(1);
+      expect(sonuc.hatalar[0]?.mesaj).toContain("veritabanına bağlı değil");
+    }
+  });
+
+  it("yeni versiyon, bağlantı yokken açıklayıcı hata döner", async () => {
+    const sonuc = await yeniVersiyon("eg-b03-s12");
+    expect(sonuc.ok).toBe(false);
+    if (!sonuc.ok) expect(sonuc.hatalar[0]?.mesaj).toContain("veritabanına bağlı değil");
   });
 });

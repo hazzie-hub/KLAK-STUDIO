@@ -171,15 +171,49 @@ export async function tumSahneKodlariniGetir(): Promise<string[]> {
   return (data ?? []).map((s) => (s as { kod: string }).kod);
 }
 
-/** Sahne listesi — Stüdyo ve ana sayfa için, cihazlarıyla birlikte. */
-export async function tumSahneleriGetir(): Promise<Array<{ sahne: Sahne; cihaz: Cihaz | null }>> {
-  if (!supabaseKaynakMi()) return tumSahneler();
+/**
+ * Sahne listesi — Stüdyo ve ana sayfa için, cihazlarıyla birlikte.
+ *
+ * `kilitli` ve `versiyon` yalnızca veritabanı kaynağında gelir; dosya
+ * kaynağında onay kavramı yok, bu yüzden `null` dönerler.
+ */
+export type SahneOzeti = {
+  sahne: Sahne;
+  cihaz: Cihaz | null;
+  kilitli: boolean | null;
+  versiyon: number | null;
+};
 
-  const sahneler = await tabloOku("sahneler", SahneSchema);
+export async function tumSahneleriGetir(): Promise<SahneOzeti[]> {
+  if (!supabaseKaynakMi()) {
+    return tumSahneler().map(({ sahne, cihaz }) => ({
+      sahne,
+      cihaz,
+      kilitli: null,
+      versiyon: null,
+    }));
+  }
+
+  const { data, error } = await baglan().from("sahneler").select("veri, kilitli, versiyon");
+  if (error !== null) throw new Error(`[ekran] Sahne listesi okunamadı: ${error.message}`);
+
   const cihazlar = await tabloOku("cihazlar", CihazSchema);
   const cihazHaritasi = new Map(cihazlar.map((c) => [c.kod, c]));
 
-  return [...sahneler]
-    .sort((a, b) => a.kod.localeCompare(b.kod))
-    .map((sahne) => ({ sahne, cihaz: cihazHaritasi.get(sahne.cihaz) ?? null }));
+  const ozetler = (data ?? []).map((ham, i) => {
+    const satir = ham as { veri: unknown; kilitli: boolean; versiyon: number };
+    const sonuc = SahneSchema.safeParse(satir.veri);
+    if (!sonuc.success) {
+      const sebep = sonuc.error.issues.map((x) => x.message).join(" | ");
+      throw new Error(`[ekran] "sahneler" ${i}. satır şemadan geçmedi: ${sebep}`);
+    }
+    return {
+      sahne: sonuc.data,
+      cihaz: cihazHaritasi.get(sonuc.data.cihaz) ?? null,
+      kilitli: satir.kilitli,
+      versiyon: satir.versiyon,
+    };
+  });
+
+  return ozetler.sort((a, b) => a.sahne.kod.localeCompare(b.sahne.kod));
 }

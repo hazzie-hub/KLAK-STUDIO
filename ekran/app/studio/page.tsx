@@ -61,7 +61,7 @@ export default async function StudioSayfasi() {
               </h2>
 
               <ul className="mt-3 flex flex-col gap-2">
-                {kayitlar.map(({ sahne, cihaz }) => {
+                {kayitlar.map(({ sahne, cihaz, kilitli, versiyon }) => {
                   const parca = kodCoz(sahne.kod);
                   return (
                     <li key={sahne.kod} className="rounded-2xl border border-[#d2d2d7]">
@@ -77,6 +77,11 @@ export default async function StudioSayfasi() {
                           <span className="ml-auto shrink-0 text-[12px] text-[#6e6e73]">
                             {sahne.baslangic.modul}
                           </span>
+                          {kilitli === true && (
+                            <span className="shrink-0 rounded-full bg-[#e6f4ea] px-[8px] py-[2px] text-[11px] font-medium text-[#1d6b3f]">
+                              onaylı v{versiyon}
+                            </span>
+                          )}
                         </div>
                         <p className="mt-[5px] line-clamp-2 text-[13px] leading-snug text-[#3a3a3c]">
                           {sahne.talimat}

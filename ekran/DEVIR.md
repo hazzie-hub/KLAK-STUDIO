@@ -3,8 +3,8 @@
 Bu dosya, yeni bir oturuma başlarken okunacak. `CLAUDE.md` projenin anayasası;
 bu dosya ise **nerede kaldığımızı** anlatır.
 
-Son güncelleme: Faz 4 sürüyor. **4.1–4.4 bitti**. Sahneler Stüdyo'dan
-şablonla kurulup düzenlenebiliyor, kopyalanabiliyor. Sıradaki 4.5 (kilit+versiyon).
+Son güncelleme: Faz 4 sürüyor. **4.1–4.5 bitti**. Geriye tek adım kaldı:
+4.6 (`galeri`, `harita`, `anaekran` modülleri).
 
 ---
 
@@ -57,7 +57,7 @@ denemek için açıldı. Yapımdan gerçek sahne numaraları gelince dosya adlar
 | **Faz 4** (Stüdyo) | 4.1 bitti (aşağıdaki plan). 4.2'de Supabase gerekiyor. |
 | **Faz 5** | Başlanmadı. |
 
-Doğrulama: `npm test` (253 test), `npm run validate` (32 dosya),
+Doğrulama: `npm test` (255 test), `npm run validate` (32 dosya),
 `npm run kabul` (3 kabuk × 6 sahne × 20 tur, internet kesik).
 
 ---
@@ -103,7 +103,7 @@ uyarı gösterilebilir. **Kullanıcıya soruldu, karar vermedi — tekrar sorula
 | 4.2 | Supabase tabloları, verinin dosyadan veritabanına taşınması | **BİTTİ** |
 | 4.3 | Sahne oluşturma/düzenleme formları | **BİTTİ** |
 | 4.4 | Sahne şablonları + kopyala-düzenle | **BİTTİ** |
-| 4.5 | Kilit + versiyon | — |
+| 4.5 | Kilit + versiyon | **BİTTİ** |
 | 4.6 | `galeri`, `harita`, `anaekran` modülleri | — |
 
 **Yayınlama modeli (kullanıcıya anlatıldı, itiraz gelmedi):** Stüdyo'da sahne
@@ -149,6 +149,17 @@ yazmadan önce ve okuduktan sonra Zod'dan geçer. Sorgulanan alanlar (kod, dizi,
 bölüm, tür) ayrıca sütun.
 
 ---
+
+### 4.5 — kilit ve versiyon nasıl çalışıyor
+
+- **Kilitli = onaylandı.** Kilitli sahne kaydedilemez; `sahneYaz` reddeder,
+  düzenleme sayfası da uyarı gösterir.
+- **Revizyon yeni versiyon açar:** mevcut içerik `sahne_versiyonlari`na
+  kopyalanır, sonra `versiyon` bir artar ve kilit açılır. Arşiv yazılamazsa
+  kilit AÇILMAZ — onaylı hali kaybolmasın.
+- **Link hiç değişmez.** Sete gönderilen QR ve adres sahne koduna bağlı;
+  versiyon değişse de geçerli kalır.
+- Sahne listesinde onaylı sahneler "onaylı vN" rozetiyle görünür.
 
 ### 4.3 nasıl kuruldu
 

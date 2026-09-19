@@ -3,6 +3,8 @@ import Link from "next/link";
 import { cihazGetir, diziGetir, karakterGetir, sahneGetir } from "@/icerik/kaynak";
 import { TeslimPaketi } from "@/studio/teslim-paketi";
 import { YayinlaDugmesi } from "@/studio/yayinla-dugmesi";
+import { KilitKutusu } from "@/studio/kilit-kutusu";
+import { sahneDurumu } from "@/icerik/yazma";
 import { kodCoz } from "@/studio/teslim";
 
 /** Teslim paketi her zaman taze okunur; sahne düzenlenince anında güncellenir. */
@@ -27,6 +29,16 @@ export default async function TeslimSayfasi({ params }: { params: Promise<{ kod:
   }
 
   const cihaz = await cihazGetir(sahne.cihaz);
+
+  // Kilit/versiyon yalnızca veritabanı varken anlamlı; yerelde dosya
+  // kaynağıyla çalışırken kutu hiç gösterilmez.
+  let kilitDurumu: { kilitli: boolean; versiyon: number } | null = null;
+  try {
+    const d = await sahneDurumu(kod);
+    if (d.var) kilitDurumu = { kilitli: d.kilitli, versiyon: d.versiyon };
+  } catch {
+    kilitDurumu = null;
+  }
   const parca = kodCoz(sahne.kod);
   const dizi = parca === null ? null : await diziGetir(parca.dizi);
   const karakter = cihaz?.karakter === undefined ? null : await karakterGetir(cihaz.karakter);
@@ -51,7 +63,14 @@ export default async function TeslimSayfasi({ params }: { params: Promise<{ kod:
         </Link>
       </div>
       <TeslimPaketi sahne={sahne} cihaz={cihaz} dizi={dizi} karakter={karakter} />
-      <div className="mt-5">
+      <div className="mt-5 flex flex-col gap-5">
+        {kilitDurumu !== null && (
+          <KilitKutusu
+            kod={kod}
+            kilitli={kilitDurumu.kilitli}
+            versiyon={kilitDurumu.versiyon}
+          />
+        )}
         <YayinlaDugmesi kod={kod} />
       </div>
     </main>

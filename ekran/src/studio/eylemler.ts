@@ -3,7 +3,13 @@
 import { revalidatePath } from "next/cache";
 
 import { SahneSchema } from "@/schema";
-import { StudioHatasi, sahneSil, sahneYaz } from "@/icerik/yazma";
+import {
+  StudioHatasi,
+  sahneKilitle,
+  sahneSil,
+  sahneYaz,
+  yeniVersiyonAc,
+} from "@/icerik/yazma";
 
 /**
  * Stüdyo'nun sunucu eylemleri. Faz 4.3
@@ -78,6 +84,37 @@ export async function yayinla(kod: string): Promise<YayinSonucu> {
   }
 
   return { ok: true };
+}
+
+/**
+ * Sahneyi onayla (kilitle). CLAUDE.md §8
+ * Kilitli sahne değiştirilemez; revizyon için yeni versiyon açılır.
+ */
+export async function sahneyiKilitle(kod: string): Promise<KayitSonucu> {
+  try {
+    await sahneKilitle(kod);
+  } catch (hata) {
+    const mesaj = hata instanceof StudioHatasi ? hata.message : "Sahne kilitlenemedi.";
+    if (!(hata instanceof StudioHatasi)) console.error("[ekran] sahneyiKilitle:", hata);
+    return { ok: false, hatalar: [{ yol: "", mesaj }] };
+  }
+  revalidatePath(`/studio/${kod}`);
+  revalidatePath("/studio");
+  return { ok: true, kod };
+}
+
+/** Kilidi aç ve yeni versiyon başlat. Önceki hali arşivlenir. */
+export async function yeniVersiyon(kod: string): Promise<KayitSonucu> {
+  try {
+    await yeniVersiyonAc(kod);
+  } catch (hata) {
+    const mesaj = hata instanceof StudioHatasi ? hata.message : "Yeni versiyon açılamadı.";
+    if (!(hata instanceof StudioHatasi)) console.error("[ekran] yeniVersiyon:", hata);
+    return { ok: false, hatalar: [{ yol: "", mesaj }] };
+  }
+  revalidatePath(`/studio/${kod}`);
+  revalidatePath("/studio");
+  return { ok: true, kod };
 }
 
 export async function sahneyiSil(kod: string): Promise<KayitSonucu> {
