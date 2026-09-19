@@ -262,8 +262,17 @@ kodda değişiklik gerekmez:
 
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_...
 ```
+
+Anahtar Supabase'in **publishable** anahtarıdır (eski adıyla `anon`);
+tarayıcıda çalışmak için tasarlanmıştır. **`secret` anahtar buraya
+KONULMAZ** — o sunucu içindir ve tarayıcıya gömülürse veritabanının tüm
+yetkisi dışarı açılır.
+
+İkisinden biri eksik ya da boşsa taşıyıcı sessizce yerel kanala düşer
+(kumandanın üst satırı bunu yazar), sette "neden çalışmıyor" diye vakit
+kaybedilmesin diye.
 
 Kanal adı `sahne:{kod}` (CLAUDE.md §6).
 

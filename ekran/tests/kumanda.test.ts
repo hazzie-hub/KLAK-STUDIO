@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
+import { tasiyiciSec } from "../src/kumanda/kanal";
 import { NonceDefteri, mesajCoz, nonceUret } from "../src/kumanda/mesaj";
 
 const temel = { nonce: "abc123def", zaman: 1_700_000_000_000 };
@@ -83,5 +84,28 @@ describe("nonceUret", () => {
       expect(n.length).toBeGreaterThanOrEqual(6);
       expect(n.length).toBeLessThanOrEqual(64);
     }
+  });
+});
+
+describe("taşıyıcı seçimi — yarım yapılandırma sette saat kaybettirir", () => {
+  it("iki değer de varsa Supabase", () => {
+    expect(tasiyiciSec("https://x.supabase.co", "sb_publishable_abc")).toBe("supabase");
+  });
+
+  it("biri eksikse YEREL kanala düşer", () => {
+    expect(tasiyiciSec("https://x.supabase.co", undefined)).toBe("yerel");
+    expect(tasiyiciSec(undefined, "sb_publishable_abc")).toBe("yerel");
+    expect(tasiyiciSec(undefined, undefined)).toBe("yerel");
+  });
+
+  it("boş ya da sadece boşluktan ibaret değerler sayılmaz", () => {
+    expect(tasiyiciSec("", "sb_publishable_abc")).toBe("yerel");
+    expect(tasiyiciSec("   ", "sb_publishable_abc")).toBe("yerel");
+    expect(tasiyiciSec("https://x.supabase.co", "  ")).toBe("yerel");
+  });
+
+  it("metin olmayan değerler sayılmaz", () => {
+    expect(tasiyiciSec(123, {})).toBe("yerel");
+    expect(tasiyiciSec(null, null)).toBe("yerel");
   });
 });

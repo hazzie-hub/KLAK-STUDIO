@@ -64,7 +64,16 @@ class SupabaseKanal implements Kanal {
   }
 
   private async baglan(url: string, anahtar: string): Promise<void> {
-    const { createClient } = await import("@supabase/supabase-js");
+    let createClient: typeof import("@supabase/supabase-js").createClient;
+    try {
+      ({ createClient } = await import("@supabase/supabase-js"));
+    } catch {
+      // Sette internet kesikken kütüphane yüklenemeyebilir. Sahne buna
+      // takılmaz: kumanda susar, oynatıcı süreli tetikleriyle devam eder.
+      console.error("[ekran] Kumanda kütüphanesi yüklenemedi; sahne kumandasız devam ediyor.");
+      this.secenekler.onBaglanti?.(false);
+      return;
+    }
     if (this.kapandi) return;
 
     const istemci = createClient(url, anahtar, {
@@ -101,13 +110,26 @@ class SupabaseKanal implements Kanal {
   }
 }
 
+/**
+ * Hangi taşıyıcı kullanılacak? Saf fonksiyon — testi kolay olsun diye
+ * ortam değişkenlerini kendisi okumaz.
+ *
+ * Supabase anahtarları TAM olmalı; yarısı girilmişse yerel kanala düşer,
+ * yoksa sette "kumanda çalışmıyor" diye saatler harcanır.
+ */
+export function tasiyiciSec(url: unknown, anahtar: unknown): Kanal["tur"] {
+  const gecerli = (d: unknown): d is string => typeof d === "string" && d.trim() !== "";
+  return gecerli(url) && gecerli(anahtar) ? "supabase" : "yerel";
+}
+
 /** Supabase anahtarları varsa onu, yoksa yerel kanalı açar. */
 export function kanalAc(secenekler: KanalSecenekleri): Kanal {
+  // Next.js bu değerleri derleme anında gömer; koşul dışına çıkarılamaz.
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anahtar = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (typeof url === "string" && url !== "" && typeof anahtar === "string" && anahtar !== "") {
-    return new SupabaseKanal(secenekler, url, anahtar);
+  if (tasiyiciSec(url, anahtar) === "supabase") {
+    return new SupabaseKanal(secenekler, url as string, anahtar as string);
   }
   return new YerelKanal(secenekler);
 }
