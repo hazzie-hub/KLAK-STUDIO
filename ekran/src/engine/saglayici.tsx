@@ -39,6 +39,8 @@ type SahneBaglami = {
   /** Gizli panelin gecikme ayarı (CLAUDE.md §6). */
   gecikmeAl: (olayId: string) => number;
   gecikmeAyarla: (olayId: string, gecikme: number) => void;
+  /** Sahne başlangıcından beri geçen süre — kumandanın geri sayımı için. */
+  gecen: () => number;
 };
 
 const Baglam = createContext<SahneBaglami | null>(null);
@@ -84,6 +86,7 @@ export function SahneSaglayici({ sahne, children }: { sahne: Sahne; children: Re
   const dokun = useCallback((hedef: string) => motor.dokun(hedef), [motor]);
   const elleTetikle = useCallback((olayId: string) => motor.elleTetikle(olayId), [motor]);
   const gecikmeAl = useCallback((olayId: string) => motor.gecikmeAl(olayId), [motor]);
+  const gecen = useCallback(() => motor.gecen, [motor]);
   const gecikmeAyarla = useCallback(
     (olayId: string, gecikme: number) => motor.gecikmeAyarla(olayId, gecikme),
     [motor],
@@ -108,10 +111,11 @@ export function SahneSaglayici({ sahne, children }: { sahne: Sahne; children: Re
       basaSar,
       gecikmeAl,
       gecikmeAyarla,
+      gecen,
     }),
     // motor içeride mutasyonla değişiyor; `surum` her duyuruda artar.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [sahne, motor, dokun, elleTetikle, basaSar, gecikmeAl, gecikmeAyarla, surum],
+    [sahne, motor, dokun, elleTetikle, basaSar, gecikmeAl, gecikmeAyarla, gecen, surum],
   );
 
   return <Baglam.Provider value={deger}>{children}</Baglam.Provider>;

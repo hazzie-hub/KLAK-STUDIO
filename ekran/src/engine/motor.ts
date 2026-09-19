@@ -163,6 +163,11 @@ export class Motor {
       .sort((a, b) => a.hedefZaman - b.hedefZaman);
   }
 
+  /** Sahne başlangıcından beri geçen süre — kumandaya "kaç sn kaldı" demek için. */
+  get gecen(): number {
+    return this.gecenSure();
+  }
+
   /** Sıradaki olay — kumandada vurgulanacak olan. */
   get siradaki(): BekleyenOlay | null {
     return this.bekleyenler[0] ?? null;

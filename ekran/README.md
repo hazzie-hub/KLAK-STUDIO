@@ -224,6 +224,41 @@ sonra en üstte belirir.
 | `yeni-post-akisi-basladi` | + düğmesine basıldı |
 | `yeni-post-akisi-tamam` | "Paylaş"a basıldı |
 
+## Kumanda (Faz 2)
+
+`/k/{sahneKodu}` — operatörün kendi telefonunda açılır. Oyuncunun elindeki
+cihaza hiç dokunmadan sahneyi yönetir: olayları tetikler (büyük butonlar,
+sıradaki vurgulu), gecikme ±250 ms ayarlar, başa sarar. Üstte oynatıcının
+çevrimiçi olup olmadığı, sıradaki olay ve geri sayım, son tetiklenen olay.
+
+**Taşıyıcı iki türlü** (`src/kumanda/kanal.ts`), çağıran taraf hangisi
+olduğunu bilmez:
+
+| Taşıyıcı | Ne zaman | Kapsam |
+|---|---|---|
+| Supabase Realtime | `NEXT_PUBLIC_SUPABASE_URL` ve `NEXT_PUBLIC_SUPABASE_ANON_KEY` tanımlıysa | **Ayrı cihazlar** — sette kullanılacak olan |
+| Yerel (BroadcastChannel) | anahtarlar yokken | Aynı cihazdaki iki sekme — deneme için |
+
+Kumandanın üst satırı hangisinin kullanıldığını yazar, sette yanlış yolda
+olunmasın diye.
+
+**Supabase'i açmak için** Vercel'de şu iki ortam değişkenini tanımlamak yeterli;
+kodda değişiklik gerekmez:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
+```
+
+Kanal adı `sahne:{kod}` (CLAUDE.md §6).
+
+**Mesajlar küçük ve idempotent:** her mesajın bir `nonce`'u var, oynatıcı aynı
+nonce'u iki kez uygulamaz — zayıf sahada mesaj tekrarlanırsa olay iki kez
+tetiklenmez. Gelen her mesaj Zod şemasından geçer; ağdan gelen veriye güvenilmez.
+
+**Bağlantı koparsa hiçbir şey kilitlenmez:** oynatıcı kendi süreli tetikleriyle
+oynamaya devam eder, kumanda sadece "çevrimdışı" yazar.
+
 ## Gizli ayar paneli
 
 Sette operatörün kullandığı yer. CLAUDE.md §6.

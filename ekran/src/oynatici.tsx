@@ -10,6 +10,7 @@ import { ModulSec, modulGorunumu } from "@/modules";
 import { HazirlikSaglayici } from "@/platform/hazirlik";
 import type { Cihaz, Hesap, Icerik, Sahne } from "@/schema";
 import { Kabuk, gorunenDurum, skinSec } from "@/shell";
+import { KumandaBaglantisi } from "@/kumanda/oynatici-baglantisi";
 import { GizliKatman, SistemKatmani } from "@/system";
 
 /**
@@ -66,6 +67,7 @@ export function Oynatici({
               <SistemKatmani aktifModul={sahne.baslangic.modul} />
               <GizliKatman />
             </Kabuk>
+            <KumandaBaglantisi />
           </SahneSaglayici>
         </KutuphaneSaglayici>
       </DurumSaglayici>

@@ -26,11 +26,8 @@ export default function AnaSayfa() {
 
       <ul className="mt-6 flex flex-col gap-2">
         {sahneler.map(({ sahne, cihaz }) => (
-          <li key={sahne.kod}>
-            <Link
-              href={`/p/${sahne.kod}`}
-              className="block rounded-2xl border border-[#d2d2d7] px-4 py-[14px] active:bg-[#f5f5f7]"
-            >
+          <li key={sahne.kod} className="rounded-2xl border border-[#d2d2d7]">
+            <Link href={`/p/${sahne.kod}`} className="block px-4 py-[14px] active:bg-[#f5f5f7]">
               <div className="flex items-baseline gap-2">
                 <span className="font-mono text-[15px] font-semibold">{sahne.kod}</span>
                 <span className="ml-auto shrink-0 text-[12px] text-[#6e6e73]">
@@ -42,11 +39,31 @@ export default function AnaSayfa() {
                 {sahne.cihaz} · {sahne.olaylar.length} olay
               </p>
             </Link>
+            <div className="flex border-t border-[#e8e8ed] text-[13px]">
+              <Link
+                href={`/p/${sahne.kod}`}
+                className="flex-1 py-[11px] text-center font-medium text-[#0071e3] active:bg-[#f5f5f7]"
+              >
+                Oynatıcı
+              </Link>
+              <Link
+                href={`/k/${sahne.kod}`}
+                className="flex-1 border-l border-[#e8e8ed] py-[11px] text-center font-medium text-[#0071e3] active:bg-[#f5f5f7]"
+              >
+                Kumanda
+              </Link>
+            </div>
           </li>
         ))}
       </ul>
 
       <div className="mt-7 rounded-2xl bg-[#f5f5f7] px-4 py-[14px] text-[13px] leading-relaxed text-[#3a3a3c]">
+        <strong className="block text-[#1d1d1f]">Oynatıcı ve kumanda</strong>
+        <strong>Oynatıcı</strong> oyuncunun eline verilen cihazda açılır.{" "}
+        <strong>Kumanda</strong> operatörün kendi telefonunda: olayları tetikler,
+        gecikme ayarlar, başa sarar — oyuncunun cihazına hiç dokunmadan.
+        <br />
+        <br />
         <strong className="block text-[#1d1d1f]">Sete hazırlık</strong>
         Sahneyi açın, <strong>bir kez yenileyin</strong> ve birkaç saniye bekleyin.
         Saatin iki noktası bir kez yanıp sönünce her şey indi demektir; internet
