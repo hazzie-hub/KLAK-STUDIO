@@ -66,6 +66,13 @@ export const AksiyonSchema = z.discriminatedUnion(
       sure: z.number().int().min(0).max(60000).optional(),
     }),
 
+    /** Mesaj: gönderilen mesajın durumu değişir (iletildi / görüldü). */
+    z.strictObject({
+      tur: z.literal("mesajDurumu"),
+      sohbet: SlugSchema,
+      durum: z.enum(["gonderildi", "iletildi", "goruldu"]),
+    }),
+
     /** Sistem katmanı: gelen arama ekranı. */
     z.strictObject({
       tur: z.literal("aramaGeldi"),
@@ -114,7 +121,7 @@ export const AksiyonSchema = z.discriminatedUnion(
   ],
   {
     error:
-      'Böyle bir aksiyon yok. Seçenekler: bildirim, yorumGeldi, begeniGeldi, takipGeldi, mesajGeldi, yaziyor, aramaGeldi, pilDegisti, baglantiDegisti, ekranAc, ghostTypingBaslat, postYukle.',
+      'Böyle bir aksiyon yok. Seçenekler: bildirim, yorumGeldi, begeniGeldi, takipGeldi, mesajGeldi, yaziyor, mesajDurumu, aramaGeldi, pilDegisti, baglantiDegisti, ekranAc, ghostTypingBaslat, postYukle.',
   },
 );
 

@@ -61,3 +61,9 @@ body {
   38%, 58% { opacity: 0; }
   74%, 100% { opacity: 1; }
 }
+
+/* "yazıyor…" noktaları. */
+@keyframes yaziyorNokta {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 0.9; transform: translateY(-3px); }
+}

@@ -224,6 +224,21 @@ sonra en üstte belirir.
 | `yeni-post-akisi-basladi` | + düğmesine basıldı |
 | `yeni-post-akisi-tamam` | "Paylaş"a basıldı |
 
+## mesaj modülü (Faz 3)
+
+CLAUDE.md §3.2. Sohbet listesi, sohbet ekranı, **yazıyor…** göstergesi,
+**görüldü** tikleri (tek/çift/mavi), fotoğraf ekleri.
+
+Sosyal modülündeki mimarinin aynısı: ekranda ne varsa gerçekleşen olaylardan
+türer. Gelen mesaj = `mesajGeldi` olayı, "yazıyor…" = `yaziyor` olayı (bir
+mesaj düşünce kendiliğinden kalkar), tikler = `mesajDurumu` olayı.
+
+`mesajDurumu` aksiyonu şemaya eklendi: gönderilen mesajın durumu sahne içinde
+`gonderildi` → `iletildi` → `goruldu` olarak değişebiliyor.
+
+Gelen mesajlara cihazın o anki saati yazılır — sabit saat olduğu için her
+tekrarda aynı (CLAUDE.md §2.4).
+
 ## Kumanda (Faz 2)
 
 `/k/{sahneKodu}` — operatörün kendi telefonunda açılır. Oyuncunun elindeki

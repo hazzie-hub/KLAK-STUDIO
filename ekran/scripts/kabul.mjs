@@ -50,6 +50,12 @@ const SAHNELER = [
     basta: (m) => !m.includes("Teşekkürler, çok naziksiniz"),
   },
   {
+    kod: "eg-b03-s13",
+    ad: "mesajlaşma",
+    bitti: (m) => m.includes("Kimseye söyleme.") && !m.includes("yazıyor…"),
+    basta: (m) => !m.includes("Kimseye söyleme."),
+  },
+  {
     kod: "eg-b03-s71",
     ad: "pil bitmesi",
     bitti: (_m, d) => d.kapanmaEkrani,

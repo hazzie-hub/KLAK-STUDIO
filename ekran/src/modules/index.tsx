@@ -1,5 +1,6 @@
 import type { Cihaz, Sahne } from "@/schema";
 import { KilitModulu } from "./kilit";
+import { MesajModulu } from "./mesaj";
 import { SosyalModulu } from "./sosyal";
 import { YerTutucu } from "./yer-tutucu";
 
@@ -15,6 +16,8 @@ export function ModulSec({ sahne, cihaz }: { sahne: Sahne; cihaz: Cihaz | null }
       return <KilitModulu duvarKagidi={cihaz?.kilitEkrani ?? cihaz?.duvarKagidi} />;
     case "sosyal":
       return <SosyalModulu baslangicEkrani={ekran} hesapId={sahne.baslangic.hesap} />;
+    case "mesaj":
+      return <MesajModulu baslangicEkrani={ekran} sohbetId={sahne.baslangic.icerikRef} />;
     default:
       return <YerTutucu modul={modul} ekran={ekran} />;
   }
@@ -22,4 +25,5 @@ export function ModulSec({ sahne, cihaz }: { sahne: Sahne; cihaz: Cihaz | null }
 
 export { KilitModulu } from "./kilit";
 export { SosyalModulu } from "./sosyal";
+export { MesajModulu } from "./mesaj";
 export { modulGorunumu, type ModulGorunumu } from "./gorunum";

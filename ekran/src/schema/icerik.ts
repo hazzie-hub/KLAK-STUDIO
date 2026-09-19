@@ -29,6 +29,29 @@ export const PostVerisiSchema = z.strictObject({
     .default([]),
 });
 
+/** Sohbet — `mesaj` modülü (Faz 3). */
+export const SohbetVerisiSchema = z.strictObject({
+  /** Karşı taraf. Kendi hesabımız sahneden gelir. */
+  hesap: SlugSchema,
+  mesajlar: z
+    .array(
+      z.strictObject({
+        /** Kim yazdı: "ben" (cihazın sahibi) ya da karşı tarafın hesabı. */
+        kim: z.union([z.literal("ben"), SlugSchema]),
+        metin: z.string().optional(),
+        /** Fotoğraf eki — /ornek altındaki dosya. */
+        gorsel: z.string().optional(),
+        saat: z
+          .string()
+          .regex(/^([01]\d|2[0-3]):[0-5]\d$/, { error: 'Saat "SS:DD" biçiminde olmalı.' })
+          .optional(),
+        /** Sadece "ben" mesajlarında: gönderildi / iletildi / görüldü. */
+        durum: z.enum(["gonderildi", "iletildi", "goruldu"]).optional(),
+      }),
+    )
+    .default([]),
+});
+
 /** Tek fotoğraf — `galeri` (Faz 4) ve mesaj ekleri. */
 export const FotoVerisiSchema = z.strictObject({
   dosya: z.string().min(1, { error: "Fotoğrafın dosyası belirtilmeli." }),
@@ -41,7 +64,7 @@ export const IcerikSchema = z.discriminatedUnion(
   [
     z.strictObject({ tur: z.literal("post"), id: SlugSchema, dizi: SlugSchema.optional(), veri: PostVerisiSchema }),
     z.strictObject({ tur: z.literal("foto"), id: SlugSchema, dizi: SlugSchema.optional(), veri: FotoVerisiSchema }),
-    z.strictObject({ tur: z.literal("sohbet"), id: SlugSchema, dizi: SlugSchema.optional(), veri: IleridekiFazVerisi }),
+    z.strictObject({ tur: z.literal("sohbet"), id: SlugSchema, dizi: SlugSchema.optional(), veri: SohbetVerisiSchema }),
     z.strictObject({ tur: z.literal("aramaSonucu"), id: SlugSchema, dizi: SlugSchema.optional(), veri: IleridekiFazVerisi }),
     z.strictObject({ tur: z.literal("webSayfasi"), id: SlugSchema, dizi: SlugSchema.optional(), veri: IleridekiFazVerisi }),
     z.strictObject({ tur: z.literal("konum"), id: SlugSchema, dizi: SlugSchema.optional(), veri: IleridekiFazVerisi }),
@@ -55,3 +78,4 @@ export const IcerikSchema = z.discriminatedUnion(
 export type Icerik = z.infer<typeof IcerikSchema>;
 export type PostVerisi = z.infer<typeof PostVerisiSchema>;
 export type FotoVerisi = z.infer<typeof FotoVerisiSchema>;
+export type SohbetVerisi = z.infer<typeof SohbetVerisiSchema>;

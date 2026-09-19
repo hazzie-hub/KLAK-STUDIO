@@ -1,0 +1,41 @@
+{
+  "kod": "eg-b03-s13",
+  "cihaz": "nergis-telefon",
+  "baslangic": { "modul": "mesaj", "ekran": "sohbet", "icerikRef": "nergis-sezai" },
+  "durum": { "baglanti": "normal", "gorsel": "normal", "saat": "23:43" },
+  "olaylar": [
+    {
+      "id": "goruldu",
+      "ad": "Sezai mesajı görür",
+      "tetik": { "tur": "baslangic", "gecikme": 1500 },
+      "aksiyon": { "tur": "mesajDurumu", "sohbet": "nergis-sezai", "durum": "goruldu" }
+    },
+    {
+      "id": "yaziyor",
+      "ad": "Sezai yazmaya başlar",
+      "tetik": { "tur": "sonra", "olayId": "goruldu", "gecikme": 2000 },
+      "aksiyon": { "tur": "yaziyor", "sohbet": "nergis-sezai" }
+    },
+    {
+      "id": "gelen-mesaj",
+      "ad": "Sezai'nin mesajı düşer",
+      "tetik": { "tur": "sonra", "olayId": "yaziyor", "gecikme": 3500 },
+      "aksiyon": {
+        "tur": "mesajGeldi",
+        "sohbet": "nergis-sezai",
+        "metin": "Yarın sabah kahvaltıda anlatırım."
+      }
+    },
+    {
+      "id": "ikinci-mesaj",
+      "ad": "Sezai devam eder",
+      "tetik": { "tur": "sonra", "olayId": "gelen-mesaj", "gecikme": 2500 },
+      "aksiyon": {
+        "tur": "mesajGeldi",
+        "sohbet": "nergis-sezai",
+        "metin": "Kimseye söyleme."
+      }
+    }
+  ],
+  "talimat": "Sohbet ekranı açık. 1,5 sn sonra Nergis'in mesajı görüldü olur, 2 sn sonra Sezai yazmaya başlar (üç nokta), 3,5 sn sonra mesajı düşer, 2,5 sn sonra ikincisi. Replikler senaryodan alınmalı; buradakiler yer tutucudur."
+}

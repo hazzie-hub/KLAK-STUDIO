@@ -1,0 +1,36 @@
+{
+  "id": "nergis-sezai",
+  "tur": "sohbet",
+  "dizi": "eg",
+  "veri": {
+    "hesap": "gonul-yolcusu",
+    "mesajlar": [
+      {
+        "kim": "gonul-yolcusu",
+        "metin": "Bugünkü postunu gördüm.",
+        "saat": "23:12"
+      },
+      {
+        "kim": "ben",
+        "metin": "Beğendin mi?",
+        "saat": "23:14",
+        "durum": "goruldu"
+      },
+      {
+        "kim": "gonul-yolcusu",
+        "metin": "Çok. Ama konuşmamız gereken bir şey var.",
+        "saat": "23:15"
+      },
+      {
+        "kim": "gonul-yolcusu",
+        "gorsel": "sokak.svg",
+        "saat": "23:16"
+      },
+      {
+        "kim": "gonul-yolcusu",
+        "metin": "Bu akşam konuşmamız lazım.",
+        "saat": "23:41"
+      }
+    ]
+  }
+}
