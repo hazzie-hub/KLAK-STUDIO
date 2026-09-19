@@ -3,8 +3,8 @@
 Bu dosya, yeni bir oturuma başlarken okunacak. `CLAUDE.md` projenin anayasası;
 bu dosya ise **nerede kaldığımızı** anlatır.
 
-Son güncelleme: Faz 2 bitti. Faz 3'te `arama` (LOOK) ve `web` bitti;
-geriye `telefon` kaldı. Modüller arası derin link artık çalışıyor.
+Son güncelleme: **Faz 3 BİTTİ.** Dört modülün dördü de yazıldı.
+Sıradaki Faz 4 (Stüdyo) — ya da kullanıcının istediği harita/Akış-web.
 
 ---
 
@@ -34,10 +34,12 @@ aittir (creative-assistant / workflow builder). Ona dokunulmadı, dokunulmayacak
 
 Sahneler: `eg-b03-s12` (kilit+bildirim), `eg-b03-s13` (mesajlaşma),
 `eg-b03-s44` (gelen arama), `eg-b03-s58` (sosyal, CLAUDE.md §5'teki örnek),
-`eg-b03-s59` (ghost typing), `eg-b03-s62` (LOOK araması), `eg-b03-s71` (pil bitmesi).
+`eg-b03-s59` (ghost typing), `eg-b03-s62` (LOOK araması + siteler),
+`eg-b03-s63` (telefon uygulaması), `eg-b03-s71` (pil bitmesi).
 
-**`eg-b03-s62` numarası UYDURMA** — `arama` modülünü sette denemek için açıldı.
-Yapımdan gerçek sahne numarası gelince dosya adı ve `kod` alanı değiştirilecek.
+**`eg-b03-s62` ve `eg-b03-s63` numaraları UYDURMA** — yeni modülleri sette
+denemek için açıldı. Yapımdan gerçek sahne numaraları gelince dosya adları ve
+`kod` alanları değiştirilecek.
 
 ---
 
@@ -47,11 +49,11 @@ Yapımdan gerçek sahne numarası gelince dosya adı ve `kod` alanı değiştiri
 |---|---|
 | **Faz 1** | 10 adımın 10'u bitti. Kabul testi geçiyor. Gerçek iPhone'da test edildi, çıkan 3 sorun düzeltildi. |
 | **Faz 2** (kumanda) | **BİTTİ.** Supabase kanalı yayında açık, çift yönlü doğrulandı (§3). |
-| **Faz 3** (modüller) | `mesaj`, `arama` (LOOK), `web` bitti. `telefon` yapılmadı. |
+| **Faz 3** (modüller) | **BİTTİ** — `mesaj`, `arama` (LOOK), `web`, `telefon`. |
 | **Faz 4** (Stüdyo) | Başlanmadı. Supabase veritabanı gerekiyor. |
 | **Faz 5** | Başlanmadı. |
 
-Doğrulama: `npm test` (186 test), `npm run validate` (31 dosya),
+Doğrulama: `npm test` (204 test), `npm run validate` (32 dosya),
 `npm run kabul` (3 kabuk × 6 sahne × 20 tur, internet kesik).
 
 ---
@@ -97,6 +99,8 @@ uyarı gösterilebilir. **Kullanıcıya soruldu, karar vermedi — tekrar sorula
 | Mesaj uygulaması | **Mesaj** (Türk telefonlarında yerleşik ad) — kullanıcı seçti |
 | Arama motoru | **LOOK**, renk `#5f4bb6` — kullanıcı seçti |
 | Sahte siteler | Şablonlar: `haber`, `blog`, `kurumsal`, `forum`. Sayfa gövdesi BLOK listesi; şablon sadece görünümü değiştirir |
+| Rehber ve arama geçmişi | İçerik kütüphanesinde değil, **cihaz dosyasında** durur — bir telefonun geçmişi o telefona aittir |
+| Gelen / giden arama | Gelen arama SİSTEM katmanında (her modülün üstünde), giden arama `telefon` modülünde |
 | "Instagram" istendiğinde | Gerçek marka; yerine **Akış** kullanılır (test `instagram` kelimesini yasaklıyor) |
 | Markaların yeri | `brands/index.ts`, tek kaynak. Bir test gerçek marka adı geçmediğini denetler |
 | Şema biçimi | Slug tabanlı (`cihaz: "nergis-pc"`), `id`/`bolumId`/`versiyon`/`kilitli` opsiyonel — Faz 4'te zorunlu olacak |
@@ -124,6 +128,8 @@ uyarı gösterilebilir. **Kullanıcıya soruldu, karar vermedi — tekrar sorula
 2. ~~Sahte web sitelerinin şablonları~~ — dört şablon yazıldı, modül bitti.
    Kullanıcının istediklerinden **Akış'ın web hâli** ve **harita** HENÜZ YOK.
    Harita CLAUDE.md'de Faz 4 modülü; öne çekilecek mi, sorulacak.
+   Faz 3 bittiğine göre sıradaki soru: Faz 4'e (Stüdyo) mi geçilecek, yoksa
+   önce bu ikisi mi yapılacak?
 3. **Gerçek replikler** — şu an hepsi yer tutucu. Özellikle `eg-b03-s58`'de
    Sezai'nin yorumu hâlâ `"..."` (CLAUDE.md'de de öyle yazıyordu, birebir korundu)
 4. **Yapımdan gelen fotoğraflar** — `public/ornek` ve `public/avatar` altındaki

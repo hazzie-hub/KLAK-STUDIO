@@ -5,6 +5,19 @@
   "model": "iPhone",
   "duvarKagidi": "gece-sahil",
   "kilitEkrani": "gece-sahil",
-  "rehber": [{ "ad": "Sezai", "karakter": "sezai" }],
+  "rehber": [
+    { "ad": "Sezai", "karakter": "sezai", "numara": "0532 000 00 12" },
+    { "ad": "Anne", "numara": "0533 000 00 41" },
+    { "ad": "Elif", "numara": "0535 000 00 77" },
+    { "ad": "Kuaför", "numara": "0216 000 00 09" },
+    { "ad": "Mert", "numara": "0534 000 00 58" }
+  ],
+  "aramaGecmisi": [
+    { "ad": "Sezai", "karakter": "sezai", "yon": "cevapsiz", "zaman": "dün 23:52" },
+    { "ad": "Sezai", "karakter": "sezai", "yon": "gelen", "zaman": "dün 21:14", "sure": "4:12" },
+    { "ad": "Anne", "yon": "giden", "zaman": "dün 19:05", "sure": "11:38" },
+    { "ad": "Elif", "yon": "gelen", "zaman": "Pazartesi", "sure": "1:47" },
+    { "ad": "0216 000 00 09", "yon": "cevapsiz", "zaman": "Pazartesi" }
+  ],
   "varsayilanDurum": { "baglanti": "normal", "gorsel": "normal", "saat": "23:41", "tarih": "18 Eylül Perşembe", "pil": 42 }
 }

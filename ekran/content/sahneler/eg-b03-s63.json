@@ -1,0 +1,31 @@
+{
+  "kod": "eg-b03-s63",
+  "cihaz": "nergis-telefon",
+  "baslangic": { "modul": "telefon", "ekran": "gecmis" },
+  "durum": { "baglanti": "normal", "gorsel": "normal", "saat": "23:44" },
+  "olaylar": [
+    {
+      "id": "sezai-arar",
+      "ad": "Sezai arar — gelen arama ekranı üstü kaplar",
+      "tetik": { "tur": "baslangic", "gecikme": 4000 },
+      "aksiyon": {
+        "tur": "aramaGeldi",
+        "arayan": "Sezai",
+        "numara": "cep",
+        "gorselRef": "sezai-foto"
+      }
+    },
+    {
+      "id": "numara-yazilir",
+      "ad": "Tuş takımı açılır, numara kendiliğinden yazılır",
+      "tetik": { "tur": "dokunma", "hedef": "telefon-tus" },
+      "aksiyon": {
+        "tur": "ghostTypingBaslat",
+        "hedef": "telefon-numara",
+        "metin": "0532 000 00 12",
+        "mod": "senaryolu"
+      }
+    }
+  ],
+  "talimat": "Telefon uygulaması Son Aramalar ekranında açık. 4 sn sonra Sezai arar; gelen arama ekranı üstü kaplar. Oyuncu reddedince arama geçmişinin başına yeni bir 'gelen' kaydı düşer. Oyuncu Tuş Takımı sekmesine geçerse tuşlara bastıkça senaryodaki numara kendiliğinden yazılır; yeşil düğme giden arama ekranını açar. Rehber ve geçmiş cihaz dosyasından gelir; isimler ve numaralar yer tutucudur. SAHNE NUMARASI GEÇİCİ: gerçek numara yapımdan gelince değiştirilecek."
+}

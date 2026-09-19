@@ -4,6 +4,7 @@ import { AramaModulu } from "./arama";
 import { KilitModulu } from "./kilit";
 import { MesajModulu } from "./mesaj";
 import { SosyalModulu } from "./sosyal";
+import { TelefonModulu } from "./telefon";
 import { WebModulu } from "./web";
 import { YerTutucu } from "./yer-tutucu";
 
@@ -29,6 +30,8 @@ export function ModulSec({ cihaz }: { cihaz: Cihaz | null }) {
       return <AramaModulu baslangicEkrani={ekran} icerikRef={icerikRef} />;
     case "web":
       return <WebModulu icerikRef={icerikRef} />;
+    case "telefon":
+      return <TelefonModulu baslangicEkrani={ekran} cihaz={cihaz} />;
     default:
       return <YerTutucu modul={modul} ekran={ekran} />;
   }
@@ -39,5 +42,6 @@ export { SosyalModulu } from "./sosyal";
 export { MesajModulu } from "./mesaj";
 export { AramaModulu } from "./arama";
 export { WebModulu } from "./web";
+export { TelefonModulu } from "./telefon";
 export { modulGorunumu, type ModulGorunumu } from "./gorunum";
 export { useAktifEkran, aktifEkranTuret, type AktifEkran } from "./aktif-ekran";
