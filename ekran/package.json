@@ -12,7 +12,8 @@
     "validate": "tsx scripts/validate.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "kabul": "node scripts/kabul.mjs"
+    "kabul": "node scripts/kabul.mjs",
+    "aktar": "tsx scripts/aktar.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",

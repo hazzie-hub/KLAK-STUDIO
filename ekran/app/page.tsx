@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { tumSahneler } from "@/icerik/yukle";
+import { tumSahneleriGetir } from "@/icerik/kaynak";
 
 /**
  * Sahne listesi. Sette operatör kök adresi açıp sahneyi seçer.
@@ -8,8 +8,8 @@ import { tumSahneler } from "@/icerik/yukle";
  * Bu sayfa kameraya GİRMEZ — oyuncuya doğrudan sahne linki verilir.
  * Burası bizim ve operatörün sayfası, o yüzden teknik bilgi göstermesi sorun değil.
  */
-export default function AnaSayfa() {
-  const sahneler = tumSahneler();
+export default async function AnaSayfa() {
+  const sahneler = await tumSahneleriGetir();
 
   const kabukAdi: Record<string, string> = {
     ios: "iPhone",

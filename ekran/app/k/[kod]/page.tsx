@@ -1,14 +1,14 @@
-import { sahneOku, tumSahneKodlari } from "@/icerik/yukle";
+import { sahneGetir, tumSahneKodlariniGetir } from "@/icerik/kaynak";
 import { Kumanda } from "@/kumanda/kumanda";
 
 /** Kumanda sayfası — set operatörünün telefonunda açılır. CLAUDE.md §3 */
-export function generateStaticParams() {
-  return tumSahneKodlari().map((kod) => ({ kod }));
+export async function generateStaticParams() {
+  return (await tumSahneKodlariniGetir()).map((kod) => ({ kod }));
 }
 
 export default async function KumandaSayfasi({ params }: { params: Promise<{ kod: string }> }) {
   const { kod } = await params;
-  const sahne = sahneOku(kod);
+  const sahne = await sahneGetir(kod);
 
   if (sahne === null) {
     return (

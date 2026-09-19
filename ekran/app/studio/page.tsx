@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { kodCoz } from "@/studio/teslim";
-import { tumDiziler, tumSahneler } from "@/icerik/yukle";
+import { tumDizileriGetir, tumSahneleriGetir } from "@/icerik/kaynak";
 
 /**
  * Stüdyo — sahne listesi. CLAUDE.md §8
@@ -10,9 +10,9 @@ import { tumDiziler, tumSahneler } from "@/icerik/yukle";
  * Faz 4.1'de yalnızca OKUR: veri hâlâ `content/` altındaki dosyalardan gelir.
  * Düzenleme ekranları Supabase'e geçişten sonra (4.2–4.3).
  */
-export default function StudioSayfasi() {
-  const sahneler = tumSahneler();
-  const diziler = tumDiziler();
+export default async function StudioSayfasi() {
+  const sahneler = await tumSahneleriGetir();
+  const diziler = await tumDizileriGetir();
   const diziAdi = (kod: string) => diziler.find((d) => d.kod === kod)?.ad ?? kod;
 
   // Diziye ve bölüme göre grupla — Stüdyo'nun ana ağacı bu (dizi → bölüm → sahne).

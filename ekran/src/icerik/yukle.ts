@@ -104,10 +104,18 @@ export function tumDiziler(): Dizi[] {
  * Oynatıcı açılırken bunları önbelleğe alır; sonrası internetsiz çalışır
  * (CLAUDE.md §2.3).
  */
-export function sahneVarliklari(cihaz: Cihaz | null): string[] {
+export function sahneVarliklari(
+  cihaz: Cihaz | null,
+  /**
+   * Kütüphane dışarıdan verilebilir — Faz 4.2'den sonra içerik Supabase'ten
+   * geliyor. Verilmezse dosyalardan okunur (testler ve Faz 1–3 böyle çalışır).
+   */
+  icerikler: Icerik[] = tumIcerikler(),
+  hesaplar: Hesap[] = tumHesaplar(),
+): string[] {
   const varliklar = new Set<string>();
 
-  for (const icerik of tumIcerikler()) {
+  for (const icerik of icerikler) {
     if (icerik.tur === "post") varliklar.add(`/ornek/${icerik.veri.gorsel}`);
     if (icerik.tur === "foto") varliklar.add(`/ornek/${icerik.veri.dosya}`);
     if (icerik.tur === "aramaSonucu") {
@@ -122,7 +130,7 @@ export function sahneVarliklari(cihaz: Cihaz | null): string[] {
       }
     }
   }
-  for (const hesap of tumHesaplar()) {
+  for (const hesap of hesaplar) {
     if (hesap.avatar !== undefined) varliklar.add(`/avatar/${hesap.avatar}`);
   }
   for (const duvar of [cihaz?.kilitEkrani, cihaz?.duvarKagidi]) {

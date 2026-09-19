@@ -3,8 +3,8 @@
 Bu dosya, yeni bir oturuma başlarken okunacak. `CLAUDE.md` projenin anayasası;
 bu dosya ise **nerede kaldığımızı** anlatır.
 
-Son güncelleme: Faz 3 bitti. **Faz 4 başladı**: 4.1 (Stüdyo iskeleti +
-teslim paketi) bitti. Sıradaki 4.2 — Supabase tabloları.
+Son güncelleme: Faz 4 sürüyor. 4.1 bitti. 4.2'nin KOD tarafı bitti;
+kullanıcının SQL'i çalıştırması ve anahtarı girmesi bekleniyor.
 
 ---
 
@@ -55,7 +55,7 @@ denemek için açıldı. Yapımdan gerçek sahne numaraları gelince dosya adlar
 | **Faz 4** (Stüdyo) | 4.1 bitti (aşağıdaki plan). 4.2'de Supabase gerekiyor. |
 | **Faz 5** | Başlanmadı. |
 
-Doğrulama: `npm test` (222 test), `npm run validate` (32 dosya),
+Doğrulama: `npm test` (230 test), `npm run validate` (32 dosya),
 `npm run kabul` (3 kabuk × 6 sahne × 20 tur, internet kesik).
 
 ---
@@ -98,7 +98,7 @@ uyarı gösterilebilir. **Kullanıcıya soruldu, karar vermedi — tekrar sorula
 | # | Adım | Durum |
 |---|---|---|
 | 4.1 | Stüdyo iskeleti + teslim paketi (link, QR, hazır metin) | **BİTTİ** |
-| 4.2 | Supabase tabloları, verinin dosyadan veritabanına taşınması | sıradaki |
+| 4.2 | Supabase tabloları, verinin dosyadan veritabanına taşınması | kod hazır, kurulum bekliyor |
 | 4.3 | Sahne oluşturma/düzenleme formları | — |
 | 4.4 | Sahne şablonları + kopyala-düzenle | — |
 | 4.5 | Kilit + versiyon | — |
@@ -109,8 +109,28 @@ kaydedilir, "Yayınla" sitenin yeniden kurulmasını tetikler (~2 dk), sahne
 sayfası STATİK kalır. Oynatıcının veritabanına canlı bağlanması REDDEDİLDİ:
 CLAUDE.md §2.3 sette internetsiz çalışmayı şart koşuyor.
 
-4.2'de kullanıcıdan tek bir şey istenecek: Supabase panelindeki SQL
-düzenleyicisine hazır SQL'i yapıştırıp çalıştırmak.
+### 4.2'nin durumu
+
+Kod tarafı hazır:
+- `supabase/01-tablolar.sql` — tablolar, RLS (politika YOK, yani anon anahtarla
+  erişim kapalı; okuma yalnızca service role ile).
+- `src/icerik/kaynak.ts` — okuma yüzeyi. `NEXT_PUBLIC_SUPABASE_URL` ve
+  `SUPABASE_SERVICE_ROLE_KEY` tanımlıysa Supabase'ten, değilse `content/`
+  dosyalarından okur. **Sessizce geri düşmez**: Supabase yapılandırılmış ama
+  erişilemiyorsa derleme hata verip durur.
+- `npm run aktar` — `content/` altındaki her şeyi Supabase'e upsert eder,
+  tekrar çalıştırılabilir, silme yapmaz. `--kuru` ile önizlenir.
+
+Kullanıcıdan beklenenler (sırayla):
+1. `supabase/01-tablolar.sql` içeriğini Supabase panelinde SQL Editor'a
+   yapıştırıp çalıştırmak.
+2. Service role anahtarını `.env.local`'e ve Vercel'e `SUPABASE_SERVICE_ROLE_KEY`
+   adıyla girmek. **Bu anahtar gizlidir**, `NEXT_PUBLIC_` ÖNEKİ ALMAZ, tarayıcıya
+   gitmemeli.
+
+Şema TEK KAYNAK Zod'da; tablolarda kaydın tamamı `veri` (jsonb) sütununda durur,
+yazmadan önce ve okuduktan sonra Zod'dan geçer. Sorgulanan alanlar (kod, dizi,
+bölüm, tür) ayrıca sütun.
 
 ---
 
