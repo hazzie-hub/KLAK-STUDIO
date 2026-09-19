@@ -1,10 +1,26 @@
 # Devir notu
 
-Bu dosya, yeni bir oturuma başlarken okunacak. `CLAUDE.md` projenin anayasası;
-bu dosya ise **nerede kaldığımızı** anlatır.
+Yeni oturuma başlarken bu dosya okunur. `CLAUDE.md` projenin anayasasıdır;
+bu dosya **nerede kaldığımızı** ve **nasıl çalışıldığını** anlatır.
 
-Son güncelleme: **FAZ 4 BİTTİ.** Dokuz modülün dokuzu da yazıldı, Stüdyo
-çalışıyor. Geriye CLAUDE.md'de yalnızca Faz 5 (hızlandırıcılar) kaldı.
+---
+
+## 0. Bir bakışta
+
+**Faz 1–4 bitti. Sistem kurulu ve yayında çalışıyor.**
+
+| | |
+|---|---|
+| Modüller | 9/9 — kilit, sosyal, mesaj, arama, web, telefon, galeri, harita, anaekran |
+| Stüdyo | Şablon → form → kaydet → onayla → teslim paketi. JSON yazılmıyor |
+| Veri | Supabase'te. `content/` dosyaları yalnızca test/geliştirme kaynağı |
+| Sahneler | 9 sahne yayında |
+| Doğrulama | 299 test · `validate` 39 dosyada temiz (3 uyarı, kasıtlı) |
+
+Geriye CLAUDE.md'de yalnızca **Faz 5 (hızlandırıcılar)** kaldı ve o zorunlu
+değil: senaryodan taslak üretme, ghost typing ekstraları, gerekirse Capacitor.
+
+**Sıradaki iş kodda değil, içerikte** — §3'e bak.
 
 ---
 
@@ -13,228 +29,78 @@ Son güncelleme: **FAZ 4 BİTTİ.** Dokuz modülün dokuzu da yazıldı, Stüdyo
 | | |
 |---|---|
 | Depo | `hazzie-hub/KLAK-STUDIO`, kod `ekran/` klasöründe |
-| Dal | `main` (çalışma dalı `claude/phase-1-planning-setup-u2d7wt`, ikisi aynı noktada) |
-| Yayın | https://ekran-rosy.vercel.app — Vercel, kök dizin `ekran` |
-| Veritabanı | Supabase, proje `gyrsjoziawhvjwdqhwcz` (yalnızca kumanda için kullanılıyor) |
+| Dal | `main` |
+| Yayın | https://ekran-rosy.vercel.app — Vercel projesi `ekran` |
+| Veritabanı | Supabase, proje `gyrsjoziawhvjwdqhwcz` |
 
 Kullanıcının masaüstündeki `KLAK-STUDIO-main` klasörü **eski, kopuk bir
-indirmedir** — git deposu değil, GitHub'a bağlı değil. Ona dokunma, oradan
-çalışma. Çalışma kopyası her oturumda GitHub'dan taze klonlanır.
+indirmedir** — git deposu değil. Oradan çalışma. Çalışma kopyası her oturumda
+GitHub'dan taze klonlanır, `npm install` çalıştırılır.
 
 Kökteki `app/`, `components/`, `hooks/`, `lib/`, `types/` **başka bir projeye**
-aittir (creative-assistant / workflow builder). Ona dokunulmadı, dokunulmayacak.
+aittir. Dokunulmadı, dokunulmayacak. (Depoya bağlı ikinci bir Vercel projesi
+olan `klak-studio` o eski projeyi kurmaya çalışıp her commit'te hata veriyor;
+bizim işimizi etkilemiyor, kapatılabilir.)
 
 ### Adresler
 
-| Adres | Ne |
+| Adres | Kim kullanır |
 |---|---|
-| `/` | Sahne listesi (operatör buradan seçer) |
-| `/p/{kod}` | Oynatıcı — oyuncunun eline verilen cihaz |
-| `/k/{kod}` | Kumanda — operatörün telefonu |
-| `/studio` | Stüdyo — sahne ağacı (dizi → bölüm → sahne) |
-| `/studio/{kod}` | Teslim paketi — link, QR kod, hazır metin, Yayınla |
-| `/studio/yeni` | Yeni sahne — şablon seçimi, `?sablon=` ile şablondan, `?kopya=` ile kopyadan |
-| `/studio/{kod}/duzenle` | Sahne düzenleme formu |
+| `/studio` | Biz — sahne ağacı, yeni sahne, içerik aktarma |
+| `/studio/{kod}` | Teslim paketi: link, QR, sete gönderilecek metin, onay |
+| `/studio/{kod}/duzenle` | Sahne formu |
+| `/studio/yeni` | Şablon seçimi · `?sablon=` · `?kopya=` |
+| `/p/{kod}` | **Oynatıcı** — oyuncunun eline verilen cihaz, kameraya giren ekran |
+| `/k/{kod}` | **Kumanda** — operatörün telefonu |
+| `/` | Sahne listesi (operatör) |
 
-Sahneler: `eg-b03-s12` (kilit+bildirim), `eg-b03-s13` (mesajlaşma),
-`eg-b03-s44` (gelen arama), `eg-b03-s58` (sosyal, CLAUDE.md §5'teki örnek),
-`eg-b03-s59` (ghost typing), `eg-b03-s62` (LOOK araması + siteler),
-`eg-b03-s63` (telefon uygulaması), `eg-b03-s64` (ana ekran + harita + galeri),
-`eg-b03-s71` (pil bitmesi).
+### Sahneler
 
-**`eg-b03-s62`, `eg-b03-s63` ve `eg-b03-s64` numaraları UYDURMA** — yeni modülleri sette
-denemek için açıldı. Yapımdan gerçek sahne numaraları gelince dosya adları ve
-`kod` alanları değiştirilecek.
+`eg-b03-s12` kilit+bildirim · `s13` mesajlaşma · `s44` gelen arama ·
+`s58` sosyal (CLAUDE.md §5 örneği) · `s59` ghost typing · `s62` LOOK araması +
+siteler · `s63` telefon uygulaması · `s64` ana ekran + harita + galeri ·
+`s71` pil bitmesi.
 
----
-
-## 2. Faz durumu
-
-| Faz | Durum |
-|---|---|
-| **Faz 1** | 10 adımın 10'u bitti. Kabul testi geçiyor. Gerçek iPhone'da test edildi, çıkan 3 sorun düzeltildi. |
-| **Faz 2** (kumanda) | **BİTTİ.** Supabase kanalı yayında açık, çift yönlü doğrulandı (§3). |
-| **Faz 3** (modüller) | **BİTTİ** — `mesaj`, `arama` (LOOK), `web`, `telefon`. |
-| **Faz 4** (Stüdyo) | **BİTTİ.** Altı adımın altısı da tamam. |
-| **Faz 5** (hızlandırıcılar) | Başlanmadı. Zorunlu değil: senaryodan taslak üretme, ghost typing ekstraları, gerekirse Capacitor. |
-
-Doğrulama: `npm test` (271 test), `npm run validate` (39 dosya),
-`npm run kabul` (3 kabuk × 6 sahne × 20 tur, internet kesik).
+> **`s62`, `s63`, `s64` numaraları UYDURMA** — yeni modülleri sette denemek
+> için açıldı. Yapımdan gerçek numaralar gelince dosya adı ve `kod` alanı
+> değiştirilecek.
 
 ---
 
-## 3. ÇÖZÜLDÜ — Supabase kanalı (kayıt için duruyor)
+## 2. Mimari — bozulmaması gerekenler
 
-**Belirti:** `/k/{kod}` sayfasının üst satırı
-`Supabase · kanal kapalı · CHANNEL_ERROR: channel error: transport failure`.
-
-**Asıl sebep:** Vercel'deki `NEXT_PUBLIC_SUPABASE_ANON_KEY` değişkenine anahtar
-değil, anahtarın **Supabase panelinde gizli gösterilen hâli** yapıştırılmıştı.
-Yani değer `eyJhbGci` ile başlayıp geri kalan 200 karakteri `•` (nokta işareti)
-olan bir metindi. JWT'de olması gereken iki `.` ayıracı hiç yoktu.
-
-Kullanıcı anahtarı panelde fareyle seçip kopyalamıştı; Supabase o alanı maskeli
-gösterdiği için maskenin kendisi kopyalanmış oldu.
-
-**Çözüm:** Supabase panelinde **kopyala düğmesiyle** (fareyle seçerek değil)
-alınan legacy `anon` JWT anahtarı Vercel'e yapıştırıldı, önbelleksiz yeniden
-dağıtım yapıldı.
-
-**Doğrulama (yayında, iki sekme, gerçekten Supabase üzerinden):**
-
-- Üst satır: `Supabase · kanal açık`
-- Kumandadan **Başa sar** → oynatıcıdaki mesaj anında silindi
-- Kumandadan **Şimdi** → oynatıcıda mesaj anında düştü
-- Oynatıcıdan kumandaya telemetri geldi: `çevrimiçi`, `pil %42`,
-  `Sıradaki: ikinci-mesaj 2.0 sn`, `Son tetiklenen: ilk-mesaj`
-
-**Ders (koda yansıtılabilir):** Bu tuzak kullanıcıyı İKİ kez yakaladı — önce
-değişkenin adı yapıştırıldı, sonra maskeli görüntü. Her ikisinde de ekranda
-yalnızca anlamsız `transport failure` yazdı. `tasiyiciSec` şu an sadece "boş mu"
-diye bakıyor. Anahtarın JWT biçiminde olup olmadığı denetlenip sade bir Türkçe
-uyarı gösterilebilir. **Kullanıcıya soruldu, karar vermedi — tekrar sorulabilir.**
+- **Ekran gerçekleşen olaylardan türer.** Modüller kendi sayacını/listesini
+  tutmaz. Başa sar = olay listesini boşaltmak. Her tekrar birebir aynı.
+- **Açık modül de olaylardan türer** (`src/modules/aktif-ekran.ts`). `ekranAc`
+  başka bir modüle geçebilir (aramadan siteye). Ana ekrandan uygulamaya giriş
+  ise GEÇİCİ yerel gezinmedir, olay listesine yazılmaz ve başa sarınca sıfırlanır.
+- **Rastgelelik yok.** Gecikmeler, rota animasyonu, her şey deterministik.
+- **Modüller kendi "yavaş yükleme" mantığını yazmaz** — hepsi `shared/medya.tsx`.
+- **Otomatik zincir gerçekleşmiş olayı tekrar etmez.**
+- Kumanda mesajları **idempotent** (nonce) ve Zod'dan geçer.
+- **Oynatıcı sayfaları STATİK.** Sette internetsiz çalışmak şart (CLAUDE.md
+  §2.3). Stüdyo sayfaları `force-dynamic`, oynatıcı asla.
+- **Şema tek kaynak: Zod.** Veritabanında kayıt `veri` (jsonb) sütununda durur,
+  yazmadan önce ve okuduktan sonra Zod'dan geçer.
 
 ---
 
-## 3.5 Faz 4 planı ve verilen mimari karar
+## 3. Sıradaki iş — kullanıcıdan bekleniyor
 
-| # | Adım | Durum |
-|---|---|---|
-| 4.1 | Stüdyo iskeleti + teslim paketi (link, QR, hazır metin) | **BİTTİ** |
-| 4.2 | Supabase tabloları, verinin dosyadan veritabanına taşınması | **BİTTİ** |
-| 4.3 | Sahne oluşturma/düzenleme formları | **BİTTİ** |
-| 4.4 | Sahne şablonları + kopyala-düzenle | **BİTTİ** |
-| 4.5 | Kilit + versiyon | **BİTTİ** |
-| 4.6 | `galeri`, `harita`, `anaekran` modülleri | **BİTTİ** |
+Kod tarafında zorunlu bir iş kalmadı. Bunlar içerik:
 
-**Yayınlama modeli (kullanıcıya anlatıldı, itiraz gelmedi):** Stüdyo'da sahne
-kaydedilir, "Yayınla" sitenin yeniden kurulmasını tetikler (~2 dk), sahne
-sayfası STATİK kalır. Oynatıcının veritabanına canlı bağlanması REDDEDİLDİ:
-CLAUDE.md §2.3 sette internetsiz çalışmayı şart koşuyor.
-
-### 4.2 bitti — kurulmuş hali
-
-Veritabanı kuruldu, veri aktarıldı, `SUPABASE_SERVICE_ROLE_KEY` Vercel'e
-(yalnızca Production) girildi. Yayındaki site sahneleri veritabanından okuyor.
-
-> ⚠️ **YENİ TUZAK — en önemli madde:** `content/` altındaki dosyalar artık
-> YAYINI BESLEMİYOR. Bir sahneyi dosyadan düzenleyip göndermek yayında
-> HİÇBİR ŞEYİ DEĞİŞTİRMEZ; site veritabanından okuyor. Değişikliğin yayına
-> gitmesi için `npm run aktar -- --sql` çalıştırılıp üretilen
-> `supabase/02-veri.sql` panele yapıştırılmalı. Bu zahmet 4.3'te (Stüdyo
-> formları) ortadan kalkacak. Dosyalar testlerin ve `npm run validate`'in
-> veri kaynağı olarak duruyor, silinmeyecek.
-
-Kod tarafı:
-- `supabase/01-tablolar.sql` — tablolar, RLS (politika YOK, yani anon anahtarla
-  erişim kapalı; okuma yalnızca service role ile).
-- `src/icerik/kaynak.ts` — okuma yüzeyi. `NEXT_PUBLIC_SUPABASE_URL` ve
-  `SUPABASE_SERVICE_ROLE_KEY` tanımlıysa Supabase'ten, değilse `content/`
-  dosyalarından okur. **Sessizce geri düşmez**: Supabase yapılandırılmış ama
-  erişilemiyorsa derleme hata verip durur.
-- `npm run aktar` — `content/` altındaki her şeyi Supabase'e upsert eder,
-  tekrar çalıştırılabilir, silme yapmaz. `--kuru` ile önizlenir.
-
-Kurulumda yaşananlar (tekrarlanırsa diye):
-- Supabase'in SQL düzenleyicisi `01-tablolar.sql` için "destructive operations"
-  uyarısı verdi. Sebebi metindeki `drop trigger if exists` satırları; tablo ya
-  da veri silen hiçbir komut yok, güvenle çalıştırıldı.
-- İlk kurulum `Invalid API key` ile düştü: Vercel'e yanlış/maskeli anahtar
-  girilmişti. Doğru anahtar `service_role` (legacy JWT); `anon` ve
-  `sb_publishable_` DEĞİL. Kaydetmeden önce Vercel'in göz simgesiyle değeri
-  gösterip `eyJ` ile başladığını ve içinde iki nokta olduğunu doğrulamak
-  bu turu kısaltıyor.
-
-Şema TEK KAYNAK Zod'da; tablolarda kaydın tamamı `veri` (jsonb) sütununda durur,
-yazmadan önce ve okuduktan sonra Zod'dan geçer. Sorgulanan alanlar (kod, dizi,
-bölüm, tür) ayrıca sütun.
-
----
-
-### 4.6 — son üç modül
-
-- **`anaekran`**: ikon ızgarası + rıhtım. İkona dokununca o modül açılır. Bu
-  GEÇİCİ gezinmedir, olay listesine yazılmaz; başa sarınca ve olaylardan gelen
-  ekran değişince sıfırlanır (`src/modules/index.tsx`). Her ikonun bir hotspot'u
-  var (`anaekran-harita` gibi), sahne ona tetik bağlayabilir — bağlarsa geçiş
-  olayla olur, bağlamazsa yerel gezinmeyle.
-- **Ana ekrana dönüş**: ekranın en altında 18px'lik görünmez şerit; gerçek
-  telefonlardaki alt çizgi gibi. Yalnızca YEREL gezinme varken çizilir. Görünür
-  bir "geri" düğmesi kamerada yanlış durur (CLAUDE.md §2.6).
-- **`galeri`**: `foto` içeriklerinden ızgara + tek fotoğraf ekranı. Mesajdaki
-  ya da posttaki fotoğraftan derin link verilebilir.
-- **`harita`**: zemin KODLA ÇİZİLİYOR (`harita/zemin.tsx`), üç desen: şehir,
-  sahil, kırsal. Gerçek karo haritası yok — CLAUDE.md'nin harita notu lisans
-  riski nedeniyle bunu istiyor, ayrıca sette internet olmayabilir. Rota
-  animasyonu sabit süreli (2600 ms), rastgelelik yok.
-- `konum` içerik türünün şeması yazıldı; pin ve rota noktaları haritanın
-  YÜZDESİ (0–1) olarak tutuluyor, böylece zemin değişse de yerinde kalıyorlar.
-- Bununla birlikte içerik türlerinin HEPSİNİN şeması tamamlandı; "ileriki faz"
-  serbest kaydı kaldırıldı.
-
-### Stüdyo arayüzü
-
-Kullanıcı "panel arayüzü çok karışık" dedi; sadeleştirildi.
-
-- Ortak parçalar `src/studio/panel.tsx`'te: `Panel`, `PanelUst`, `Kart`,
-  `Alan`, `Dugme`, `Rozet`. Sayfalar kendi ölçülerini uydurmuyor.
-- Başlıklar soru cümlesi: "Sahne nerede geçiyor?", "Sahnede neler oluyor?".
-- Teknik slug'lar arayüzde GÖRÜNMÜYOR: `MODUL_ADLARI` ve `EKRAN_ADLARI`
-  (`alanlar.ts`) okunur karşılıklarını veriyor — `sosyal` yerine
-  "Akış (sosyal medya)", `gecmis` yerine "Son aramalar".
-- Açılış ekranı artık elle yazılmıyor, `EKRANLAR` listesinden seçiliyor.
-  Yanlış yazılan ekran adı sessizce varsayılana düşüyordu; sette fark edilmezdi.
-- Olay kartı "NE ZAMAN" / "NE OLSUN" diye ikiye ayrıldı.
-- Cihaz durumu (saat, pil, bağlantı) katlanır bölüme alındı; çoğu sahnede
-  dokunulmuyor.
-- Kaydet düğmesi sayfanın altına sabitlendi.
-
-**Kimlikler (slug) kullanıcıya bırakılmadı.** Sette telefondan sahne düzenleyen
-kimse kimlik yazmakla uğraşmamalı:
-
-- Olay kimliği ADDAN türüyor (`kimlik.ts`): "Sezai yorum yapar" →
-  `sezai-yorum-yapar`, çakışırsa `-2`. Alan varsayılan olarak GİZLİ, küçük bir
-  "değiştir" bağlantısı var. Kullanıcı elle değiştirirse ad değişince kimliğe
-  dokunulmaz (ayrı bayrak yok; kimlik eski adın türevi mi diye bakılıyor).
-- **Kimlik değişince "sonra" tetiklerindeki referanslar da güncelleniyor.**
-  Güncellenmeseydi zincir sessizce kopardı ve sette fark edilirdi.
-- "Hangi olaydan sonra" artık slug yazılan bir kutu değil, olay listesi.
-- Kimlik alanları yazarken normalleşiyor (Türkçe harf, boşluk, büyük harf);
-  hata gösterilmiyor, düzeltiliyor. Tarayıcı yardımları (otomatik büyütme,
-  düzeltme, öneri) kapalı.
-- Doğrulama hataları alanı söylüyor ("2. olay (Sezai ısrar eder) · Ne olsun ·
-  Metin"), tekrar etmiyor, tıklanınca alana kayıyor ve alan kırmızı
-  çerçeveleniyor. Boş alanlarda Zod'un biçim dersi yerine "Doldurulmalı."
-  yazıyor (`hatalar.ts`).
-
-### 4.5 — kilit ve versiyon nasıl çalışıyor
-
-- **Kilitli = onaylandı.** Kilitli sahne kaydedilemez; `sahneYaz` reddeder,
-  düzenleme sayfası da uyarı gösterir.
-- **Revizyon yeni versiyon açar:** mevcut içerik `sahne_versiyonlari`na
-  kopyalanır, sonra `versiyon` bir artar ve kilit açılır. Arşiv yazılamazsa
-  kilit AÇILMAZ — onaylı hali kaybolmasın.
-- **Link hiç değişmez.** Sete gönderilen QR ve adres sahne koduna bağlı;
-  versiyon değişse de geçerli kalır.
-- Sahne listesinde onaylı sahneler "onaylı vN" rozetiyle görünür.
-
-### 4.3 nasıl kuruldu
-
-- Form, 13 aksiyon türü için 13 ayrı form DEĞİL: her türün alanları
-  `src/studio/alanlar.ts`'te veri olarak duruyor, form onu okuyup kendini
-  kuruyor. Yeni aksiyon = tabloya bir satır.
-- `tests/alanlar.test.ts` bu tablonun şemadan ayrışmasını engelliyor: alan
-  adları Zod şemasıyla BİREBİR aynı olmalı, zorunluluklar uyuşmalı.
-- Doğrulama tek yerde: form serbest taslak tutar, kaydederken `SahneSchema`
-  çalışır, hatalar alan alan gösterilir.
-- Stüdyo sayfaları `force-dynamic`. Oynatıcı sayfaları STATİK kalır.
-- **Yayınlama kurulum İSTEMEZ.** Kaydetmek, sahnenin oyuncu ve kumanda
-  sayfalarını `revalidatePath` ile tazeler; sayfa bir sonraki açılışta
-  veritabanındaki son haliyle yeniden üretilir ve yine statik kalır. Sette
-  internetsiz çalışma şartı bozulmuyor. "Yayınla" düğmesi aynı şeyi elle
-  yapar, emin olmak isteyenler için.
-  Vercel deploy hook fikri DENENDİ VE BIRAKILDI: çalışırdı ama kullanıcıdan
-  kurulum istiyordu ve iki dakika sürüyordu (bkz. §7'deki kural).
+1. **Gerçek sahne numaraları** — `s62`, `s63`, `s64` uydurma.
+2. **Gerçek replikler** — hepsi yer tutucu. `eg-b03-s58`'de Sezai'nin yorumu
+   hâlâ `"..."` (CLAUDE.md'de de öyle yazıyordu, birebir korundu).
+3. **Yapımdan fotoğraflar** — `public/ornek` ve `public/avatar` altındaki soyut
+   çizimlerin yerine.
+4. **Uydurma alan adlarının yapım/hukuk onayı** — `kiyidasabah.com`,
+   `gezginnotu.net`, `kadikoykahvaltici.com`, `rehberdefteri.net`,
+   `gunluksehir.net`. Hepsi DNS'te sorgulandı, çözülmüyorlar;
+   `sahilsofrasi.com`, `sehirdefteri.com`, `kentgundem.net` GERÇEK çıktığı için
+   elendi. Yeni alan adı uydururken aynı kontrolü yap.
+5. **Akış'ın web hâli ve harita** kullanıcı istemişti; harita modülü yapıldı,
+   Akış'ın `web` şablonu olarak sürümü YAPILMADI.
 
 ---
 
@@ -242,143 +108,129 @@ kimse kimlik yazmakla uğraşmamalı:
 
 | Konu | Karar |
 |---|---|
-| Sosyal uygulama | **Akış**, renk `#0f6f74` — kullanıcı seçti |
-| Mesaj uygulaması | **Mesaj** (Türk telefonlarında yerleşik ad) — kullanıcı seçti |
-| Arama motoru | **LOOK**, renk `#5f4bb6` — kullanıcı seçti |
-| Sahte siteler | Şablonlar: `haber`, `blog`, `kurumsal`, `forum`. Sayfa gövdesi BLOK listesi; şablon sadece görünümü değiştirir |
-| Rehber ve arama geçmişi | İçerik kütüphanesinde değil, **cihaz dosyasında** durur — bir telefonun geçmişi o telefona aittir |
+| Sosyal uygulama | **Akış**, `#0f6f74` |
+| Mesaj uygulaması | **Mesaj** |
+| Arama motoru | **LOOK**, `#5f4bb6` |
+| "Instagram" istendiğinde | Gerçek marka; yerine **Akış**. Bir test `instagram`, `whatsapp`, `facebook`, `twitter`, `tiktok`, `snapchat` kelimelerinin `src/`, `brands/`, `content/` altında GEÇMEDİĞİNİ denetler — yorum satırında bile |
+| Sahte siteler | Şablonlar: `haber`, `blog`, `kurumsal`, `forum`. Gövde BLOK listesi, şablon yalnızca görünümü değiştirir |
+| Rehber ve arama geçmişi | İçerik kütüphanesinde değil, **cihaz dosyasında** |
 | Gelen / giden arama | Gelen arama SİSTEM katmanında (her modülün üstünde), giden arama `telefon` modülünde |
-| "Instagram" istendiğinde | Gerçek marka; yerine **Akış** kullanılır (test `instagram` kelimesini yasaklıyor) |
-| Markaların yeri | `brands/index.ts`, tek kaynak. Bir test gerçek marka adı geçmediğini denetler |
-| Şema biçimi | Slug tabanlı (`cihaz: "nergis-pc"`), `id`/`bolumId`/`versiyon`/`kilitli` opsiyonel — Faz 4'te zorunlu olacak |
-| Kod nereye | Kökteki eski projeye dokunmadan `ekran/` altına |
-| Dal | `main`'e birleştiriliyor (kullanıcı onayladı) |
-
-### Mimari kararlar (bozulmamalı)
-
-- **Ekran, gerçekleşen olaylardan türer.** Modüller kendi sayacını/listesini
-  tutmaz. Başa sar = olay listesini boşaltmak. Her tekrar birebir aynı.
-- **Rastgelelik yok.** Gecikmeler bile deterministik (görsel adresinden hesaplanır).
-- **Modüller kendi "yavaş yükleme" mantığını yazmaz** — hepsi `shared/medya.tsx`'ten geçer.
-- **Otomatik zincir gerçekleşmiş olayı tekrar etmez** (operatör sona atlayınca
-  çift bildirim olmasın diye). Elle tekrarlamak ayrı.
-- Kumanda mesajları **idempotent** (nonce) ve Zod'dan geçer.
-- **Açık modül de olaylardan türer** (`src/modules/aktif-ekran.ts`). `ekranAc`
-  başka bir modüle geçebilir — arama sonucundan siteye. Başa sarınca olay
-  listesi boşalır ve sahne kendiliğinden başlangıç modülüne döner.
+| Harita | Zemin KODLA ÇİZİLİYOR. Gerçek karo haritası yok: lisans/atıf riski + sette internet olmayabilir |
+| Markaların yeri | `brands/index.ts`, tek kaynak |
+| Yayınlama | Kaydetmek sahnenin oyuncu/kumanda sayfalarını `revalidatePath` ile tazeler. Sayfa statik kalır. **Vercel deploy hook fikri denendi ve BIRAKILDI** — kullanıcıdan kurulum istiyordu |
 
 ---
 
-## 5. Kullanıcıdan beklenen kararlar
+## 5. Stüdyo nasıl kurulu
 
-1. ~~Arama motorunun kurgusal adı~~ — **LOOK** seçildi, modül bitti.
-2. ~~Sahte web sitelerinin şablonları~~ — dört şablon yazıldı, modül bitti.
-   Kullanıcının istediklerinden **Akış'ın web hâli** ve **harita** HENÜZ YOK.
-   Harita CLAUDE.md'de Faz 4 modülü; öne çekilecek mi, sorulacak.
-   Faz 3 bittiğine göre sıradaki soru: Faz 4'e (Stüdyo) mi geçilecek, yoksa
-   önce bu ikisi mi yapılacak?
-3. **Gerçek replikler** — şu an hepsi yer tutucu. Özellikle `eg-b03-s58`'de
-   Sezai'nin yorumu hâlâ `"..."` (CLAUDE.md'de de öyle yazıyordu, birebir korundu)
-4. **Yapımdan gelen fotoğraflar** — `public/ornek` ve `public/avatar` altındaki
-   soyut çizimlerin yerine
-6. **Uydurma alan adları hukuken temiz mi?** — `arama` içeriğindeki adresler
-   (`kiyidasabah.com`, `gezginnotu.net`, `kadikoykahvaltici.com`,
-   `rehberdefteri.net`) DNS'te çözülmüyor diye seçildi, ama yapım/hukuk
-   onayından geçmeli. `sahilsofrasi.com` gerçek çıktığı için elendi.
-5. **Anahtar biçim denetimi eklensin mi?** — §3'ün sonundaki ders
+- **Form, 13 aksiyon için 13 ayrı form değil**: alanlar `src/studio/alanlar.ts`'te
+  VERİ olarak duruyor, form okuyup kendini kuruyor. `tests/alanlar.test.ts` bu
+  tablonun Zod şemasından ayrışmasını engelliyor (alan adları birebir aynı
+  olmalı, zorunluluklar uyuşmalı).
+- **Teknik slug'lar arayüzde görünmez**: `MODUL_ADLARI`, `EKRAN_ADLARI`.
+  Açılış ekranı `EKRANLAR` listesinden seçilir (yanlış yazılan ekran adı
+  sessizce varsayılana düşüyordu).
+- **Kimlikler kullanıcıya bırakılmadı** (`src/studio/kimlik.ts`): olay kimliği
+  ADDAN türer, çakışırsa `-2`. Alan gizli, "değiştir" ile açılır. Elle
+  değiştirilirse ad değişince dokunulmaz. **Kimlik değişince "sonra"
+  tetiklerindeki referanslar da güncellenir** — yoksa zincir sessizce kopardı.
+  "Hangi olaydan sonra" artık olay listesinden seçilir.
+- **Hatalar alanı söyler** (`src/studio/hatalar.ts`): "2. olay (Sezai ısrar
+  eder) · Ne olsun · Metin". Tıklayınca alana kayar ve alan kırmızı
+  çerçevelenir; tekrar eden mesaj gösterilmez; boş alanlarda "Doldurulmalı."
+- **Kilit ve versiyon**: onaylanan sahne kilitlenir, kaydedilemez. Yeni versiyon
+  açmak önce `sahne_versiyonlari`na arşivler, SONRA kilidi açar — arşiv
+  yazılamazsa kilit açılmaz. Link hiç değişmez.
+- **Arayüz parçaları** `src/studio/panel.tsx`'te (Panel, PanelUst, Kart, Alan,
+  Dugme, Rozet). Sayfalar kendi ölçülerini uydurmaz.
+
+### İçerik dosyaları ile veritabanı ilişkisi — ÖNEMLİ
+
+`content/` altındaki dosyalar **yayını beslemiyor.** Depoya yeni sahne/içerik
+eklersen, Stüdyo ana sayfasındaki **"Depodaki içeriği aktar"** düğmesine bas
+(sunucuda çalışır, kimseden bir şey istemez). Düğme hiçbir şey SİLMEZ ve
+KİLİTLİ sahnelere dokunmaz; ama depoda karşılığı olan ve kilitli olmayan bir
+sahneyi Stüdyo'dan düzenlediysen üstüne yazar.
 
 ---
 
 ## 6. Çalışma ortamı
 
-Ortam iki türlü olabiliyor, ikisini karıştırma:
+**Kullanıcının Mac'i (tercih edilen):**
 
-**A) Kullanıcının Mac'i (şu anki durum — tercih edilen)**
-
-- Yayındaki siteye ve Supabase'e **erişilebiliyor.** Tarayıcı panelinden
-  `https://ekran-rosy.vercel.app` açılıp doğrudan teşhis yapılabiliyor —
-  Supabase anahtarı hatası böyle bulundu. Kullanıcıya ekran görüntüsü
-  sorma zahmeti kalktı.
-- `gh` (GitHub komutu) **kuruldu ve giriş yapıldı** (hesap `hazzie-hub`,
-  keyring'de token, `repo` yetkisi var). Koda değişiklik gönderme artık
-  doğrudan buradan yapılabiliyor; kullanıcının elle bir şey yapması gerekmiyor.
-- Çalışma kopyası: depo her oturumda scratchpad'e taze klonlanır, `npm install`
-  çalıştırılır. Masaüstündeki eski klasör kullanılmaz (§1).
+- Yayındaki siteye ve Supabase'e erişilebiliyor; tarayıcı panelinden doğrudan
+  teşhis yapılabiliyor.
+- `gh` kurulu ve girişli (`hazzie-hub`). Kod göndermek doğrudan buradan yapılır.
+- Vercel oturumu YOK; kurulum durumu gerekirse GitHub üzerinden görülebilir:
+  `gh api repos/hazzie-hub/KLAK-STUDIO/commits/<sha>/status`
 - Tarayıcıda PWA servis çalışanı eski yapıyı önbellekte tutuyor; yeni dağıtımı
-  görmek için servis çalışanını kaldırıp önbelleği temizlemek gerekiyor,
-  yoksa eski sayfa görünüp yanlış teşhis konur.
+  görmek için servis çalışanını kaldırıp önbelleği temizle, yoksa eski sayfayı
+  görüp yanlış teşhis koyarsın.
 
-**B) Bulut oturumu (eski oturumlar böyleydi)**
+**Bulut oturumu:** ağ politikası `vercel.app` ve `supabase.co` adreslerini
+engelliyor; yayını oradan test etmek mümkün değil.
 
-- Ağ politikası `vercel.app` ve `supabase.co` adreslerini **engelliyor.**
-  Yayındaki siteyi oradan test etmek mümkün değil; doğrulamayı kullanıcı yapmalı.
-- Yerel doğrulama tam çalışıyor: `npm run build && npm run start` + Playwright
-  (Chromium: `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`).
-
-Her iki ortamda da: sunucu yeniden başlatılırken portun boşaldığından emin
-olunmalı; `next start` port doluysa sessizce ölüyor ve eski yapı servis
-edilmeye devam ediyor (bu tuzağa bir kez düşüldü).
+Her iki ortamda: `next start` port doluysa sessizce ölür ve eski yapı servis
+edilmeye devam eder. Yeniden başlatırken portu boşalt.
 
 ---
 
 ## 7. Kullanıcıyla çalışma şekli
 
-- **Kullanıcı yazılımcı değil.** Terminal, GitHub, Vercel gibi şeyler yeni.
-  Açıklamalar sade olmalı, jargon açıklanmalı.
-- **GEREKMEDİKÇE KULLANICIDAN HİÇBİR ŞEY İSTEME.** Bu, kullanıcının açık
-  talimatıdır. İki yol varsa senin tek başına tamamlayabildiğini seç; kullanıcı
-  yükü farkı genellikle diğer ölçütlerden baskındır. Bir adım istemeden önce
-  "bunu ben yapabilir miyim?" diye sor — genellikle yapılabiliyor:
-  Vercel deploy hook kurdurmak yerine Next'in `revalidatePath`'i, elle veri
-  girişi yerine üretilen SQL, gizli anahtarı yerelde tutmak yerine anahtarsız
-  çalışan bir kip. Gerçekten zorunlu tek iş tipi: yalnızca onun hesabında
-  yapılabilen ve gizli bilgi gerektirenler. Onu da tek seferde, sebebiyle iste.
-  Seçimini bildir ama onay için bekleme.
-- **Aynı anda tek adım ver.** Uzun listeler boğuyor; "geldim" deyince sonraki
-  adımı vermek iyi çalıştı. Bu, yukarıdaki kuralın istisnası değil: önce
-  isteme, istemek zorundaysan tek adım ver.
-- İletişim **Türkçe**.
-- Kendi bilgisayarında komut çalıştırmayı sevmiyor — mümkün olan her şeyi
-  bu taraftan yapıp sonucu göstermek iyi karşılandı. Mac ortamında (§6-A)
-  bu artık neredeyse tamamen mümkün.
-- Her adım sonunda **GitHub'a ve `main`'e** gidiyor; Vercel kendiliğinden kuruyor.
-- Kredi tüketimine dikkat edilmesi istendi: az ve toplu araç çağrısı, gereksiz
-  ekran görüntüsü almamak.
+- **GEREKMEDİKÇE KULLANICIDAN HİÇBİR ŞEY İSTEME.** Bu onun açık talimatı.
+  İki yol varsa senin tek başına tamamlayabildiğini seç. Bir adım istemeden
+  önce "bunu ben yapabilir miyim?" diye sor — genellikle yapılabiliyor:
+  deploy hook yerine `revalidatePath`, elle veri girişi yerine üretilen SQL ya
+  da sunucuda çalışan aktarma düğmesi. Gerçekten zorunlu tek iş tipi: yalnızca
+  onun hesabında yapılabilen ve gizli bilgi gerektirenler. Onu da tek seferde,
+  sebebiyle iste; seçimini bildir ama onay için bekleme.
+- **Kullanıcı yazılımcı değil.** Jargon açıklanmalı. İletişim **Türkçe**.
+- İstemek zorundaysan **tek adım ver**; "geldim" deyince sonrakini.
+- Ekran görüntüsü atarak soruyor; görüntüden okuyup teşhis koymak gerekiyor.
+- Kredi tüketimine dikkat: az ve toplu araç çağrısı, gereksiz ekran görüntüsü yok.
 
 ### Yararlı olduğu görülen alışkanlıklar
 
-- Her adımın sonunda: `npx tsc --noEmit`, `npm test`, `npm run validate`,
+- Her adım sonunda: `npx tsc --noEmit`, `npm test`, `npm run validate`,
   `npm run build`, gerektiğinde `npm run kabul`.
-- Tarayıcıda **gerçekten** doğrulamak (sadece test değil) — birkaç gerçek hata
-  böyle yakalandı: banner hiç kalkmıyordu, panel gecikmesi ekrana yansımıyordu,
-  offline'da parametreli adres açılmıyordu, telefonda 5 dokunuş çalışmıyordu,
-  ve son olarak Supabase anahtarı maskeli kopyalanmıştı.
-- Bulunan her hatayı commit mesajında açıkça anlatmak.
+- **Tarayıcıda gerçekten doğrula**, sadece teste güvenme. Bu oturumda böyle
+  yakalananlar: banner kalkmıyordu, panel gecikmesi yansımıyordu, offline'da
+  parametreli adres açılmıyordu, telefonda 5 dokunuş çalışmıyordu, Supabase
+  anahtarı maskeli kopyalanmıştı, sette iki saat ve altta beyaz bant vardı.
 - **Toplu metin değişiminde MUTLAKA doğrula.** Betikle yapılan `replace`
   eşleşmezse sessizce hiçbir şey yapmaz ve "tamam" yazar. Bir kez buna
-  düşüldü: arayüz metni hiç değişmedi, sonra yayında o metin aranıp
-  "kurulum gelmedi" sanıldı ve yarım saat boşa gitti. Ya `assert eski in s`
-  yaz, ya da tek tek düzenleme aracını kullan.
-
-### Bilinen, henüz çözülmemiş küçük konular
-
-- `npm audit` 4 açık bildiriyor; hepsi Next.js'in içindeki postcss'ten geliyor,
-  bizim eklediğimiz paketlerden değil. Düzeltmesi Next majör sürüm yükseltmesi
-  istiyor — ayrı bir iş olarak ele alınmalı.
-- Operatör sayfaları (`/`, `/studio`) açık temaya sabitlendi (`.acik-sayfa`).
-  Renkler doğrudan yazılı olduğu için koyu mod desteği yok; sette okunabilirlik
-  bu şekilde garanti altına alındı.
+  düşüldü: arayüz metni hiç değişmedi, sonra yayında o metin aranıp "kurulum
+  gelmedi" sanıldı, yarım saat gitti. `assert eski in s` yaz ya da tek tek
+  düzenleme aracını kullan.
+- Bulunan her hatayı commit mesajında açıkça anlat.
+- Gizli anahtar isterken: Supabase paneli anahtarı MASKELİ gösteriyor; fareyle
+  seçilirse nokta işaretleri kopyalanıyor. Kopyala düğmesi kullanılmalı;
+  kaydetmeden önce değerin `eyJ` ile başladığı ve içinde iki nokta olduğu
+  doğrulatılmalı. Bu tuzak iki tur kaybettirdi.
 
 ---
 
-## 8. Komutlar
+## 8. Bilinen, çözülmemiş küçük konular
+
+- `npm audit` 4 açık bildiriyor; hepsi Next.js'in içindeki postcss'ten.
+  Düzeltmesi Next majör yükseltmesi istiyor, ayrı bir iş.
+- Operatör sayfaları açık temaya sabitlendi (`.acik-sayfa`); koyu mod desteği yok.
+- **Stüdyo'da kimlik doğrulama yok.** Adresi bilen herkes sahne düzenleyebilir.
+  Senaryo içeriği gizli olduğu için bu ele alınmalı.
+- `npm run validate` 3 uyarı veriyor; üçü de "bu olaya zincir bağlı değil,
+  yalnızca kumandadan tetiklenir" — kasıtlı.
+
+---
+
+## 9. Komutlar
 
 ```bash
 cd ekran
 npm install
 npm run dev        # geliştirme (service worker kapalı)
 npm run validate   # sahne ve içerik denetimi
-npm test           # 152 test
+npm test           # 299 test
 npm run build && npm run start
 npm run kabul      # kabul testi (önce build+start, ayrı terminalde)
+npm run aktar -- --sql   # content/ → supabase/02-veri.sql (anahtar gerekmez)
 ```
