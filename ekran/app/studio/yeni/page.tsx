@@ -17,9 +17,12 @@ export const dynamic = "force-dynamic";
 export default async function YeniSahneSayfasi({
   searchParams,
 }: {
-  searchParams: Promise<{ sablon?: string; kopya?: string }>;
+  searchParams: Promise<{ sablon?: string; kopya?: string; dizi?: string }>;
 }) {
-  const { sablon: sablonId, kopya } = await searchParams;
+  const { sablon: sablonId, kopya, dizi } = await searchParams;
+  // Hangi diziden gelindiyse geri o panele dönülsün.
+  const geriYol = dizi === undefined ? "/" : `/studio/dizi/${dizi}`;
+  const diziEki = dizi === undefined ? "" : `&dizi=${dizi}`;
   const secenekler = await secenekleriTopla();
   const sablon = sablonId === undefined ? null : sablonAl(sablonId);
 
@@ -46,8 +49,8 @@ export default async function YeniSahneSayfasi({
     return (
       <Panel>
         <PanelUst
-          geri="/studio"
-          geriEtiketi="Stüdyo"
+          geri={geriYol}
+          geriEtiketi={dizi === undefined ? "Diziler" : "Dizi paneli"}
           baslik="Yeni sahne"
           aciklama="Hazır bir iskeletten başlayın; olayları ve süreleri sonra değiştirebilirsiniz."
         />
@@ -55,7 +58,7 @@ export default async function YeniSahneSayfasi({
           {SABLONLAR.map((s) => (
             <li key={s.id}>
               <Link
-                href={`/studio/yeni?sablon=${s.id}`}
+                href={`/studio/yeni?sablon=${s.id}${diziEki}`}
                 className="block h-full rounded-[18px] border border-[#e4e4e7] bg-white p-[18px] transition-colors hover:border-[#c9c9ce] hover:bg-[#fcfcfd]"
               >
                 <span className="block text-[15px] font-semibold text-[#1d1d1f]">{s.ad}</span>
@@ -67,7 +70,7 @@ export default async function YeniSahneSayfasi({
           ))}
         </ul>
         <Link
-          href="/studio/yeni?sablon=bos"
+          href={`/studio/yeni?sablon=bos${diziEki}`}
           className="mt-5 inline-block text-[13px] font-medium text-[#0071e3]"
         >
           Şablonsuz, boş sahneyle başla →
@@ -78,7 +81,12 @@ export default async function YeniSahneSayfasi({
 
   return (
     <Panel>
-      <PanelUst geri="/studio/yeni" geriEtiketi="Şablonlar" baslik={baslik} aciklama={aciklama} />
+      <PanelUst
+        geri={dizi === undefined ? "/studio/yeni" : `/studio/yeni?dizi=${dizi}`}
+        geriEtiketi="Şablonlar"
+        baslik={baslik}
+        aciklama={aciklama}
+      />
       <Yigin>
         {sablon !== null && sablon.doldurulacak.length > 0 && (
           <Kart vurgu="mavi" baslik="Doldurmanız gerekenler">

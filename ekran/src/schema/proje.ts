@@ -6,6 +6,8 @@ import { SlugSchema } from "./ortak";
 export const DiziSchema = z.strictObject({
   kod: SlugSchema,
   ad: z.string().min(1, { error: "Dizi adı boş olamaz." }),
+  /** Yayıncı kanal — Stüdyo'nun dizi listesinde adın yanında görünür. */
+  kanal: z.string().min(1, { error: "Kanal adı boş olamaz." }).optional(),
 });
 
 export const BolumSchema = z.strictObject({

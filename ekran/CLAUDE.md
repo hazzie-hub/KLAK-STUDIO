@@ -27,7 +27,7 @@ Başarı ölçütü: sistem oturduktan sonra yeni bir telefon sahnesi **15–30 
 
 | Parça | Kim kullanır | Nerede | URL |
 |---|---|---|---|
-| **Stüdyo** | Biz (ajans) | Bilgisayar | `/studio` |
+| **Stüdyo** | Biz (ajans) | Bilgisayar | `/` (diziler) → `/studio/dizi/{diziKodu}` |
 | **Oynatıcı** | Oyuncu, kamera önünde | Set telefonu / set bilgisayarı | `/p/{sahneKodu}` |
 | **Kumanda** | Set operatörü | Operatörün telefonu | `/k/{sahneKodu}` |
 
@@ -158,6 +158,7 @@ Her olay, tetiğinden bağımsız olarak **her zaman elle de tetiklenebilir**. E
 - **Senaryodan taslak (Faz 5):** senaryonun sahne metni yapıştırılır, Claude API sahne JSON'u taslağı üretir, Zod ile doğrulanır, kullanıcı düzeltir.
 - **Teslim paketi:** onaylanan sahne için sabit link + QR kod + WhatsApp'a yapıştırılacak hazır metin (`Sahne 58 – Nergis PC sosyal medya: {link}` + talimat + cihaz hazırlığı).
 - **Kilit ve versiyon:** onaylanan sahne kilitlenir; revizyon yeni versiyon açar, link değişmez, oynatıcı her zaman son onaylı versiyonu açar.
+- **Giriş:** Stüdyo ve operatör sayfaları tek parolanın arkasında (`/giris`, "KLAK Studio"); senaryo içeriği gizlidir. Parola `STUDIO_PAROLA` ortam değişkeninden gelir, yoksa koddaki varsayılan geçerlidir ve giriş ekranı bunu uyarır. **Oynatıcı ve kumanda asla korunmaz** — sette parola sorulamaz.
 
 ## 9. Fazlar
 

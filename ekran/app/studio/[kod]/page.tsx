@@ -16,7 +16,7 @@ export default async function TeslimSayfasi({ params }: { params: Promise<{ kod:
   if (sahne === null) {
     return (
       <Panel>
-        <PanelUst geri="/studio" geriEtiketi="Stüdyo" baslik="Sahne bulunamadı" aciklama={kod} />
+        <PanelUst geri="/" geriEtiketi="Diziler" baslik="Sahne bulunamadı" aciklama={kod} />
       </Panel>
     );
   }
@@ -43,8 +43,8 @@ export default async function TeslimSayfasi({ params }: { params: Promise<{ kod:
   return (
     <Panel>
       <PanelUst
-        geri="/studio"
-        geriEtiketi="Stüdyo"
+        geri={parca === null ? "/" : `/studio/dizi/${parca.dizi}`}
+        geriEtiketi={dizi?.ad ?? "Diziler"}
         baslik={sahneBasligi(sahne, dizi)}
         aciklama={cihazSatiri === "" ? sahne.cihaz : cihazSatiri}
         eylemler={

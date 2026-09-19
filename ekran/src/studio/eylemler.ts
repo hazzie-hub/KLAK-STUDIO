@@ -46,11 +46,12 @@ export async function sahneKaydet(ham: unknown): Promise<KayitSonucu> {
     return { ok: false, hatalar: [{ yol: "", mesaj }] };
   }
 
-  revalidatePath("/studio");
+  revalidatePath("/studio/dizi/[kod]", "page");
   revalidatePath(`/studio/${sonuc.data.kod}`);
   revalidatePath(`/p/${sonuc.data.kod}`);
   revalidatePath(`/k/${sonuc.data.kod}`);
   revalidatePath("/");
+  revalidatePath("/sahneler");
   return { ok: true, kod: sonuc.data.kod };
 }
 
@@ -77,8 +78,9 @@ export async function yayinla(kod: string): Promise<YayinSonucu> {
     revalidatePath(`/p/${kod}`);
     revalidatePath(`/k/${kod}`);
     revalidatePath(`/studio/${kod}`);
-    revalidatePath("/studio");
+    revalidatePath("/studio/dizi/[kod]", "page");
     revalidatePath("/");
+    revalidatePath("/sahneler");
   } catch (hata) {
     console.error("[ekran] yayinla:", hata);
     return { ok: false, mesaj: "Yayınlanamadı. Sayfayı yenileyip tekrar deneyin." };
@@ -100,7 +102,7 @@ export async function sahneyiKilitle(kod: string): Promise<KayitSonucu> {
     return { ok: false, hatalar: [{ yol: "", mesaj }] };
   }
   revalidatePath(`/studio/${kod}`);
-  revalidatePath("/studio");
+  revalidatePath("/studio/dizi/[kod]", "page");
   return { ok: true, kod };
 }
 
@@ -114,7 +116,7 @@ export async function yeniVersiyon(kod: string): Promise<KayitSonucu> {
     return { ok: false, hatalar: [{ yol: "", mesaj }] };
   }
   revalidatePath(`/studio/${kod}`);
-  revalidatePath("/studio");
+  revalidatePath("/studio/dizi/[kod]", "page");
   return { ok: true, kod };
 }
 
@@ -139,8 +141,9 @@ export async function iceriginiAktar(): Promise<AktarimSonucu> {
     return { ok: false, mesaj };
   }
 
-  revalidatePath("/studio");
+  revalidatePath("/studio/dizi/[kod]", "page");
   revalidatePath("/");
+  revalidatePath("/sahneler");
   return { ok: true, sayim };
 }
 
@@ -152,7 +155,8 @@ export async function sahneyiSil(kod: string): Promise<KayitSonucu> {
     if (!(hata instanceof StudioHatasi)) console.error("[ekran] sahneyiSil:", hata);
     return { ok: false, hatalar: [{ yol: "", mesaj }] };
   }
-  revalidatePath("/studio");
+  revalidatePath("/studio/dizi/[kod]", "page");
   revalidatePath("/");
+  revalidatePath("/sahneler");
   return { ok: true, kod };
 }

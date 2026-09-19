@@ -15,7 +15,7 @@ bu dosya **nerede kaldığımızı** ve **nasıl çalışıldığını** anlatı
 | Stüdyo | Şablon → form → kaydet → onayla → teslim paketi. JSON yazılmıyor |
 | Veri | Supabase'te. `content/` dosyaları yalnızca test/geliştirme kaynağı |
 | Sahneler | 9 sahne yayında |
-| Doğrulama | 306 test · `validate` 40 dosyada temiz (3 uyarı, kasıtlı) |
+| Doğrulama | 319 test · `validate` 40 dosyada temiz (3 uyarı, kasıtlı) |
 
 Geriye CLAUDE.md'de yalnızca **Faz 5 (hızlandırıcılar)** kaldı ve o zorunlu
 değil: senaryodan taslak üretme, ghost typing ekstraları, gerekirse Capacitor.
@@ -46,13 +46,23 @@ bizim işimizi etkilemiyor, kapatılabilir.)
 
 | Adres | Kim kullanır |
 |---|---|
-| `/studio` | Biz — sahne ağacı, yeni sahne, içerik aktarma |
+| `/giris` | **KLAK Studio girişi** — parola. Stüdyo ve operatör sayfaları bunun arkasında |
+| `/` | Dizi listesi: "Evlilik Güzeldir · TRT". Yeni dizi buraya eklenir |
+| `/studio/dizi/{kod}` | Dizi paneli — sahne ağacı, yeni sahne, içerik aktarma |
+| `/sahneler` | Sahne listesi (operatör): her sahnenin oynatıcı ve kumanda linki |
 | `/studio/{kod}` | Teslim paketi: link, QR, sete gönderilecek metin, onay |
 | `/studio/{kod}/duzenle` | Sahne formu |
 | `/studio/yeni` | Şablon seçimi · `?sablon=` · `?kopya=` |
 | `/p/{kod}` | **Oynatıcı** — oyuncunun eline verilen cihaz, kameraya giren ekran |
 | `/k/{kod}` | **Kumanda** — operatörün telefonu |
-| `/` | Sahne listesi (operatör) |
+
+> **Oynatıcı ve kumanda parola SORMAZ** ve asla sormamalı: sette oyuncunun ve
+> operatörün eline verilen linkler onlar. `tests/oturum.test.ts` bunu denetler.
+>
+> Parola şu an `klak-studyo-2026` — koddaki varsayılan, giriş ekranı bunu
+> kırmızı kutuyla söylüyor. Kullanıcıya özel parola istendiğinde ya kod
+> değiştirilir ya da yayında `STUDIO_PAROLA` ortam değişkeni tanımlanır
+> (tanımlıysa o geçerli olur, uyarı da kalkar).
 
 ### Sahneler
 
@@ -217,8 +227,11 @@ edilmeye devam eder. Yeniden başlatırken portu boşalt.
 - `npm audit` 4 açık bildiriyor; hepsi Next.js'in içindeki postcss'ten.
   Düzeltmesi Next majör yükseltmesi istiyor, ayrı bir iş.
 - Operatör sayfaları açık temaya sabitlendi (`.acik-sayfa`); koyu mod desteği yok.
-- **Stüdyo'da kimlik doğrulama yok.** Adresi bilen herkes sahne düzenleyebilir.
-  Senaryo içeriği gizli olduğu için bu ele alınmalı.
+- **Stüdyo parolası koddaki varsayılan.** Giriş var ve çalışıyor ama parola
+  depoyu görebilen herkesçe bilinebilir. Kullanıcıya özel parola konulunca
+  kapanır.
+- **Dizi ekleme arayüzü yok.** Liste birden çok diziyi gösteriyor ama yeni dizi
+  şimdilik içerik dosyasıyla ekleniyor; Stüdyo'dan ekleme formu yapılmadı.
 - `npm run validate` 3 uyarı veriyor; üçü de "bu olaya zincir bağlı değil,
   yalnızca kumandadan tetiklenir" — kasıtlı.
 
