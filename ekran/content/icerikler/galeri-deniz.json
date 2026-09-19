@@ -1,0 +1,10 @@
+{
+  "id": "galeri-deniz",
+  "tur": "foto",
+  "dizi": "eg",
+  "veri": {
+    "dosya": "deniz.svg",
+    "aciklama": "Vapurdan",
+    "tarih": "geçen hafta"
+  }
+}

@@ -273,6 +273,22 @@ export const SABLONLAR: readonly Sablon[] = [
         ],
       ),
   },
+
+  {
+    id: "konum-navigasyon",
+    ad: "Konum → navigasyon",
+    aciklama: "Harita açılır, konum görünür, yol tarifi başlar.",
+    doldurulacak: ["Açılış içeriği (konum)"],
+    uret: (kod, cihaz) =>
+      iskelet(
+        kod,
+        cihaz,
+        "harita",
+        "harita",
+        "Harita açık, konum pini görünüyor. Oyuncu alttaki Yol tarifi düğmesine basınca rota çizilir. Harita çizilmiş bir zemindir; gerçek harita değildir.",
+        [],
+      ),
+  },
 ];
 
 export function sablonAl(id: string): Sablon | null {

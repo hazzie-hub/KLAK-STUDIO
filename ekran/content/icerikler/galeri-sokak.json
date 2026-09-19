@@ -1,0 +1,10 @@
+{
+  "id": "galeri-sokak",
+  "tur": "foto",
+  "dizi": "eg",
+  "veri": {
+    "dosya": "sokak.svg",
+    "aciklama": "Ara sokak",
+    "tarih": "geçen hafta"
+  }
+}

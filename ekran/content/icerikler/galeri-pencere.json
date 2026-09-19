@@ -1,0 +1,10 @@
+{
+  "id": "galeri-pencere",
+  "tur": "foto",
+  "dizi": "eg",
+  "veri": {
+    "dosya": "pencere.svg",
+    "aciklama": "Yağmurlu pencere",
+    "tarih": "geçen hafta"
+  }
+}

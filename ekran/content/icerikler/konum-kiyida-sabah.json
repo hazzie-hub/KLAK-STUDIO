@@ -1,0 +1,20 @@
+{
+  "id": "konum-kiyida-sabah",
+  "tur": "konum",
+  "dizi": "eg",
+  "veri": {
+    "ad": "Kıyıda Sabah",
+    "adres": "Sahil yürüyüş yolu, Kadıköy",
+    "desen": "sahil",
+    "pin": { "x": 0.64, "y": 0.46 },
+    "rota": [
+      { "x": 0.14, "y": 0.86 },
+      { "x": 0.22, "y": 0.66 },
+      { "x": 0.38, "y": 0.6 },
+      { "x": 0.52, "y": 0.52 },
+      { "x": 0.64, "y": 0.47 }
+    ],
+    "sure": "12 dk",
+    "mesafe": "3,4 km"
+  }
+}

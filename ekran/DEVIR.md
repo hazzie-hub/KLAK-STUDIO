@@ -3,8 +3,8 @@
 Bu dosya, yeni bir oturuma başlarken okunacak. `CLAUDE.md` projenin anayasası;
 bu dosya ise **nerede kaldığımızı** anlatır.
 
-Son güncelleme: Faz 4 sürüyor. **4.1–4.5 bitti**. Geriye tek adım kaldı:
-4.6 (`galeri`, `harita`, `anaekran` modülleri).
+Son güncelleme: **FAZ 4 BİTTİ.** Dokuz modülün dokuzu da yazıldı, Stüdyo
+çalışıyor. Geriye CLAUDE.md'de yalnızca Faz 5 (hızlandırıcılar) kaldı.
 
 ---
 
@@ -39,9 +39,10 @@ aittir (creative-assistant / workflow builder). Ona dokunulmadı, dokunulmayacak
 Sahneler: `eg-b03-s12` (kilit+bildirim), `eg-b03-s13` (mesajlaşma),
 `eg-b03-s44` (gelen arama), `eg-b03-s58` (sosyal, CLAUDE.md §5'teki örnek),
 `eg-b03-s59` (ghost typing), `eg-b03-s62` (LOOK araması + siteler),
-`eg-b03-s63` (telefon uygulaması), `eg-b03-s71` (pil bitmesi).
+`eg-b03-s63` (telefon uygulaması), `eg-b03-s64` (ana ekran + harita + galeri),
+`eg-b03-s71` (pil bitmesi).
 
-**`eg-b03-s62` ve `eg-b03-s63` numaraları UYDURMA** — yeni modülleri sette
+**`eg-b03-s62`, `eg-b03-s63` ve `eg-b03-s64` numaraları UYDURMA** — yeni modülleri sette
 denemek için açıldı. Yapımdan gerçek sahne numaraları gelince dosya adları ve
 `kod` alanları değiştirilecek.
 
@@ -54,10 +55,10 @@ denemek için açıldı. Yapımdan gerçek sahne numaraları gelince dosya adlar
 | **Faz 1** | 10 adımın 10'u bitti. Kabul testi geçiyor. Gerçek iPhone'da test edildi, çıkan 3 sorun düzeltildi. |
 | **Faz 2** (kumanda) | **BİTTİ.** Supabase kanalı yayında açık, çift yönlü doğrulandı (§3). |
 | **Faz 3** (modüller) | **BİTTİ** — `mesaj`, `arama` (LOOK), `web`, `telefon`. |
-| **Faz 4** (Stüdyo) | 4.1 bitti (aşağıdaki plan). 4.2'de Supabase gerekiyor. |
-| **Faz 5** | Başlanmadı. |
+| **Faz 4** (Stüdyo) | **BİTTİ.** Altı adımın altısı da tamam. |
+| **Faz 5** (hızlandırıcılar) | Başlanmadı. Zorunlu değil: senaryodan taslak üretme, ghost typing ekstraları, gerekirse Capacitor. |
 
-Doğrulama: `npm test` (255 test), `npm run validate` (32 dosya),
+Doğrulama: `npm test` (271 test), `npm run validate` (39 dosya),
 `npm run kabul` (3 kabuk × 6 sahne × 20 tur, internet kesik).
 
 ---
@@ -104,7 +105,7 @@ uyarı gösterilebilir. **Kullanıcıya soruldu, karar vermedi — tekrar sorula
 | 4.3 | Sahne oluşturma/düzenleme formları | **BİTTİ** |
 | 4.4 | Sahne şablonları + kopyala-düzenle | **BİTTİ** |
 | 4.5 | Kilit + versiyon | **BİTTİ** |
-| 4.6 | `galeri`, `harita`, `anaekran` modülleri | — |
+| 4.6 | `galeri`, `harita`, `anaekran` modülleri | **BİTTİ** |
 
 **Yayınlama modeli (kullanıcıya anlatıldı, itiraz gelmedi):** Stüdyo'da sahne
 kaydedilir, "Yayınla" sitenin yeniden kurulmasını tetikler (~2 dk), sahne
@@ -149,6 +150,27 @@ yazmadan önce ve okuduktan sonra Zod'dan geçer. Sorgulanan alanlar (kod, dizi,
 bölüm, tür) ayrıca sütun.
 
 ---
+
+### 4.6 — son üç modül
+
+- **`anaekran`**: ikon ızgarası + rıhtım. İkona dokununca o modül açılır. Bu
+  GEÇİCİ gezinmedir, olay listesine yazılmaz; başa sarınca ve olaylardan gelen
+  ekran değişince sıfırlanır (`src/modules/index.tsx`). Her ikonun bir hotspot'u
+  var (`anaekran-harita` gibi), sahne ona tetik bağlayabilir — bağlarsa geçiş
+  olayla olur, bağlamazsa yerel gezinmeyle.
+- **Ana ekrana dönüş**: ekranın en altında 18px'lik görünmez şerit; gerçek
+  telefonlardaki alt çizgi gibi. Yalnızca YEREL gezinme varken çizilir. Görünür
+  bir "geri" düğmesi kamerada yanlış durur (CLAUDE.md §2.6).
+- **`galeri`**: `foto` içeriklerinden ızgara + tek fotoğraf ekranı. Mesajdaki
+  ya da posttaki fotoğraftan derin link verilebilir.
+- **`harita`**: zemin KODLA ÇİZİLİYOR (`harita/zemin.tsx`), üç desen: şehir,
+  sahil, kırsal. Gerçek karo haritası yok — CLAUDE.md'nin harita notu lisans
+  riski nedeniyle bunu istiyor, ayrıca sette internet olmayabilir. Rota
+  animasyonu sabit süreli (2600 ms), rastgelelik yok.
+- `konum` içerik türünün şeması yazıldı; pin ve rota noktaları haritanın
+  YÜZDESİ (0–1) olarak tutuluyor, böylece zemin değişse de yerinde kalıyorlar.
+- Bununla birlikte içerik türlerinin HEPSİNİN şeması tamamlandı; "ileriki faz"
+  serbest kaydı kaldırıldı.
 
 ### 4.5 — kilit ve versiyon nasıl çalışıyor
 

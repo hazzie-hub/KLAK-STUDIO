@@ -1,0 +1,10 @@
+{
+  "id": "galeri-kedi",
+  "tur": "foto",
+  "dizi": "eg",
+  "veri": {
+    "dosya": "kedi.svg",
+    "aciklama": "Kedi pencerede",
+    "tarih": "geçen hafta"
+  }
+}

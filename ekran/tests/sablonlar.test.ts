@@ -84,14 +84,16 @@ describe("sahne şablonları", () => {
   });
 
   it("boş bırakılan alanlar kullanıcıya önceden söyleniyor", () => {
+    // Tek yönlü kural: taslakta boş alan BIRAKAN şablon neyin doldurulacağını
+    // listelemek ZORUNDA. Tersi zorunlu değil — bir şablon, taslakta boş dize
+    // olarak görünmeyen bir alanın seçilmesini de isteyebilir (örn. açılış
+    // içeriği, taslakta hiç bulunmaz, formdaki açılır listeden seçilir).
     for (const s of SABLONLAR) {
-      const metin = JSON.stringify(s.uret("eg-b03-s90", "nergis-telefon"));
-      const bosluklu = metin.includes('""');
-      // Boşluk bırakan şablon, neyin doldurulacağını listelemeli.
-      expect({ sablon: s.id, bosluklu, liste: s.doldurulacak.length > 0 }).toEqual({
+      const bosluklu = JSON.stringify(s.uret("eg-b03-s90", "nergis-telefon")).includes('""');
+      if (!bosluklu) continue;
+      expect({ sablon: s.id, listeDolu: s.doldurulacak.length > 0 }).toEqual({
         sablon: s.id,
-        bosluklu,
-        liste: bosluklu,
+        listeDolu: true,
       });
     }
   });

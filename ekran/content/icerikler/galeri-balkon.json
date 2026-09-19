@@ -1,0 +1,10 @@
+{
+  "id": "galeri-balkon",
+  "tur": "foto",
+  "dizi": "eg",
+  "veri": {
+    "dosya": "balkon.svg",
+    "aciklama": "Balkonda sabah",
+    "tarih": "geçen hafta"
+  }
+}

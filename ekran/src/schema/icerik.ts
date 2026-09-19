@@ -5,11 +5,9 @@ import { SlugSchema } from "./ortak";
  * İçerik kütüphanesi. CLAUDE.md §5
  * Sahneler arasında yeniden kullanılabilir parçalar: post, sohbet, arama sonucu, web sayfası, konum, foto.
  *
- * Faz 1 sadece `post` ve `foto` kullanır; diğerlerinin ayrıntılı şeması
- * ilgili modül geldiğinde (Faz 3–4) doldurulur, şimdilik serbest bırakılır.
+ * Faz 4 sonunda türlerin HEPSİNİN ayrıntılı şeması var; serbest kayıt kalmadı.
+ * Yeni bir tür eklemek, şemasını da yazmayı gerektirir.
  */
-
-const IleridekiFazVerisi = z.record(z.string(), z.unknown());
 
 /** Sosyal medya postu — `sosyal` modülü (Faz 1). */
 export const PostVerisiSchema = z.strictObject({
@@ -146,6 +144,34 @@ export const WebSayfasiVerisiSchema = z.strictObject({
   govde: z.array(WebBlokSchema).default([]),
 });
 
+/**
+ * Harita konumu — `harita` modülü (Faz 4).
+ *
+ * CLAUDE.md §3.2 harita notu: gerçek karo haritası KULLANILMAZ (lisans ve
+ * atıf riski). Zemin bizim çizdiğimiz stilize haritadır; burada tutulan şey
+ * pinin ve rotanın o zemin üzerindeki YÜZDELİK konumudur (0–1).
+ */
+const NoktaSchema = z.strictObject({
+  x: z.number().min(0).max(1),
+  y: z.number().min(0).max(1),
+});
+
+export const KonumVerisiSchema = z.strictObject({
+  ad: z.string().min(1, { error: "Konumun adı boş olamaz." }),
+  adres: z.string().optional(),
+  /** Haritanın görünümü. */
+  desen: z.enum(["sehir", "sahil", "kirsal"], {
+    error: 'Harita deseni "sehir", "sahil" veya "kirsal" olabilir.',
+  }).default("sehir"),
+  pin: NoktaSchema,
+  /** Rota noktaları. En az iki nokta verilirse animasyonlu çizilir. */
+  rota: z.array(NoktaSchema).default([]),
+  /** "12 dk" gibi serbest metin. */
+  sure: z.string().optional(),
+  /** "3,4 km" gibi serbest metin. */
+  mesafe: z.string().optional(),
+});
+
 /** Tek fotoğraf — `galeri` (Faz 4) ve mesaj ekleri. */
 export const FotoVerisiSchema = z.strictObject({
   dosya: z.string().min(1, { error: "Fotoğrafın dosyası belirtilmeli." }),
@@ -161,7 +187,7 @@ export const IcerikSchema = z.discriminatedUnion(
     z.strictObject({ tur: z.literal("sohbet"), id: SlugSchema, dizi: SlugSchema.optional(), veri: SohbetVerisiSchema }),
     z.strictObject({ tur: z.literal("aramaSonucu"), id: SlugSchema, dizi: SlugSchema.optional(), veri: AramaSonucuVerisiSchema }),
     z.strictObject({ tur: z.literal("webSayfasi"), id: SlugSchema, dizi: SlugSchema.optional(), veri: WebSayfasiVerisiSchema }),
-    z.strictObject({ tur: z.literal("konum"), id: SlugSchema, dizi: SlugSchema.optional(), veri: IleridekiFazVerisi }),
+    z.strictObject({ tur: z.literal("konum"), id: SlugSchema, dizi: SlugSchema.optional(), veri: KonumVerisiSchema }),
   ],
   {
     error:
@@ -177,3 +203,4 @@ export type AramaSonucuVerisi = z.infer<typeof AramaSonucuVerisiSchema>;
 export type AramaSonucu = AramaSonucuVerisi["sonuclar"][number];
 export type WebSayfasiVerisi = z.infer<typeof WebSayfasiVerisiSchema>;
 export type WebBlok = z.infer<typeof WebBlokSchema>;
+export type KonumVerisi = z.infer<typeof KonumVerisiSchema>;

@@ -414,7 +414,7 @@ export function SahneFormu({
           {bekliyor ? "Kaydediliyor…" : "Kaydet"}
         </button>
         <span className="text-[12px] text-[#86868b]">
-          Kaydetmek yayına çıkarmaz; yayın için sahne sayfasındaki Yayınla kullanılır.
+          Kaydedince sahne linki kendiliğinden güncellenir.
         </span>
       </div>
     </div>

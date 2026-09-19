@@ -1,0 +1,37 @@
+{
+  "kod": "eg-b03-s64",
+  "cihaz": "nergis-telefon",
+  "baslangic": { "modul": "anaekran", "ekran": "anaekran" },
+  "durum": { "baglanti": "normal", "gorsel": "normal", "saat": "09:12", "tarih": "19 Eylül Cuma" },
+  "olaylar": [
+    {
+      "id": "haritaya-git",
+      "ad": "Harita açılır, konum görünür",
+      "tetik": { "tur": "dokunma", "hedef": "anaekran-harita" },
+      "aksiyon": {
+        "tur": "ekranAc",
+        "modul": "harita",
+        "ekran": "harita",
+        "icerikRef": "konum-kiyida-sabah"
+      }
+    },
+    {
+      "id": "galeriye-git",
+      "ad": "Galeri açılır",
+      "tetik": { "tur": "elle" },
+      "aksiyon": { "tur": "ekranAc", "modul": "galeri", "ekran": "izgara" }
+    },
+    {
+      "id": "fotoyu-ac",
+      "ad": "Tek fotoğraf ekranı açılır",
+      "tetik": { "tur": "elle" },
+      "aksiyon": {
+        "tur": "ekranAc",
+        "modul": "galeri",
+        "ekran": "foto",
+        "icerikRef": "galeri-deniz"
+      }
+    }
+  ],
+  "talimat": "Ana ekran açık. Oyuncu istediği uygulamaya dokunabilir; uygulamalar açılır. Haritaya dokununca Kıyıda Sabah konumu gelir, alttaki Yol tarifi düğmesi rotayı çizer. Galeri ve tek fotoğraf ekranı gerekiyorsa kumandadan tetiklenir. SAHNE NUMARASI GEÇİCİ: gerçek numara yapımdan gelince değiştirilecek."
+}
