@@ -3,8 +3,8 @@
 Bu dosya, yeni bir oturuma başlarken okunacak. `CLAUDE.md` projenin anayasası;
 bu dosya ise **nerede kaldığımızı** anlatır.
 
-Son güncelleme: Faz 4 sürüyor. **4.1, 4.2, 4.3 bitti** — sahneler artık
-Stüdyo'dan formla kurulup düzenlenebiliyor. Sıradaki 4.4 (şablonlar).
+Son güncelleme: Faz 4 sürüyor. **4.1–4.4 bitti**. Sahneler Stüdyo'dan
+şablonla kurulup düzenlenebiliyor, kopyalanabiliyor. Sıradaki 4.5 (kilit+versiyon).
 
 ---
 
@@ -33,7 +33,7 @@ aittir (creative-assistant / workflow builder). Ona dokunulmadı, dokunulmayacak
 | `/k/{kod}` | Kumanda — operatörün telefonu |
 | `/studio` | Stüdyo — sahne ağacı (dizi → bölüm → sahne) |
 | `/studio/{kod}` | Teslim paketi — link, QR kod, hazır metin, Yayınla |
-| `/studio/yeni` | Yeni sahne formu |
+| `/studio/yeni` | Yeni sahne — şablon seçimi, `?sablon=` ile şablondan, `?kopya=` ile kopyadan |
 | `/studio/{kod}/duzenle` | Sahne düzenleme formu |
 
 Sahneler: `eg-b03-s12` (kilit+bildirim), `eg-b03-s13` (mesajlaşma),
@@ -57,7 +57,7 @@ denemek için açıldı. Yapımdan gerçek sahne numaraları gelince dosya adlar
 | **Faz 4** (Stüdyo) | 4.1 bitti (aşağıdaki plan). 4.2'de Supabase gerekiyor. |
 | **Faz 5** | Başlanmadı. |
 
-Doğrulama: `npm test` (244 test), `npm run validate` (32 dosya),
+Doğrulama: `npm test` (253 test), `npm run validate` (32 dosya),
 `npm run kabul` (3 kabuk × 6 sahne × 20 tur, internet kesik).
 
 ---
@@ -102,7 +102,7 @@ uyarı gösterilebilir. **Kullanıcıya soruldu, karar vermedi — tekrar sorula
 | 4.1 | Stüdyo iskeleti + teslim paketi (link, QR, hazır metin) | **BİTTİ** |
 | 4.2 | Supabase tabloları, verinin dosyadan veritabanına taşınması | **BİTTİ** |
 | 4.3 | Sahne oluşturma/düzenleme formları | **BİTTİ** |
-| 4.4 | Sahne şablonları + kopyala-düzenle | — |
+| 4.4 | Sahne şablonları + kopyala-düzenle | **BİTTİ** |
 | 4.5 | Kilit + versiyon | — |
 | 4.6 | `galeri`, `harita`, `anaekran` modülleri | — |
 

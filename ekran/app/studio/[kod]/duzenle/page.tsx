@@ -25,7 +25,7 @@ export default async function SahneDuzenleSayfasi({
       {sahne === null ? (
         <p className="mt-6 text-[15px]">Böyle bir sahne yok.</p>
       ) : (
-        <SahneFormu baslangicSahne={sahne} secenekler={secenekler} yeniMi={false} />
+        <SahneFormu baslangicTaslak={sahne as unknown as Record<string, unknown>} secenekler={secenekler} yeniMi={false} />
       )}
     </main>
   );

@@ -38,8 +38,14 @@ export default async function TeslimSayfasi({ params }: { params: Promise<{ kod:
           ← Stüdyo
         </Link>
         <Link
-          href={`/studio/${kod}/duzenle`}
+          href={`/studio/yeni?kopya=${kod}`}
           className="ml-auto rounded-full border border-[#d2d2d7] px-4 py-[6px] text-[13px] font-medium text-[#1d1d1f] active:bg-[#f5f5f7]"
+        >
+          Kopyala
+        </Link>
+        <Link
+          href={`/studio/${kod}/duzenle`}
+          className="rounded-full border border-[#d2d2d7] px-4 py-[6px] text-[13px] font-medium text-[#1d1d1f] active:bg-[#f5f5f7]"
         >
           Düzenle
         </Link>

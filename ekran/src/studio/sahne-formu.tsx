@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
-import type { AksiyonTuru, Sahne, TetikTuru } from "@/schema";
+import type { AksiyonTuru, TetikTuru } from "@/schema";
 import { AlanGirdisi, type Secenekler } from "./alan-girdisi";
 import {
   AKSIYON_ADLARI,
@@ -34,11 +34,15 @@ function varsayilanlar(alanlar: readonly Alan[]): Taslak {
 }
 
 export function SahneFormu({
-  baslangicSahne,
+  baslangicTaslak,
   secenekler,
   yeniMi,
 }: {
-  baslangicSahne: Sahne | null;
+  /**
+   * Formun açılış hali. Geçerli bir sahne olmak ZORUNDA DEĞİL: şablondan
+   * gelen taslakların içerik referansları boştur, kullanıcı doldurur.
+   */
+  baslangicTaslak: Record<string, unknown> | null;
   secenekler: Secenekler;
   yeniMi: boolean;
 }) {
@@ -47,7 +51,7 @@ export function SahneFormu({
   const [sonuc, setSonuc] = useState<KayitSonucu | null>(null);
 
   const [sahne, setSahne] = useState<Taslak>(() =>
-    baslangicSahne === null
+    baslangicTaslak === null
       ? {
           kod: "",
           cihaz: "",
@@ -56,7 +60,7 @@ export function SahneFormu({
           olaylar: bosOlaylar(),
           talimat: "",
         }
-      : (structuredClone(baslangicSahne) as unknown as Taslak),
+      : structuredClone(baslangicTaslak),
   );
 
   const yaz = (yol: string[], deger: unknown) => {
