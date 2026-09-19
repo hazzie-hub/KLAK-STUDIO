@@ -67,6 +67,12 @@ export function cihazHazirligi(skin: Skin, kumandaVar: boolean): string[] {
   }
 
   return [
+    // EN ÖNEMLİ MADDE, EN BAŞTA: tarayıcı çubuğu kameraya girmemeli
+    // (CLAUDE.md §2.6). Linki doğrudan açmak yetmez; adres çubuğu ancak
+    // sahne ANA EKRANDAKİ İKONDAN açılınca kaybolur.
+    skin === "ios"
+      ? 'Linki Safari\'de açın → Paylaş (kutu ve yukarı ok) → "Ana Ekrana Ekle" → sonra sahneyi ANA EKRANDAKİ İKONDAN açın. Tarayıcı çubuğu ancak böyle kaybolur.'
+      : 'Linki Chrome\'da açın → sağ üstteki ⋮ → "Ana ekrana ekle" → sonra sahneyi ANA EKRANDAKİ İKONDAN açın. Tarayıcı çubuğu ancak böyle kaybolur.',
     "Rahatsız Etmeyin / Odak modu AÇIK",
     "Otomatik kilit KAPALI",
     "Parlaklık sabit (otomatik parlaklık kapalı)",
@@ -128,7 +134,10 @@ export function teslimMetni(bilgi: TeslimBilgisi): string {
     ...cihazHazirligi(skin, kumandaVar).map((m) => `• ${m}`),
     "",
     "ÇEKİMDEN ÖNCE",
-    "• Linki açın, bir kez yenileyin, birkaç saniye bekleyin.",
+    skin === "desktop"
+      ? "• Tarayıcıyı tam ekran yapın (F11); adres çubuğu görünmesin."
+      : "• Sahneyi ana ekrandaki ikondan açın — tarayıcı içinden açarsanız adres çubuğu kameraya girer.",
+    "• Bir kez yenileyin, birkaç saniye bekleyin.",
     "• Saatin iki noktası bir kez yanıp sönünce her şey indi demektir.",
     "• Ondan sonra internet kesilse de sahne çalışır.",
   ];

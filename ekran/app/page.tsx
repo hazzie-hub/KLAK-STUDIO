@@ -65,6 +65,12 @@ export default async function AnaSayfa() {
         <br />
         <br />
         <strong className="block text-[#1d1d1f]">Sete hazırlık</strong>
+        <strong>Telefonda önce sahneyi ana ekrana ekleyin</strong> (iPhone: Paylaş →
+        &quot;Ana Ekrana Ekle&quot;, Android: ⋮ → &quot;Ana ekrana ekle&quot;) ve sahneyi{" "}
+        <strong>o ikondan açın</strong>. Tarayıcının adres çubuğu ancak böyle kaybolur;
+        tarayıcı içinden açarsanız çubuk kameraya girer. Bilgisayarda F11 ile tam ekran.
+        <br />
+        <br />
         Sahneyi açın, <strong>bir kez yenileyin</strong> ve birkaç saniye bekleyin.
         Saatin iki noktası bir kez yanıp sönünce her şey indi demektir; internet
         kesilebilir.

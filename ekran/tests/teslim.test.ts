@@ -110,7 +110,32 @@ describe("teslim metni", () => {
 
   it("çekimden önce yapılacaklar her zaman var — sette en çok unutulan adım", () => {
     const metin = teslimMetni({ ...temel, kumandaVar: true });
-    expect(metin).toContain("bir kez yenileyin");
+    expect(metin.toLocaleLowerCase("tr")).toContain("bir kez yenileyin");
+  });
+
+  it("TELEFONDA ana ekrana ekleme adımı var — tarayıcı çubuğu kameraya girmesin", () => {
+    for (const skin of ["ios", "android"] as const) {
+      const metin = teslimMetni({
+        ...temel,
+        cihaz: { ...(cihaz ?? { kod: "x", skin, rehber: [], aramaGecmisi: [] }), skin },
+        kumandaVar: false,
+      });
+      expect({ skin, var: metin.includes("Ana Ekrana Ekle") || metin.includes("Ana ekrana ekle") }).toEqual({
+        skin,
+        var: true,
+      });
+      expect(metin).toContain("ikondan");
+    }
+  });
+
+  it("BİLGİSAYARDA ana ekrana ekleme değil, tam ekran yazar", () => {
+    const metin = teslimMetni({
+      ...temel,
+      cihaz: { ...(cihaz ?? { kod: "x", skin: "desktop", rehber: [], aramaGecmisi: [] }), skin: "desktop" },
+      kumandaVar: false,
+    });
+    expect(metin).not.toContain("Ana ekrana ekle");
+    expect(metin).toContain("F11");
   });
 
   it("karakter adı verilirse cihaz satırında o yazar", () => {
