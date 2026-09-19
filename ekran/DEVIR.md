@@ -3,8 +3,8 @@
 Bu dosya, yeni bir oturuma başlarken okunacak. `CLAUDE.md` projenin anayasası;
 bu dosya ise **nerede kaldığımızı** anlatır.
 
-Son güncelleme: Faz 4 sürüyor. 4.1 bitti. 4.2'nin KOD tarafı bitti;
-kullanıcının SQL'i çalıştırması ve anahtarı girmesi bekleniyor.
+Son güncelleme: Faz 4 sürüyor. **4.1 ve 4.2 bitti** — yayındaki site artık
+sahneleri Supabase'ten okuyor. Sıradaki 4.3 (sahne formları).
 
 ---
 
@@ -98,7 +98,7 @@ uyarı gösterilebilir. **Kullanıcıya soruldu, karar vermedi — tekrar sorula
 | # | Adım | Durum |
 |---|---|---|
 | 4.1 | Stüdyo iskeleti + teslim paketi (link, QR, hazır metin) | **BİTTİ** |
-| 4.2 | Supabase tabloları, verinin dosyadan veritabanına taşınması | kod hazır, kurulum bekliyor |
+| 4.2 | Supabase tabloları, verinin dosyadan veritabanına taşınması | **BİTTİ** |
 | 4.3 | Sahne oluşturma/düzenleme formları | — |
 | 4.4 | Sahne şablonları + kopyala-düzenle | — |
 | 4.5 | Kilit + versiyon | — |
@@ -109,9 +109,20 @@ kaydedilir, "Yayınla" sitenin yeniden kurulmasını tetikler (~2 dk), sahne
 sayfası STATİK kalır. Oynatıcının veritabanına canlı bağlanması REDDEDİLDİ:
 CLAUDE.md §2.3 sette internetsiz çalışmayı şart koşuyor.
 
-### 4.2'nin durumu
+### 4.2 bitti — kurulmuş hali
 
-Kod tarafı hazır:
+Veritabanı kuruldu, veri aktarıldı, `SUPABASE_SERVICE_ROLE_KEY` Vercel'e
+(yalnızca Production) girildi. Yayındaki site sahneleri veritabanından okuyor.
+
+> ⚠️ **YENİ TUZAK — en önemli madde:** `content/` altındaki dosyalar artık
+> YAYINI BESLEMİYOR. Bir sahneyi dosyadan düzenleyip göndermek yayında
+> HİÇBİR ŞEYİ DEĞİŞTİRMEZ; site veritabanından okuyor. Değişikliğin yayına
+> gitmesi için `npm run aktar -- --sql` çalıştırılıp üretilen
+> `supabase/02-veri.sql` panele yapıştırılmalı. Bu zahmet 4.3'te (Stüdyo
+> formları) ortadan kalkacak. Dosyalar testlerin ve `npm run validate`'in
+> veri kaynağı olarak duruyor, silinmeyecek.
+
+Kod tarafı:
 - `supabase/01-tablolar.sql` — tablolar, RLS (politika YOK, yani anon anahtarla
   erişim kapalı; okuma yalnızca service role ile).
 - `src/icerik/kaynak.ts` — okuma yüzeyi. `NEXT_PUBLIC_SUPABASE_URL` ve
@@ -121,12 +132,15 @@ Kod tarafı hazır:
 - `npm run aktar` — `content/` altındaki her şeyi Supabase'e upsert eder,
   tekrar çalıştırılabilir, silme yapmaz. `--kuru` ile önizlenir.
 
-Kullanıcıdan beklenenler (sırayla):
-1. `supabase/01-tablolar.sql` içeriğini Supabase panelinde SQL Editor'a
-   yapıştırıp çalıştırmak.
-2. Service role anahtarını `.env.local`'e ve Vercel'e `SUPABASE_SERVICE_ROLE_KEY`
-   adıyla girmek. **Bu anahtar gizlidir**, `NEXT_PUBLIC_` ÖNEKİ ALMAZ, tarayıcıya
-   gitmemeli.
+Kurulumda yaşananlar (tekrarlanırsa diye):
+- Supabase'in SQL düzenleyicisi `01-tablolar.sql` için "destructive operations"
+  uyarısı verdi. Sebebi metindeki `drop trigger if exists` satırları; tablo ya
+  da veri silen hiçbir komut yok, güvenle çalıştırıldı.
+- İlk kurulum `Invalid API key` ile düştü: Vercel'e yanlış/maskeli anahtar
+  girilmişti. Doğru anahtar `service_role` (legacy JWT); `anon` ve
+  `sb_publishable_` DEĞİL. Kaydetmeden önce Vercel'in göz simgesiyle değeri
+  gösterip `eyJ` ile başladığını ve içinde iki nokta olduğunu doğrulamak
+  bu turu kısaltıyor.
 
 Şema TEK KAYNAK Zod'da; tablolarda kaydın tamamı `veri` (jsonb) sütununda durur,
 yazmadan önce ve okuduktan sonra Zod'dan geçer. Sorgulanan alanlar (kod, dizi,
