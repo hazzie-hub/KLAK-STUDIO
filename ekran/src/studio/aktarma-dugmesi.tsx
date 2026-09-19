@@ -27,7 +27,9 @@ export function AktarmaDugmesi() {
           </h2>
           <p className="mt-1 text-[12px] leading-relaxed text-[#6e6e73]">
             Koda yeni sahne ya da içerik eklendiyse bu düğme onları veritabanına taşır.
-            Hiçbir şey silmez, onaylanmış sahnelere dokunmaz.
+            Hiçbir şey silmez ve onaylanmış (kilitli) sahnelere dokunmaz. Ama dikkat:
+            depoda karşılığı olan ve kilitli OLMAYAN bir sahneyi Stüdyo'dan
+            düzenlediyseniz, bu aktarım o düzenlemenin üstüne yazar. Önce onaylayın.
           </p>
         </div>
         <button
