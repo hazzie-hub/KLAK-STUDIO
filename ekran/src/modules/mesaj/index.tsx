@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 
 import { useSahne } from "@/engine";
 import { Medya } from "@/shared/medya";
-import { Avatar, Geri } from "@/modules/sosyal/parcalar";
+import { Geri } from "@/modules/sosyal/parcalar";
+import { Avatar } from "@/shared/avatar";
 import { MARKA, useMesajVeri, type GorunenMesaj, type GorunenSohbet } from "./veri";
 
 /**

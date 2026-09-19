@@ -1,0 +1,37 @@
+{
+  "id": "site-akis-kadikoy-kahve",
+  "tur": "webSayfasi",
+  "dizi": "eg",
+  "veri": {
+    "sablon": "sosyal",
+    "siteAdi": "Akış",
+    "adres": "akissosyal.com/kadikoy.kahve",
+    "baslik": "Kadıköy Kahve — Akış profili",
+    "menu": ["Keşfet", "Ara", "Giriş yap"],
+    "govde": [
+      {
+        "tur": "profil",
+        "hesap": "kadikoy-kahve",
+        "biyografi": "Sahil yolunun üstünde küçük bir kahve. Sabah yedide açılır, akşam sekizde kapanır.",
+        "gonderi": 148,
+        "takipci": 4820,
+        "takip": 312
+      },
+      {
+        "tur": "izgara",
+        "dosyalar": [
+          "kahve.svg",
+          "masa.svg",
+          "pencere.svg",
+          "deniz.svg",
+          "balkon.svg",
+          "sokak.svg"
+        ]
+      },
+      {
+        "tur": "paragraf",
+        "metin": "Gönderileri görmek için uygulamayı aç."
+      }
+    ]
+  }
+}

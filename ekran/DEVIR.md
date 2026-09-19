@@ -15,7 +15,7 @@ bu dosya **nerede kaldığımızı** ve **nasıl çalışıldığını** anlatı
 | Stüdyo | Şablon → form → kaydet → onayla → teslim paketi. JSON yazılmıyor |
 | Veri | Supabase'te. `content/` dosyaları yalnızca test/geliştirme kaynağı |
 | Sahneler | 9 sahne yayında |
-| Doğrulama | 299 test · `validate` 39 dosyada temiz (3 uyarı, kasıtlı) |
+| Doğrulama | 306 test · `validate` 40 dosyada temiz (3 uyarı, kasıtlı) |
 
 Geriye CLAUDE.md'de yalnızca **Faz 5 (hızlandırıcılar)** kaldı ve o zorunlu
 değil: senaryodan taslak üretme, ghost typing ekstraları, gerekirse Capacitor.
@@ -60,6 +60,8 @@ bizim işimizi etkilemiyor, kapatılabilir.)
 `s58` sosyal (CLAUDE.md §5 örneği) · `s59` ghost typing · `s62` LOOK araması +
 siteler · `s63` telefon uygulaması · `s64` ana ekran + harita + galeri ·
 `s71` pil bitmesi.
+>
+> `s62`'nin 5. sonucu Akış'ın tarayıcıdaki hâlini açar (`sosyal` web şablonu).
 
 > **`s62`, `s63`, `s64` numaraları UYDURMA** — yeni modülleri sette denemek
 > için açıldı. Yapımdan gerçek numaralar gelince dosya adı ve `kod` alanı
@@ -96,11 +98,11 @@ Kod tarafında zorunlu bir iş kalmadı. Bunlar içerik:
    çizimlerin yerine.
 4. **Uydurma alan adlarının yapım/hukuk onayı** — `kiyidasabah.com`,
    `gezginnotu.net`, `kadikoykahvaltici.com`, `rehberdefteri.net`,
-   `gunluksehir.net`. Hepsi DNS'te sorgulandı, çözülmüyorlar;
-   `sahilsofrasi.com`, `sehirdefteri.com`, `kentgundem.net` GERÇEK çıktığı için
-   elendi. Yeni alan adı uydururken aynı kontrolü yap.
-5. **Akış'ın web hâli ve harita** kullanıcı istemişti; harita modülü yapıldı,
-   Akış'ın `web` şablonu olarak sürümü YAPILMADI.
+   `gunluksehir.net`, `akissosyal.com`. Hepsi DNS'te sorgulandı, çözülmüyorlar;
+   `sahilsofrasi.com`, `sehirdefteri.com`, `kentgundem.net`, `akis.com`,
+   `akisapp.com`, `akis.app` GERÇEK çıktığı için elendi. Yeni alan adı
+   uydururken aynı kontrolü yap (A kaydı yetmez, NS/SOA da bak: `akis.app`
+   böyle yakalandı).
 
 ---
 

@@ -2,9 +2,11 @@ import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
+import { markalar, modulMarkasi } from "../brands";
 import { aktifEkranTuret } from "../src/modules/aktif-ekran";
 import { SABLON_RENKLERI } from "../src/modules/web/sablonlar";
 import {
+  HesapSchema,
   IcerikSchema,
   SahneSchema,
   WebSayfasiVerisiSchema,
@@ -99,6 +101,39 @@ describe("web sayfası şeması", () => {
     expect(WebSayfasiVerisiSchema.safeParse({ ...gecerli, sablon: "dergi" }).success).toBe(false);
   });
 
+  it("sosyal şablon tanınır — uygulamanın tarayıcıdaki hâli", () => {
+    expect(WebSayfasiVerisiSchema.safeParse({ ...gecerli, sablon: "sosyal" }).success).toBe(true);
+  });
+
+  it("profil bloğu hesabı kimlikle verir — kullanıcı adı sayfaya elle yazılmaz", () => {
+    const v = WebSayfasiVerisiSchema.parse({
+      ...gecerli,
+      govde: [{ tur: "profil", hesap: "kadikoy-kahve", takipci: 4820 }],
+    });
+    expect(v.govde[0]).toEqual({ tur: "profil", hesap: "kadikoy-kahve", takipci: 4820 });
+  });
+
+  it("profil bloğunda hesap zorunlu", () => {
+    expect(WebSayfasiVerisiSchema.safeParse({ ...gecerli, govde: [{ tur: "profil" }] }).success).toBe(false);
+  });
+
+  it("profil sayıları negatif ya da kesirli olamaz", () => {
+    const dene = (takipci: number) =>
+      WebSayfasiVerisiSchema.safeParse({
+        ...gecerli,
+        govde: [{ tur: "profil", hesap: "kadikoy-kahve", takipci }],
+      }).success;
+    expect(dene(-1)).toBe(false);
+    expect(dene(4.5)).toBe(false);
+    expect(dene(0)).toBe(true);
+  });
+
+  it("boş ızgara kabul edilmez — kamerada boş kare görünmesin", () => {
+    expect(
+      WebSayfasiVerisiSchema.safeParse({ ...gecerli, govde: [{ tur: "izgara", dosyalar: [] }] }).success,
+    ).toBe(false);
+  });
+
   it("boş paragraf kabul edilmez — kamerada boş satır görünmesin", () => {
     const sonuc = WebSayfasiVerisiSchema.safeParse({
       ...gecerli,
@@ -130,6 +165,24 @@ describe("site içerikleri", () => {
   it("her şablonun bir rengi tanımlı", () => {
     for (const s of sayfalar) {
       expect(SABLON_RENKLERI[s.veri.sablon]).toMatch(/^#[0-9a-f]{6}$/);
+    }
+  });
+
+  it("sosyal şablonun rengi markadan geliyor — elle yazılmıyor (CLAUDE.md §2.1)", () => {
+    expect(SABLON_RENKLERI.sosyal).toBe(markalar[modulMarkasi.sosyal].renk);
+  });
+
+  it("profil bloğundaki her hesap gerçekten kütüphanede var", () => {
+    const hesapIdleri = new Set(
+      readdirSync(join(KOK, "content", "hesaplar"))
+        .filter((d) => d.endsWith(".json"))
+        .map((d) => HesapSchema.parse(oku(`content/hesaplar/${d}`)).id),
+    );
+    for (const s of sayfalar) {
+      for (const blok of s.veri.govde) {
+        if (blok.tur !== "profil") continue;
+        expect(hesapIdleri.has(blok.hesap)).toBe(true);
+      }
     }
   });
 

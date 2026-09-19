@@ -6,7 +6,8 @@ import { Medya } from "@/shared/medya";
 import { GhostYaziAlani, useGhostTyping } from "@/shared/ghost-typing";
 import { useKutuphane } from "@/icerik/kutuphane";
 import { GHOST_HEDEF, HOTSPOT } from "./hotspotlar";
-import { Avatar, Balon, Geri, Kalp, sayiYaz } from "./parcalar";
+import { Avatar, sayiYaz } from "@/shared/avatar";
+import { Balon, Geri, Kalp } from "./parcalar";
 import { PostKarti } from "./post-karti";
 import type { Aktivite, GorunenPost, SosyalVeri } from "./veri";
 

@@ -1,9 +1,11 @@
 "use client";
 
-import { Medya } from "@/shared/medya";
-import type { Hesap } from "@/schema";
-
-/** Elle çizilmiş ikonlar — CLAUDE.md §2.1: gerçek uygulama ikonu yok. */
+/**
+ * Elle çizilmiş ikonlar — CLAUDE.md §2.1: gerçek uygulama ikonu yok.
+ *
+ * Avatar ve sayı biçimi burada değil: üç modül birden kullandığı için
+ * `shared/avatar`'a taşındı.
+ */
 
 export function Kalp({ dolu = false, boyut = 24 }: { dolu?: boolean; boyut?: number }) {
   return (
@@ -92,52 +94,4 @@ export function Arti({ boyut = 25 }: { boyut?: number }) {
       <path d="M12 8.2v7.6M8.2 12h7.6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
     </svg>
   );
-}
-
-export function Avatar({
-  hesap,
-  boyut = 34,
-  halka = false,
-}: {
-  hesap: Hesap | null;
-  boyut?: number;
-  halka?: boolean;
-}) {
-  const kaynak = hesap?.avatar;
-  const govde =
-    kaynak === undefined ? (
-      <div
-        className="h-full w-full"
-        style={{ background: "var(--zemin-ikincil)", borderRadius: "999px" }}
-      />
-    ) : (
-      <Medya
-        kaynak={`/avatar/${kaynak}`}
-        alt={hesap?.gorunenAd ?? ""}
-        className="h-full w-full rounded-full"
-      />
-    );
-
-  if (!halka) {
-    return (
-      <div className="shrink-0 overflow-hidden rounded-full" style={{ width: boyut, height: boyut }}>
-        {govde}
-      </div>
-    );
-  }
-
-  return (
-    <div
-      className="shrink-0 rounded-full p-[2px]"
-      style={{ width: boyut + 5, height: boyut + 5, background: "linear-gradient(135deg,#d98f4a,#b8456a)" }}
-    >
-      <div className="h-full w-full overflow-hidden rounded-full" style={{ border: "2px solid var(--zemin)" }}>
-        {govde}
-      </div>
-    </div>
-  );
-}
-
-export function sayiYaz(n: number): string {
-  return n.toLocaleString("tr-TR");
 }

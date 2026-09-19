@@ -1,6 +1,8 @@
 "use client";
 
+import { useKutuphane } from "@/icerik/kutuphane";
 import type { WebBlok } from "@/schema";
+import { Avatar, sayiYaz } from "@/shared/avatar";
 import { Medya } from "@/shared/medya";
 
 /**
@@ -90,5 +92,78 @@ function Blok({ blok, renk }: { blok: WebBlok; renk: string }) {
           <p className="text-[13px] leading-[1.55]">{blok.metin}</p>
         </div>
       );
+
+    case "profil":
+      return <ProfilBasligi blok={blok} renk={renk} />;
+
+    case "izgara":
+      return (
+        <div className="mb-[13px] grid auto-rows-min grid-cols-3 gap-[3px]">
+          {blok.dosyalar.map((dosya, i) => (
+            <Medya
+              key={`${dosya}-${i}`}
+              kaynak={`/ornek/${dosya}`}
+              alt=""
+              className="w-full"
+              style={{ aspectRatio: "1 / 1", color: "var(--metin)" }}
+            />
+          ))}
+        </div>
+      );
   }
+}
+
+/**
+ * Profil başlığı — hesap kütüphaneden okunur.
+ *
+ * Kullanıcı adı, görünen ad ve avatar `content/hesaplar` altındaki tek
+ * kaynaktan gelir; sayfaya elle yazılmaz. Böylece bir karakterin adı
+ * değişince uygulamada da sitede de aynı anda değişir.
+ */
+function ProfilBasligi({
+  blok,
+  renk,
+}: {
+  blok: Extract<WebBlok, { tur: "profil" }>;
+  renk: string;
+}) {
+  const k = useKutuphane();
+  const hesap = k.hesap(blok.hesap);
+  const sayilar = [
+    { sayi: blok.gonderi, etiket: "gönderi" },
+    { sayi: blok.takipci, etiket: "takipçi" },
+    { sayi: blok.takip, etiket: "takip" },
+  ].flatMap((s) => (s.sayi === undefined ? [] : [{ sayi: s.sayi, etiket: s.etiket }]));
+
+  return (
+    <div className="mb-[15px]">
+      <div className="flex items-center gap-[17px]">
+        <Avatar hesap={hesap} boyut={82} />
+        <div className="min-w-0 flex-1">
+          <div className="truncate text-[18px] font-semibold">
+            {hesap?.kullaniciAdi ?? blok.hesap}
+          </div>
+          {hesap?.gorunenAd !== undefined && (
+            <div className="mt-[2px] truncate text-[13px]" style={{ color: "var(--metin-soluk)" }}>
+              {hesap.gorunenAd}
+            </div>
+          )}
+          {sayilar.length > 0 && (
+            <div className="mt-[9px] flex flex-wrap gap-[17px] text-[13px]">
+              {sayilar.map((s) => (
+                <span key={s.etiket}>
+                  <span className="font-semibold">{sayiYaz(s.sayi)}</span>{" "}
+                  <span style={{ color: "var(--metin-soluk)" }}>{s.etiket}</span>
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+      {blok.biyografi !== undefined && (
+        <p className="mt-[11px] text-[13px] leading-[1.55]">{blok.biyografi}</p>
+      )}
+      <div className="mt-[13px] h-[1px] w-full" style={{ background: renk, opacity: 0.25 }} />
+    </div>
+  );
 }

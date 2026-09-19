@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 
 import { Medya } from "@/shared/medya";
-import { Avatar, Balon, Kalp, UcNokta, Ucgen, Yer, sayiYaz } from "./parcalar";
+import { Avatar, sayiYaz } from "@/shared/avatar";
+import { Balon, Kalp, UcNokta, Ucgen, Yer } from "./parcalar";
 import type { GorunenPost } from "./veri";
 
 /**

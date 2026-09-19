@@ -112,14 +112,39 @@ export const WebBlokSchema = z.discriminatedUnion(
       metin: z.string().min(1, { error: "Yorum boş olamaz." }),
       tarih: z.string().optional(),
     }),
+    /**
+     * Sosyal medya profil başlığı — Akış'ın web hâli (`sosyal` şablonu).
+     *
+     * Hesap, içerik kütüphanesinden gelir: kullanıcı adı, görünen ad ve avatar
+     * tek kaynakta durur (`content/hesaplar`), sayfaya elle yazılmaz. Sayılar
+     * yalnızca görünüş içindir; sahne sırasında değişmezler.
+     */
+    z.strictObject({
+      tur: z.literal("profil"),
+      hesap: SlugSchema,
+      biyografi: z.string().optional(),
+      gonderi: z.number().int().min(0).optional(),
+      takipci: z.number().int().min(0).optional(),
+      takip: z.number().int().min(0).optional(),
+    }),
+    /** Fotoğraf ızgarası — /ornek altındaki dosyalar. */
+    z.strictObject({
+      tur: z.literal("izgara"),
+      dosyalar: z
+        .array(z.string().min(1, { error: "Izgaradaki fotoğrafın dosyası belirtilmeli." }))
+        .min(1, { error: "Izgara en az bir fotoğraf içermeli." }),
+    }),
   ],
-  { error: 'Blok türü şunlardan biri olmalı: baslik, paragraf, gorsel, alinti, liste, yorum.' },
+  {
+    error:
+      'Blok türü şunlardan biri olmalı: baslik, paragraf, gorsel, alinti, liste, yorum, profil, izgara.',
+  },
 );
 
 export const WebSayfasiVerisiSchema = z.strictObject({
   /** Sayfanın görünümü. CLAUDE.md §3.2 */
-  sablon: z.enum(["haber", "blog", "kurumsal", "forum"], {
-    error: 'Şablon "haber", "blog", "kurumsal" veya "forum" olabilir.',
+  sablon: z.enum(["haber", "blog", "kurumsal", "forum", "sosyal"], {
+    error: 'Şablon "haber", "blog", "kurumsal", "forum" veya "sosyal" olabilir.',
   }),
   siteAdi: z.string().min(1, { error: "Sitenin adı boş olamaz." }),
   /** Adres çubuğunda görünen kurgusal adres. Gerçek bir alan adı YAZILMAZ. */

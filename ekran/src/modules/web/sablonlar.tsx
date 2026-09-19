@@ -1,5 +1,6 @@
 "use client";
 
+import { markalar, modulMarkasi } from "@brands";
 import type { WebSayfasiVerisi } from "@/schema";
 import { Bloklar } from "./bloklar";
 
@@ -17,6 +18,8 @@ export const SABLON_RENKLERI: Record<SablonAdi, string> = {
   blog: "#2f6f4f",
   kurumsal: "#2a5b8c",
   forum: "#6a5230",
+  /** Sosyal uygulamanın web hâli — rengi markadan gelir, elle yazılmaz. */
+  sosyal: markalar[modulMarkasi.sosyal].renk,
 };
 
 function Menu({ menu, renk }: { menu: string[]; renk: string }) {
@@ -117,6 +120,33 @@ export function Sablon({ veri }: { veri: WebSayfasiVerisi }) {
           <div className="px-[15px] pt-[15px]">
             <h1 className="mb-[7px] text-[18px] font-semibold leading-[1.32]">{veri.baslik}</h1>
             <Kunye veri={veri} />
+            <Bloklar govde={veri.govde} renk={renk} />
+          </div>
+        </article>
+      );
+
+    /**
+     * Sosyal uygulamanın web hâli: tarayıcıda açılan Akış.
+     *
+     * Uygulamanın kendisi `sosyal` modülü; bu, aynı markanın tarayıcıdan
+     * görünen yüzü. Üstte uygulama adı, altında gövde — `profil` ve `izgara`
+     * blokları burada anlamını bulur ama gövde yine sıradan blok listesidir.
+     * Sayfa başlığı ayrı bir satır olarak çizilmez: profil bloğu zaten kimin
+     * sayfası olduğunu söyler, iki kere yazılmış gibi durur.
+     */
+    case "sosyal":
+      return (
+        <article className="pb-[26px]">
+          <div
+            className="flex items-center justify-between px-[15px] py-[11px]"
+            style={{ background: "var(--zemin)", borderBottom: "1px solid var(--ayrac)" }}
+          >
+            <span className="text-[17px] font-semibold tracking-tight" style={{ color: renk }}>
+              {veri.siteAdi}
+            </span>
+            <Menu menu={veri.menu} renk={renk} />
+          </div>
+          <div className="mx-auto max-w-[620px] px-[17px] pt-[17px]">
             <Bloklar govde={veri.govde} renk={renk} />
           </div>
         </article>

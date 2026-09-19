@@ -93,7 +93,21 @@
         "ekran": "sayfa",
         "icerikRef": "site-rehber-defteri"
       }
+    },
+    {
+      "id": "akis-profiline-gir",
+      "ad": "Beşinci sonuca dokunulur, Akış profili tarayıcıda açılır",
+      "tetik": {
+        "tur": "dokunma",
+        "hedef": "arama-sonuc-5"
+      },
+      "aksiyon": {
+        "tur": "ekranAc",
+        "modul": "web",
+        "ekran": "sayfa",
+        "icerikRef": "site-akis-kadikoy-kahve"
+      }
     }
   ],
-  "talimat": "LOOK arama sayfası açık. Oyuncu arama çubuğuna dokunur, klavye açılır; KLAVYEDE İSTEDİĞİ TUŞLARA BASAR — senaryodaki metin kendiliğinden yazılır. Metin bitince alttaki ara düğmesi aktifleşir; basınca sonuç sayfası gelir. Sonuçlardan birine dokununca o site açılır (1. sonuç işletme sayfası, 2. sonuç blog, 4. sonuç forum; 3. sonucun sitesi yok). Görseller sekmesi gerekiyorsa kumandadan tetiklenir. Aranan metin, sonuçlar ve site içerikleri senaryodan alınmalı; buradakiler yer tutucudur. SAHNE NUMARASI GEÇİCİ: gerçek numara yapımdan gelince değiştirilecek."
+  "talimat": "LOOK arama sayfası açık. Oyuncu arama çubuğuna dokunur, klavye açılır; KLAVYEDE İSTEDİĞİ TUŞLARA BASAR — senaryodaki metin kendiliğinden yazılır. Metin bitince alttaki ara düğmesi aktifleşir; basınca sonuç sayfası gelir. Sonuçlardan birine dokununca o site açılır (1. sonuç işletme sayfası, 2. sonuç blog, 4. sonuç forum, 5. sonuç Akış'ın tarayıcıdaki hâli; 3. sonucun sitesi yok). Görseller sekmesi gerekiyorsa kumandadan tetiklenir. Aranan metin, sonuçlar ve site içerikleri senaryodan alınmalı; buradakiler yer tutucudur. SAHNE NUMARASI GEÇİCİ: gerçek numara yapımdan gelince değiştirilecek."
 }

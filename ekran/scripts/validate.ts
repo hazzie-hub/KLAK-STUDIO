@@ -184,6 +184,14 @@ for (const { dosya, deger } of icerikler) {
       refKontrol(dosya, `veri.yorumlar[${i}].hesap`, y.hesap, hesapIdleri, "hesap");
     });
   }
+  // Sosyal uygulamanın web hâli: profil bloğu hesabı kütüphaneden okur.
+  // Hesap yoksa sette avatarsız, adı eksik bir profil çıkar.
+  if (deger.tur === "webSayfasi") {
+    deger.veri.govde.forEach((blok, i) => {
+      if (blok.tur !== "profil") return;
+      refKontrol(dosya, `veri.govde[${i}].hesap`, blok.hesap, hesapIdleri, "hesap");
+    });
+  }
   // Arama sonucundan siteye geçiş: hedef sayfa gerçekten olmalı, yoksa sette
   // sonuca dokunulunca boş ekran gelir (CLAUDE.md §3.3).
   if (deger.tur === "aramaSonucu") {
@@ -283,6 +291,10 @@ for (const { dosya, deger } of icerikler) {
     deger.veri.govde.forEach((blok, i) => {
       if (blok.tur === "gorsel") {
         varlikKontrol(dosya, `veri.govde[${i}].dosya`, `/ornek/${blok.dosya}`, "Sayfa görseli");
+      } else if (blok.tur === "izgara") {
+        blok.dosyalar.forEach((d, j) => {
+          varlikKontrol(dosya, `veri.govde[${i}].dosyalar[${j}]`, `/ornek/${d}`, "Izgara fotoğrafı");
+        });
       }
     });
   }

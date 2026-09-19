@@ -49,11 +49,13 @@ Sahne kodu formatı: `{diziKodu}-b{bölüm}-s{sahne}` → örn. `eg-b03-s58`. Ay
 | `sosyal` | Instagram benzeri: feed, keşfet, post detay, yorumlar, profil, post yükleme, aktivite | 1 |
 | `mesaj` | WhatsApp benzeri: sohbet listesi, sohbet, yazıyor…, görüldü, fotoğraf | 3 |
 | `arama` | Google benzeri arama motoru: arama çubuğu, sonuç listesi, görsel sonuçlar | 3 |
-| `web` | Sahte web siteleri: şablonlar (tarihçe/blog, haber, kurumsal, forum) | 3 |
+| `web` | Sahte web siteleri: şablonlar (tarihçe/blog, haber, kurumsal, forum, sosyal) | 3 |
 | `telefon` | Gelen/giden arama, arama geçmişi, rehber | 3 |
 | `galeri` | Fotoğraf albümü, fotoğraf detay | 4 |
 | `harita` | Harita, konum pini, yol tarifi, navigasyon animasyonu | 4 |
 | `anaekran` | Ana ekran ikon ızgarası (modüller arası geçiş için) | 4 |
+
+**`sosyal` şablon notu:** Sosyal uygulamanın (Akış) tarayıcıdan görünen hâli. Uygulamanın kendisi `sosyal` modülüdür; bu, aynı markanın web yüzü — bilgisayar sahnelerinde ve arama sonucundan profile geçişte kullanılır. Gövde yine sıradan blok listesidir; profil başlığı ve fotoğraf ızgarası `profil` ve `izgara` bloklarıyla kurulur. Profil bloğu hesabı kimlikle alır: kullanıcı adı, görünen ad ve avatar `content/hesaplar` altındaki tek kaynaktan gelir, sayfaya elle yazılmaz.
 
 **Harita notu:** Varsayılan yaklaşım, tasarlanmış/stilize harita görselleri üzerinde animasyonlu rota ve pindir (lisans riski yok). Gerçek karo haritası (MapLibre + OSM) sadece açıkça istenirse ve atıf şartı çözüldükten sonra eklenir.
 

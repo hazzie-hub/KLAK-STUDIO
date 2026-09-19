@@ -8,7 +8,8 @@ import { useKutuphane } from "@/icerik/kutuphane";
 import { useGhostTyping } from "@/shared/ghost-typing";
 import { AktiviteEkrani, Feed, Kesfet, PostDetay, Profil, Yorumlar } from "./ekranlar";
 import { GHOST_HEDEF, HOTSPOT } from "./hotspotlar";
-import { Arti, Avatar, Buyutec, Ev, Kalp } from "./parcalar";
+import { Avatar } from "@/shared/avatar";
+import { Arti, Buyutec, Ev, Kalp } from "./parcalar";
 import { useSosyalVeri } from "./veri";
 import { YuklemeAkisi } from "./yukle";
 
