@@ -80,6 +80,72 @@ export const AramaSonucuVerisiSchema = z.strictObject({
   oneriler: z.array(z.string()).default([]),
 });
 
+/**
+ * Sahte web sayfası — `web` modülü (Faz 3).
+ *
+ * Sayfanın gövdesi BLOK listesidir; şablon yalnızca görünümü değiştirir.
+ * Böylece aynı içerik haber sitesinde de forumda da gösterilebilir ve yeni
+ * şablon eklemek içerik biçimini bozmaz (CLAUDE.md §2.2).
+ */
+export const WebBlokSchema = z.discriminatedUnion(
+  "tur",
+  [
+    z.strictObject({ tur: z.literal("baslik"), metin: z.string().min(1, { error: "Ara başlık boş olamaz." }) }),
+    z.strictObject({ tur: z.literal("paragraf"), metin: z.string().min(1, { error: "Paragraf boş olamaz." }) }),
+    z.strictObject({
+      tur: z.literal("gorsel"),
+      dosya: z.string().min(1, { error: "Görselin dosyası belirtilmeli." }),
+      altYazi: z.string().optional(),
+    }),
+    z.strictObject({
+      tur: z.literal("alinti"),
+      metin: z.string().min(1, { error: "Alıntı boş olamaz." }),
+      kaynak: z.string().optional(),
+    }),
+    z.strictObject({
+      tur: z.literal("liste"),
+      maddeler: z.array(z.string().min(1, { error: "Liste maddesi boş olamaz." })).min(1, {
+        error: "Liste en az bir madde içermeli.",
+      }),
+    }),
+    z.strictObject({
+      tur: z.literal("yorum"),
+      yazar: z.string().min(1, { error: "Yorumun yazarı belirtilmeli." }),
+      metin: z.string().min(1, { error: "Yorum boş olamaz." }),
+      tarih: z.string().optional(),
+    }),
+  ],
+  { error: 'Blok türü şunlardan biri olmalı: baslik, paragraf, gorsel, alinti, liste, yorum.' },
+);
+
+export const WebSayfasiVerisiSchema = z.strictObject({
+  /** Sayfanın görünümü. CLAUDE.md §3.2 */
+  sablon: z.enum(["haber", "blog", "kurumsal", "forum"], {
+    error: 'Şablon "haber", "blog", "kurumsal" veya "forum" olabilir.',
+  }),
+  siteAdi: z.string().min(1, { error: "Sitenin adı boş olamaz." }),
+  /** Adres çubuğunda görünen kurgusal adres. Gerçek bir alan adı YAZILMAZ. */
+  adres: z
+    .string()
+    .min(1, { error: "Adres boş olamaz." })
+    .regex(/^[a-z0-9.-]+\.[a-z]{2,}(\/[^\s]*)?$/, {
+      error: 'Adres "ornekadres.com/sayfa" biçiminde olmalı: küçük harf, boşluksuz, başında http yok.',
+    }),
+  baslik: z.string().min(1, { error: "Sayfa başlığı boş olamaz." }),
+  /** Haber şablonunda üstteki etiket: "GÜNDEM", "YAŞAM"… */
+  ustBaslik: z.string().optional(),
+  yazar: z.string().optional(),
+  tarih: z.string().optional(),
+  /** Sitenin üst menüsü. */
+  menu: z.array(z.string().min(1, { error: "Menü başlığı boş olamaz." })).default([]),
+  /** Sitenin vurgu rengi. Verilmezse şablonun kendi rengi kullanılır. */
+  renk: z
+    .string()
+    .regex(/^#[0-9a-f]{6}$/, { error: 'Renk "#0f6f74" biçiminde olmalı (küçük harf).' })
+    .optional(),
+  govde: z.array(WebBlokSchema).default([]),
+});
+
 /** Tek fotoğraf — `galeri` (Faz 4) ve mesaj ekleri. */
 export const FotoVerisiSchema = z.strictObject({
   dosya: z.string().min(1, { error: "Fotoğrafın dosyası belirtilmeli." }),
@@ -94,7 +160,7 @@ export const IcerikSchema = z.discriminatedUnion(
     z.strictObject({ tur: z.literal("foto"), id: SlugSchema, dizi: SlugSchema.optional(), veri: FotoVerisiSchema }),
     z.strictObject({ tur: z.literal("sohbet"), id: SlugSchema, dizi: SlugSchema.optional(), veri: SohbetVerisiSchema }),
     z.strictObject({ tur: z.literal("aramaSonucu"), id: SlugSchema, dizi: SlugSchema.optional(), veri: AramaSonucuVerisiSchema }),
-    z.strictObject({ tur: z.literal("webSayfasi"), id: SlugSchema, dizi: SlugSchema.optional(), veri: IleridekiFazVerisi }),
+    z.strictObject({ tur: z.literal("webSayfasi"), id: SlugSchema, dizi: SlugSchema.optional(), veri: WebSayfasiVerisiSchema }),
     z.strictObject({ tur: z.literal("konum"), id: SlugSchema, dizi: SlugSchema.optional(), veri: IleridekiFazVerisi }),
   ],
   {
@@ -109,3 +175,5 @@ export type FotoVerisi = z.infer<typeof FotoVerisiSchema>;
 export type SohbetVerisi = z.infer<typeof SohbetVerisiSchema>;
 export type AramaSonucuVerisi = z.infer<typeof AramaSonucuVerisiSchema>;
 export type AramaSonucu = AramaSonucuVerisi["sonuclar"][number];
+export type WebSayfasiVerisi = z.infer<typeof WebSayfasiVerisiSchema>;
+export type WebBlok = z.infer<typeof WebBlokSchema>;

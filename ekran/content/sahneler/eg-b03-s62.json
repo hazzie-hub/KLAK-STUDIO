@@ -1,13 +1,23 @@
 {
   "kod": "eg-b03-s62",
   "cihaz": "nergis-telefon",
-  "baslangic": { "modul": "arama", "ekran": "ana", "icerikRef": "arama-kadikoy-kahvalti" },
-  "durum": { "baglanti": "normal", "gorsel": "normal" },
+  "baslangic": {
+    "modul": "arama",
+    "ekran": "ana",
+    "icerikRef": "arama-kadikoy-kahvalti"
+  },
+  "durum": {
+    "baglanti": "normal",
+    "gorsel": "normal"
+  },
   "olaylar": [
     {
       "id": "yazmaya-basla",
       "ad": "Nergis arama çubuğuna dokunur, klavye açılır",
-      "tetik": { "tur": "dokunma", "hedef": "arama-alani" },
+      "tetik": {
+        "tur": "dokunma",
+        "hedef": "arama-alani"
+      },
       "aksiyon": {
         "tur": "ghostTypingBaslat",
         "hedef": "arama-cubugu",
@@ -18,7 +28,10 @@
     {
       "id": "sonuclar-gelir",
       "ad": "Arama yapılır, sonuç sayfası açılır",
-      "tetik": { "tur": "dokunma", "hedef": "arama-yapildi" },
+      "tetik": {
+        "tur": "dokunma",
+        "hedef": "arama-yapildi"
+      },
       "aksiyon": {
         "tur": "ekranAc",
         "modul": "arama",
@@ -29,14 +42,58 @@
     {
       "id": "gorsellere-gec",
       "ad": "Görseller sekmesi açılır",
-      "tetik": { "tur": "elle" },
+      "tetik": {
+        "tur": "elle"
+      },
       "aksiyon": {
         "tur": "ekranAc",
         "modul": "arama",
         "ekran": "gorseller",
         "icerikRef": "arama-kadikoy-kahvalti"
       }
+    },
+    {
+      "id": "ilk-siteye-gir",
+      "ad": "İlk sonuca dokunulur, site açılır",
+      "tetik": {
+        "tur": "dokunma",
+        "hedef": "arama-sonuc-1"
+      },
+      "aksiyon": {
+        "tur": "ekranAc",
+        "modul": "web",
+        "ekran": "sayfa",
+        "icerikRef": "site-kiyida-sabah"
+      }
+    },
+    {
+      "id": "ikinci-siteye-gir",
+      "ad": "İkinci sonuca dokunulur, blog açılır",
+      "tetik": {
+        "tur": "dokunma",
+        "hedef": "arama-sonuc-2"
+      },
+      "aksiyon": {
+        "tur": "ekranAc",
+        "modul": "web",
+        "ekran": "sayfa",
+        "icerikRef": "site-gezgin-notu"
+      }
+    },
+    {
+      "id": "foruma-gir",
+      "ad": "Dördüncü sonuca dokunulur, forum açılır",
+      "tetik": {
+        "tur": "dokunma",
+        "hedef": "arama-sonuc-4"
+      },
+      "aksiyon": {
+        "tur": "ekranAc",
+        "modul": "web",
+        "ekran": "sayfa",
+        "icerikRef": "site-rehber-defteri"
+      }
     }
   ],
-  "talimat": "LOOK arama sayfası açık. Oyuncu arama çubuğuna dokunur, klavye açılır; KLAVYEDE İSTEDİĞİ TUŞLARA BASAR — senaryodaki metin kendiliğinden yazılır. Metin bitince alttaki ara düğmesi aktifleşir; basınca sonuç sayfası gelir. Görseller sekmesi gerekiyorsa kumandadan tetiklenir. Aranan metin ve sonuçlar senaryodan alınmalı; buradakiler yer tutucudur. SAHNE NUMARASI GEÇİCİ: gerçek numara yapımdan gelince değiştirilecek."
+  "talimat": "LOOK arama sayfası açık. Oyuncu arama çubuğuna dokunur, klavye açılır; KLAVYEDE İSTEDİĞİ TUŞLARA BASAR — senaryodaki metin kendiliğinden yazılır. Metin bitince alttaki ara düğmesi aktifleşir; basınca sonuç sayfası gelir. Sonuçlardan birine dokununca o site açılır (1. sonuç işletme sayfası, 2. sonuç blog, 4. sonuç forum; 3. sonucun sitesi yok). Görseller sekmesi gerekiyorsa kumandadan tetiklenir. Aranan metin, sonuçlar ve site içerikleri senaryodan alınmalı; buradakiler yer tutucudur. SAHNE NUMARASI GEÇİCİ: gerçek numara yapımdan gelince değiştirilecek."
 }

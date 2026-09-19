@@ -1,0 +1,37 @@
+{
+  "id": "site-rehber-defteri",
+  "tur": "webSayfasi",
+  "dizi": "eg",
+  "veri": {
+    "sablon": "forum",
+    "siteAdi": "Rehber Defteri",
+    "adres": "rehberdefteri.net/forum/istanbul",
+    "baslik": "Sahilde kahvaltı nerede yapılır? — okur önerileri",
+    "tarih": "Son yanıt: bugün",
+    "menu": ["Forum", "İstanbul"],
+    "govde": [
+      {
+        "tur": "paragraf",
+        "metin": "Pazar sabahı için sahile yakın, çok kalabalık olmayan bir yer arıyorum. Yürüme mesafesinde olsun. Önerisi olan var mı?"
+      },
+      {
+        "tur": "yorum",
+        "yazar": "sahilyolu",
+        "tarih": "2 saat önce",
+        "metin": "İskeleden sola doğru yürürsen üst katı olan bir yer var, sabah yedide açıyor. Erken gidersen deniz tarafına oturursun."
+      },
+      {
+        "tur": "yorum",
+        "yazar": "mavikapi",
+        "tarih": "1 saat önce",
+        "metin": "Hafta sonu ikiden sonra sıra oluyor, erken gitmekte fayda var. Fiyatlar geçen seneye göre biraz arttı ama porsiyonlar iyi."
+      },
+      {
+        "tur": "yorum",
+        "yazar": "gezginnotu",
+        "tarih": "40 dakika önce",
+        "metin": "Sahil boyunca 12 adresi tek tek gezip yazmıştık, rota olarak da işe yarıyor."
+      }
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "id": "site-gunluk-sehir",
+  "tur": "webSayfasi",
+  "dizi": "eg",
+  "veri": {
+    "sablon": "haber",
+    "siteAdi": "Günlük Şehir",
+    "adres": "gunluksehir.net/yasam/sahil-kahvaltisi",
+    "ustBaslik": "YAŞAM",
+    "baslik": "Sahil kahvaltısı yeniden moda oldu",
+    "yazar": "Şehir Servisi",
+    "tarih": "Bugün 08:20",
+    "menu": ["Gündem", "Yaşam", "Kültür", "Spor"],
+    "govde": [
+      {
+        "tur": "paragraf",
+        "metin": "Hafta sonu sabahları sahil hattındaki kahvaltı yerlerinde yoğunluk artıyor. İşletmeciler, geçen yıla göre erken saatlerde gelen müşteri sayısının belirgin şekilde yükseldiğini söylüyor."
+      },
+      { "tur": "gorsel", "dosya": "masa.svg", "altYazi": "Sahil hattında bir kahvaltı masası" },
+      { "tur": "baslik", "metin": "Erken saatler doldu" },
+      {
+        "tur": "paragraf",
+        "metin": "Sabah yedi ile dokuz arası tercih edilen saat aralığı olarak öne çıkıyor. Deniz tarafındaki masalar için rezervasyon isteyen işletmelerin sayısı da artmış durumda."
+      },
+      {
+        "tur": "alinti",
+        "metin": "İnsanlar artık kahvaltıya değil, sabahın kendisine geliyor.",
+        "kaynak": "Bir işletmeci"
+      }
+    ]
+  }
+}

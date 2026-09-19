@@ -1,0 +1,39 @@
+{
+  "id": "site-kiyida-sabah",
+  "tur": "webSayfasi",
+  "dizi": "eg",
+  "veri": {
+    "sablon": "kurumsal",
+    "siteAdi": "Kıyıda Sabah",
+    "adres": "kiyidasabah.com/kahvalti",
+    "baslik": "Deniz kenarında serpme kahvaltı",
+    "menu": ["Kahvaltı", "Menü", "Rezervasyon", "Ulaşım"],
+    "renk": "#2a6b7c",
+    "govde": [
+      { "tur": "gorsel", "dosya": "kahve.svg", "altYazi": "Sahile bakan üst kat" },
+      {
+        "tur": "paragraf",
+        "metin": "Sahil yürüyüş yolunun hemen üstündeyiz. Sabah yedide açıyoruz; hafta içi öğlene, hafta sonu ikiye kadar kahvaltı veriyoruz."
+      },
+      { "tur": "baslik", "metin": "Serpme kahvaltı" },
+      {
+        "tur": "liste",
+        "maddeler": [
+          "İki kişilik serpme, sınırsız çay",
+          "Köy yumurtası, menemen ya da omlet",
+          "Günlük ekmek ve ev reçelleri"
+        ]
+      },
+      { "tur": "baslik", "metin": "Rezervasyon" },
+      {
+        "tur": "paragraf",
+        "metin": "Hafta sonu için rezervasyon öneriyoruz. Deniz tarafındaki masalar sınırlı sayıda; telefonla ayırtabilirsiniz."
+      },
+      {
+        "tur": "alinti",
+        "metin": "Sabah erken gelin, sahil boşken kahvaltı bambaşka.",
+        "kaynak": "Kıyıda Sabah ekibi"
+      }
+    ]
+  }
+}

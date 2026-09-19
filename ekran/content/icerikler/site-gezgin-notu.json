@@ -1,0 +1,40 @@
+{
+  "id": "site-gezgin-notu",
+  "tur": "webSayfasi",
+  "dizi": "eg",
+  "veri": {
+    "sablon": "blog",
+    "siteAdi": "Gezgin Notu",
+    "adres": "gezginnotu.net/istanbul/kadikoy",
+    "baslik": "Kadıköy'de kahvaltı: sahile bakan 12 adres",
+    "yazar": "Deniz Aksoy",
+    "tarih": "14 Eylül",
+    "menu": ["İstanbul", "Rota", "Defter"],
+    "renk": "#3a6b52",
+    "govde": [
+      {
+        "tur": "paragraf",
+        "metin": "Moda'dan başlayıp sahil boyunca yürüyerek gidilebilecek bir rota çıkardık. Listedeki yerlerin hepsinde denize bakan en az bir masa var."
+      },
+      { "tur": "gorsel", "dosya": "deniz.svg", "altYazi": "Sabah sahil yolu" },
+      { "tur": "baslik", "metin": "Rotanın başı" },
+      {
+        "tur": "paragraf",
+        "metin": "İlk durak iskeleye yakın; kalabalık olmadan önce sekizde masaya oturmak en iyisi. Yürüyüşün ilk yarısı gölgede kalıyor."
+      },
+      {
+        "tur": "liste",
+        "maddeler": [
+          "Sabah 07.00 – 09.00 arası sakin",
+          "Hafta sonu öğleden sonra sıra oluyor",
+          "Rota boyunca yürüyüş yaklaşık 25 dakika"
+        ]
+      },
+      {
+        "tur": "alinti",
+        "metin": "Deniz kenarında kahvaltının yarısı manzara, yarısı acele etmemek.",
+        "kaynak": "Deniz Aksoy"
+      }
+    ]
+  }
+}

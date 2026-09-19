@@ -3,8 +3,8 @@
 Bu dosya, yeni bir oturuma başlarken okunacak. `CLAUDE.md` projenin anayasası;
 bu dosya ise **nerede kaldığımızı** anlatır.
 
-Son güncelleme: Faz 2 bitti. Faz 3'te `arama` (LOOK) modülü bitti;
-sıradaki `web`, sonra `telefon`.
+Son güncelleme: Faz 2 bitti. Faz 3'te `arama` (LOOK) ve `web` bitti;
+geriye `telefon` kaldı. Modüller arası derin link artık çalışıyor.
 
 ---
 
@@ -47,11 +47,11 @@ Yapımdan gerçek sahne numarası gelince dosya adı ve `kod` alanı değiştiri
 |---|---|
 | **Faz 1** | 10 adımın 10'u bitti. Kabul testi geçiyor. Gerçek iPhone'da test edildi, çıkan 3 sorun düzeltildi. |
 | **Faz 2** (kumanda) | **BİTTİ.** Supabase kanalı yayında açık, çift yönlü doğrulandı (§3). |
-| **Faz 3** (modüller) | `mesaj` ve `arama` (LOOK) bitti. `web`, `telefon` yapılmadı. |
+| **Faz 3** (modüller) | `mesaj`, `arama` (LOOK), `web` bitti. `telefon` yapılmadı. |
 | **Faz 4** (Stüdyo) | Başlanmadı. Supabase veritabanı gerekiyor. |
 | **Faz 5** | Başlanmadı. |
 
-Doğrulama: `npm test` (166 test), `npm run validate` (27 dosya),
+Doğrulama: `npm test` (186 test), `npm run validate` (31 dosya),
 `npm run kabul` (3 kabuk × 6 sahne × 20 tur, internet kesik).
 
 ---
@@ -96,6 +96,7 @@ uyarı gösterilebilir. **Kullanıcıya soruldu, karar vermedi — tekrar sorula
 | Sosyal uygulama | **Akış**, renk `#0f6f74` — kullanıcı seçti |
 | Mesaj uygulaması | **Mesaj** (Türk telefonlarında yerleşik ad) — kullanıcı seçti |
 | Arama motoru | **LOOK**, renk `#5f4bb6` — kullanıcı seçti |
+| Sahte siteler | Şablonlar: `haber`, `blog`, `kurumsal`, `forum`. Sayfa gövdesi BLOK listesi; şablon sadece görünümü değiştirir |
 | "Instagram" istendiğinde | Gerçek marka; yerine **Akış** kullanılır (test `instagram` kelimesini yasaklıyor) |
 | Markaların yeri | `brands/index.ts`, tek kaynak. Bir test gerçek marka adı geçmediğini denetler |
 | Şema biçimi | Slug tabanlı (`cihaz: "nergis-pc"`), `id`/`bolumId`/`versiyon`/`kilitli` opsiyonel — Faz 4'te zorunlu olacak |
@@ -111,15 +112,18 @@ uyarı gösterilebilir. **Kullanıcıya soruldu, karar vermedi — tekrar sorula
 - **Otomatik zincir gerçekleşmiş olayı tekrar etmez** (operatör sona atlayınca
   çift bildirim olmasın diye). Elle tekrarlamak ayrı.
 - Kumanda mesajları **idempotent** (nonce) ve Zod'dan geçer.
+- **Açık modül de olaylardan türer** (`src/modules/aktif-ekran.ts`). `ekranAc`
+  başka bir modüle geçebilir — arama sonucundan siteye. Başa sarınca olay
+  listesi boşalır ve sahne kendiliğinden başlangıç modülüne döner.
 
 ---
 
 ## 5. Kullanıcıdan beklenen kararlar
 
 1. ~~Arama motorunun kurgusal adı~~ — **LOOK** seçildi, modül bitti.
-2. **Sahte web sitelerinin şablonları** — `web` modülü için. Kullanıcı
-   "tarayıcı, instagram ve haritalar" dedi: tarayıcı çerçevesi + Akış'ın web
-   hâli + harita. Harita CLAUDE.md'de Faz 4 modülü; öne çekilecek mi, sorulacak.
+2. ~~Sahte web sitelerinin şablonları~~ — dört şablon yazıldı, modül bitti.
+   Kullanıcının istediklerinden **Akış'ın web hâli** ve **harita** HENÜZ YOK.
+   Harita CLAUDE.md'de Faz 4 modülü; öne çekilecek mi, sorulacak.
 3. **Gerçek replikler** — şu an hepsi yer tutucu. Özellikle `eg-b03-s58`'de
    Sezai'nin yorumu hâlâ `"..."` (CLAUDE.md'de de öyle yazıyordu, birebir korundu)
 4. **Yapımdan gelen fotoğraflar** — `public/ornek` ve `public/avatar` altındaki

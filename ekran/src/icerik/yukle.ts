@@ -100,6 +100,11 @@ export function sahneVarliklari(cihaz: Cihaz | null): string[] {
       }
       for (const g of icerik.veri.gorseller) varliklar.add(`/ornek/${g}`);
     }
+    if (icerik.tur === "webSayfasi") {
+      for (const blok of icerik.veri.govde) {
+        if (blok.tur === "gorsel") varliklar.add(`/ornek/${blok.dosya}`);
+      }
+    }
   }
   for (const hesap of tumHesaplar()) {
     if (hesap.avatar !== undefined) varliklar.add(`/avatar/${hesap.avatar}`);

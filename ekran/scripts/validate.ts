@@ -184,6 +184,22 @@ for (const { dosya, deger } of icerikler) {
       refKontrol(dosya, `veri.yorumlar[${i}].hesap`, y.hesap, hesapIdleri, "hesap");
     });
   }
+  // Arama sonucundan siteye geçiş: hedef sayfa gerçekten olmalı, yoksa sette
+  // sonuca dokunulunca boş ekran gelir (CLAUDE.md §3.3).
+  if (deger.tur === "aramaSonucu") {
+    deger.veri.sonuclar.forEach((sonuc, i) => {
+      refKontrol(dosya, `veri.sonuclar[${i}].siteRef`, sonuc.siteRef, icerikIdleri, "içerik");
+      if (sonuc.siteRef === undefined) return;
+      const hedef = icerikIdleri.get(sonuc.siteRef);
+      if (hedef !== undefined && hedef.tur !== "webSayfasi") {
+        hata(
+          dosya,
+          `veri.sonuclar[${i}].siteRef`,
+          `"${sonuc.siteRef}" bir web sayfası değil, "${hedef.tur}" türünde. Arama sonucu yalnızca web sayfasına bağlanabilir.`,
+        );
+      }
+    });
+  }
 }
 
 function sahneReferanslari(dosya: string, sahne: Sahne): void {
@@ -262,6 +278,12 @@ for (const { dosya, deger } of icerikler) {
     });
     deger.veri.gorseller.forEach((g, i) => {
       varlikKontrol(dosya, `veri.gorseller[${i}]`, `/ornek/${g}`, "Görsel sonuç");
+    });
+  } else if (deger.tur === "webSayfasi") {
+    deger.veri.govde.forEach((blok, i) => {
+      if (blok.tur === "gorsel") {
+        varlikKontrol(dosya, `veri.govde[${i}].dosya`, `/ornek/${blok.dosya}`, "Sayfa görseli");
+      }
     });
   }
 }

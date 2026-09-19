@@ -6,10 +6,10 @@ import { useMemo } from "react";
 import { DurumSaglayici, durumEzmeleri, type Aramalar } from "@/durum";
 import { SahneSaglayici } from "@/engine";
 import { KutuphaneSaglayici } from "@/icerik/kutuphane";
-import { ModulSec, modulGorunumu } from "@/modules";
+import { ModulSec, modulGorunumu, useAktifEkran } from "@/modules";
 import { HazirlikSaglayici } from "@/platform/hazirlik";
-import type { Cihaz, Hesap, Icerik, Sahne } from "@/schema";
-import { Kabuk, gorunenDurum, skinSec } from "@/shell";
+import type { Cihaz, Hesap, Icerik, Sahne, Skin } from "@/schema";
+import { Kabuk, TarayiciSaglayici, gorunenDurum, skinSec, useTarayici } from "@/shell";
 import { KumandaBaglantisi } from "@/kumanda/oynatici-baglantisi";
 import { GizliKatman, SistemKatmani } from "@/system";
 
@@ -50,27 +50,55 @@ export function Oynatici({
     () => durumEzmeleri(aramalar, gorunenDurum(sahne, cihaz)),
     [aramalar, sahne, cihaz],
   );
-  const gorunum = modulGorunumu(sahne.baslangic.modul);
 
   return (
     <HazirlikSaglayici varliklar={varliklar}>
       <DurumSaglayici baslangic={durum}>
         <KutuphaneSaglayici hesaplar={hesaplar} icerikler={icerikler}>
           <SahneSaglayici sahne={sahne}>
-            <Kabuk
-              skin={skin}
-              onizleme={onizleme}
-              icerikUste={gorunum.icerikUste}
-              ustKatman={gorunum.ustKatman}
-            >
-              <ModulSec sahne={sahne} cihaz={cihaz} />
-              <SistemKatmani aktifModul={sahne.baslangic.modul} />
-              <GizliKatman />
-            </Kabuk>
+            <TarayiciSaglayici>
+              <Govde skin={skin} onizleme={onizleme} cihaz={cihaz} />
+            </TarayiciSaglayici>
             <KumandaBaglantisi />
           </SahneSaglayici>
         </KutuphaneSaglayici>
       </DurumSaglayici>
     </HazirlikSaglayici>
+  );
+}
+
+/**
+ * Kabuk ve içindekiler.
+ *
+ * Sahne ve tarayıcı bağlamlarının İÇİNDE durur: hangi modülün açık olduğu
+ * (`useAktifEkran`) ve adres çubuğunda ne yazdığı (`useTarayici`) olaylara
+ * göre değiştiği için, kabuğun da onlarla birlikte güncellenmesi gerekir.
+ */
+function Govde({
+  skin,
+  onizleme,
+  cihaz,
+}: {
+  skin: Skin;
+  onizleme: boolean;
+  cihaz: Cihaz | null;
+}) {
+  const aktif = useAktifEkran();
+  const tarayici = useTarayici();
+  const gorunum = modulGorunumu(aktif.modul);
+
+  return (
+    <Kabuk
+      skin={skin}
+      onizleme={onizleme}
+      icerikUste={gorunum.icerikUste}
+      ustKatman={gorunum.ustKatman}
+      adresMetni={tarayici.adres}
+      sekmeBasligi={tarayici.baslik}
+    >
+      <ModulSec cihaz={cihaz} />
+      <SistemKatmani aktifModul={aktif.modul} />
+      <GizliKatman />
+    </Kabuk>
   );
 }
