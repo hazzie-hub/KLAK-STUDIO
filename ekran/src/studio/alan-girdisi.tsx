@@ -1,7 +1,19 @@
 "use client";
 
 import type { Alan } from "./alanlar";
+import { kimlikBitir, kimlikYaz } from "./kimlik";
 import { Alan as AlanKutusu, GIRDI_SINIFI } from "./panel";
+
+/**
+ * Kimlik yazılan alanlarda tarayıcı yardımı KAPALI: ilk harfi büyütmek,
+ * otomatik düzeltmek ya da geçmişten öneri getirmek hep bozuk kimlik üretiyor.
+ */
+const KIMLIK_OZELLIKLERI = {
+  autoCapitalize: "none",
+  autoCorrect: "off",
+  autoComplete: "off",
+  spellCheck: false,
+} as const;
 
 export type Secenekler = {
   hesap: Array<{ deger: string; etiket: string }>;
@@ -21,11 +33,15 @@ export function AlanGirdisi({
   deger,
   degistir,
   secenekler,
+  alanId,
+  hata,
 }: {
   alan: Alan;
   deger: unknown;
   degistir: (yeni: unknown) => void;
   secenekler: Secenekler;
+  alanId?: string;
+  hata?: string | null;
 }) {
   const metin = deger === undefined || deger === null ? "" : String(deger);
 
@@ -44,7 +60,13 @@ export function AlanGirdisi({
   }
 
   return (
-    <AlanKutusu etiket={alan.etiket} zorunlu={alan.zorunlu} ipucu={alan.ipucu}>
+    <AlanKutusu
+      etiket={alan.etiket}
+      zorunlu={alan.zorunlu}
+      ipucu={alan.ipucu}
+      alanId={alanId}
+      hata={hata}
+    >
       {alan.tur === "uzunMetin" ? (
         <textarea
           value={metin}
@@ -80,12 +102,29 @@ export function AlanGirdisi({
               </option>
             ))}
         </select>
+      ) : alan.tur === "slug" ? (
+        // Kimlik alanları YAZARKEN düzeltilir: hata göstermek yerine
+        // kullanıcının yazdığını geçerli hale getiriyoruz.
+        <input
+          type="text"
+          value={metin}
+          {...KIMLIK_OZELLIKLERI}
+          onChange={(e) => {
+            const temiz = kimlikYaz(e.target.value);
+            degistir(temiz === "" ? undefined : temiz);
+          }}
+          onBlur={(e) => {
+            const son = kimlikBitir(e.target.value);
+            degistir(son === "" ? undefined : son);
+          }}
+          className={`${GIRDI_SINIFI} font-mono text-[13px]`}
+        />
       ) : (
         <input
           type="text"
           value={metin}
           onChange={(e) => degistir(e.target.value === "" ? undefined : e.target.value)}
-          className={`${GIRDI_SINIFI} ${alan.tur === "slug" ? "font-mono text-[13px]" : ""}`}
+          className={GIRDI_SINIFI}
         />
       )}
     </AlanKutusu>

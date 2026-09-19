@@ -114,22 +114,34 @@ export function Yigin({ children }: { children: ReactNode }) {
 export const GIRDI_SINIFI =
   "w-full rounded-[10px] border border-[#d8d8dc] bg-white px-3 py-[9px] text-[14px] text-[#1d1d1f] outline-none transition-colors placeholder:text-[#b4b4b8] focus:border-[#0071e3]";
 
-/** Etiketli alan. Zorunluluk ve ipucu tek yerde biçimlenir. */
+/**
+ * Etiketli alan. Zorunluluk ve ipucu tek yerde biçimlenir.
+ *
+ * `alanId` verilirse hata listesinden buraya kayılabilir; hatalı alan
+ * kırmızı çerçevelenir.
+ */
 export function Alan({
   etiket,
   zorunlu,
   ipucu,
   hata,
+  alanId,
   children,
 }: {
   etiket: string;
   zorunlu?: boolean;
   ipucu?: string;
   hata?: string | null;
+  alanId?: string;
   children: ReactNode;
 }) {
   return (
-    <label className="block">
+    <label
+      id={alanId}
+      className={`block scroll-mt-24 ${
+        hata != null ? "rounded-[12px] ring-2 ring-[#e5a6a0] ring-offset-4 ring-offset-white" : ""
+      }`}
+    >
       <span className="mb-[5px] block text-[12px] font-medium text-[#48484a]">
         {etiket}
         {zorunlu === true && <span className="ml-[3px] text-[#c7392e]">*</span>}

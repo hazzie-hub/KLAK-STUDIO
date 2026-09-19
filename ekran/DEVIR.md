@@ -189,6 +189,24 @@ Kullanıcı "panel arayüzü çok karışık" dedi; sadeleştirildi.
   dokunulmuyor.
 - Kaydet düğmesi sayfanın altına sabitlendi.
 
+**Kimlikler (slug) kullanıcıya bırakılmadı.** Sette telefondan sahne düzenleyen
+kimse kimlik yazmakla uğraşmamalı:
+
+- Olay kimliği ADDAN türüyor (`kimlik.ts`): "Sezai yorum yapar" →
+  `sezai-yorum-yapar`, çakışırsa `-2`. Alan varsayılan olarak GİZLİ, küçük bir
+  "değiştir" bağlantısı var. Kullanıcı elle değiştirirse ad değişince kimliğe
+  dokunulmaz (ayrı bayrak yok; kimlik eski adın türevi mi diye bakılıyor).
+- **Kimlik değişince "sonra" tetiklerindeki referanslar da güncelleniyor.**
+  Güncellenmeseydi zincir sessizce kopardı ve sette fark edilirdi.
+- "Hangi olaydan sonra" artık slug yazılan bir kutu değil, olay listesi.
+- Kimlik alanları yazarken normalleşiyor (Türkçe harf, boşluk, büyük harf);
+  hata gösterilmiyor, düzeltiliyor. Tarayıcı yardımları (otomatik büyütme,
+  düzeltme, öneri) kapalı.
+- Doğrulama hataları alanı söylüyor ("2. olay (Sezai ısrar eder) · Ne olsun ·
+  Metin"), tekrar etmiyor, tıklanınca alana kayıyor ve alan kırmızı
+  çerçeveleniyor. Boş alanlarda Zod'un biçim dersi yerine "Doldurulmalı."
+  yazıyor (`hatalar.ts`).
+
 ### 4.5 — kilit ve versiyon nasıl çalışıyor
 
 - **Kilitli = onaylandı.** Kilitli sahne kaydedilemez; `sahneYaz` reddeder,

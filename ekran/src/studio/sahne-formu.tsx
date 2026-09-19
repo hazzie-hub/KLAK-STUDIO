@@ -16,6 +16,8 @@ import {
   type Alan,
 } from "./alanlar";
 import { sahneKaydet, type KayitSonucu } from "./eylemler";
+import { alanKimligi, hatalariDuzenle, type FormHatasi } from "./hatalar";
+import { addanKimlik, benzersizKimlik, kimlikBitir, kimlikYaz } from "./kimlik";
 import { Alan as AlanKutusu, Dugme, GIRDI_SINIFI, Kart, Yigin } from "./panel";
 
 /**
@@ -33,6 +35,20 @@ function varsayilanlar(alanlar: readonly Alan[]): Taslak {
   const o: Taslak = {};
   for (const a of alanlar) if (a.varsayilan !== undefined) o[a.ad] = a.varsayilan;
   return o;
+}
+
+/**
+ * Kimlik hâlâ addan mı türüyor?
+ *
+ * Kullanıcı kimliği elle değiştirdiyse ad değişince ona DOKUNULMAZ. Durumu
+ * ayrı bir bayrakta tutmak yerine buradan anlıyoruz: kimlik, eski adın
+ * türevi (ya da çakışma yüzünden -2'li hali) ise otomatiktir.
+ */
+function kimlikOtomatikMi(kimlik: string, ad: string): boolean {
+  if (kimlik === "") return true;
+  const taban = addanKimlik(ad);
+  if (taban === "") return false;
+  return kimlik === taban || new RegExp(`^${taban}-\\d+$`).test(kimlik);
 }
 
 const BOS_SAHNE: Taslak = {
@@ -95,6 +111,70 @@ export function SahneFormu({
       return kopya;
     });
 
+  /**
+   * Bir olayın kimliğini değiştirir ve ONA BAĞLI ZİNCİRLERİ günceller.
+   *
+   * "Şu olaydan sonra" tetikleri kimliğe göre bağlanıyor; kimlik değişince
+   * referanslar güncellenmezse sahne sessizce kopardı ve bunu ancak sette
+   * fark ederdik.
+   */
+  const kimlikAta = (i: number, yeniKimlik: string) =>
+    setSahne((onceki) => {
+      const kopya = structuredClone(onceki) as Taslak;
+      const liste = [...((kopya.olaylar as Taslak[] | undefined) ?? [])];
+      const eski = String(liste[i]?.id ?? "");
+      if (eski === yeniKimlik) return onceki;
+
+      liste[i] = { ...(liste[i] ?? {}), id: yeniKimlik };
+
+      if (eski !== "") {
+        for (let j = 0; j < liste.length; j++) {
+          const tetik = liste[j]?.tetik as Taslak | undefined;
+          if (tetik?.tur === "sonra" && tetik.olayId === eski) {
+            liste[j] = { ...(liste[j] ?? {}), tetik: { ...tetik, olayId: yeniKimlik } };
+          }
+        }
+      }
+
+      kopya.olaylar = liste;
+      return kopya;
+    });
+
+  /**
+   * Olayın adı değişince kimliği de takip eder — kullanıcı kimliği elle
+   * değiştirmediyse. Sette telefondan sahne kuran kimse kimlik yazmakla
+   * uğraşmamalı.
+   */
+  const adDegistir = (i: number, yeniAd: string) =>
+    setSahne((onceki) => {
+      const kopya = structuredClone(onceki) as Taslak;
+      const liste = [...((kopya.olaylar as Taslak[] | undefined) ?? [])];
+      const olay = liste[i] ?? {};
+      const eskiAd = String(olay.ad ?? "");
+      const eskiKimlik = String(olay.id ?? "");
+
+      liste[i] = { ...olay, ad: yeniAd };
+
+      if (kimlikOtomatikMi(eskiKimlik, eskiAd)) {
+        const baskalari = liste.flatMap((o, j) => (j === i ? [] : [String(o?.id ?? "")]));
+        const yeniKimlik = benzersizKimlik(addanKimlik(yeniAd), baskalari);
+        if (yeniKimlik !== eskiKimlik) {
+          liste[i] = { ...liste[i], id: yeniKimlik };
+          if (eskiKimlik !== "") {
+            for (let j = 0; j < liste.length; j++) {
+              const tetik = liste[j]?.tetik as Taslak | undefined;
+              if (tetik?.tur === "sonra" && tetik.olayId === eskiKimlik) {
+                liste[j] = { ...(liste[j] ?? {}), tetik: { ...tetik, olayId: yeniKimlik } };
+              }
+            }
+          }
+        }
+      }
+
+      kopya.olaylar = liste;
+      return kopya;
+    });
+
   const olayListesi = (islem: (liste: Taslak[]) => Taslak[]) =>
     setSahne((onceki) => {
       const kopya = structuredClone(onceki) as Taslak;
@@ -112,9 +192,18 @@ export function SahneFormu({
     });
   };
 
-  const hataAlani = (yol: string): string | null => {
-    if (sonuc === null || sonuc.ok) return null;
-    return sonuc.hatalar.find((h) => h.yol === yol)?.mesaj ?? null;
+  const hatalar: FormHatasi[] =
+    sonuc === null || sonuc.ok ? [] : hatalariDuzenle(sonuc.hatalar, sahne);
+
+  const hataAlani = (yol: string): string | null =>
+    hatalar.find((h) => h.yol === yol)?.mesaj ?? null;
+
+  const hataylaGit = (yol: string) => {
+    if (yol === "") return;
+    const dugum = document.getElementById(alanKimligi(yol));
+    if (dugum === null) return;
+    dugum.scrollIntoView({ behavior: "smooth", block: "center" });
+    dugum.querySelector<HTMLElement>("input, textarea, select")?.focus({ preventScroll: true });
   };
 
   return (
@@ -123,6 +212,7 @@ export function SahneFormu({
         <div className="grid gap-4 sm:grid-cols-2">
           <AlanKutusu
             etiket="Sahne kodu"
+            alanId={alanKimligi("kod")}
             zorunlu
             hata={hataAlani("kod")}
             ipucu={
@@ -131,14 +221,19 @@ export function SahneFormu({
           >
             <input
               value={String(sahne.kod ?? "")}
-              onChange={(e) => yaz(["kod"], e.target.value)}
+              onChange={(e) => yaz(["kod"], kimlikYaz(e.target.value))}
+              onBlur={(e) => yaz(["kod"], kimlikBitir(e.target.value))}
               disabled={!yeniMi}
               placeholder="eg-b03-s58"
+              autoCapitalize="none"
+              autoCorrect="off"
+              autoComplete="off"
+              spellCheck={false}
               className={`${GIRDI_SINIFI} font-mono ${yeniMi ? "" : "bg-[#f5f5f7] text-[#8e8e93]"}`}
             />
           </AlanKutusu>
 
-          <AlanKutusu etiket="Hangi cihaz?" zorunlu hata={hataAlani("cihaz")}>
+          <AlanKutusu etiket="Hangi cihaz?" alanId={alanKimligi("cihaz")} zorunlu hata={hataAlani("cihaz")}>
             <select
               value={String(sahne.cihaz ?? "")}
               onChange={(e) => yaz(["cihaz"], e.target.value)}
@@ -226,6 +321,7 @@ export function SahneFormu({
         <div className="mt-4">
           <AlanKutusu
             etiket="Sete gidecek talimat"
+            alanId={alanKimligi("talimat")}
             zorunlu
             hata={hataAlani("talimat")}
             ipucu="Teslim paketinde “NE OLACAK” başlığı altında aynen çıkar."
@@ -276,6 +372,9 @@ export function SahneFormu({
                 sira={i}
                 toplam={olaylar.length}
                 olay={olay}
+                olaylar={olaylar}
+                adDegistir={(yeni) => adDegistir(i, yeni)}
+                kimlikAta={(yeni) => kimlikAta(i, yeni)}
                 secenekler={secenekler}
                 hata={(yol) => hataAlani(`olaylar.${i}.${yol}`)}
                 degistir={(g) => olayYaz(i, g)}
@@ -373,12 +472,23 @@ export function SahneFormu({
         )}
       </Kart>
 
-      {sonuc !== null && !sonuc.ok && (
-        <Kart vurgu="kirmizi" baslik="Kaydedilemedi" aciklama="Şunları düzeltin:">
-          <ul className="flex list-disc flex-col gap-[6px] pl-5">
-            {sonuc.hatalar.map((h, i) => (
-              <li key={i} className="text-[13px] text-[#8c2820]">
-                {h.mesaj}
+      {hatalar.length > 0 && (
+        <Kart
+          vurgu="kirmizi"
+          baslik="Kaydedilemedi"
+          aciklama="Üstüne tıklayınca ilgili alana gider."
+        >
+          <ul className="flex flex-col gap-[2px]">
+            {hatalar.map((h, i) => (
+              <li key={i}>
+                <button
+                  onClick={() => hataylaGit(h.yol)}
+                  className="w-full rounded-[8px] px-2 py-[6px] text-left text-[13px] text-[#8c2820] transition-colors hover:bg-[#f9e6e3]"
+                >
+                  <span className="font-semibold">{h.baslik}</span>
+                  <span className="mx-[6px] opacity-45">—</span>
+                  {h.mesaj}
+                </button>
               </li>
             ))}
           </ul>
@@ -402,6 +512,9 @@ function OlayKarti({
   sira,
   toplam,
   olay,
+  olaylar,
+  adDegistir,
+  kimlikAta,
   secenekler,
   hata,
   degistir,
@@ -411,12 +524,16 @@ function OlayKarti({
   sira: number;
   toplam: number;
   olay: Taslak;
+  olaylar: Taslak[];
+  adDegistir: (yeniAd: string) => void;
+  kimlikAta: (yeniKimlik: string) => void;
   secenekler: Secenekler;
   hata: (yol: string) => string | null;
   degistir: (g: (o: Taslak) => Taslak) => void;
   sil: () => void;
   tasi: (yon: -1 | 1) => void;
 }) {
+  const [kimlikAcik, setKimlikAcik] = useState(false);
   const tetik = (olay.tetik as Taslak | undefined) ?? { tur: "elle" };
   const aksiyon = (olay.aksiyon as Taslak | undefined) ?? { tur: "bildirim" };
   const tetikTuru = String(tetik.tur ?? "elle") as TetikTuru;
@@ -430,7 +547,7 @@ function OlayKarti({
         </span>
         <input
           value={String(olay.ad ?? "")}
-          onChange={(e) => degistir((o) => ({ ...o, ad: e.target.value }))}
+          onChange={(e) => adDegistir(e.target.value)}
           placeholder="Olayın adı — kumandada bu görünür"
           className="min-w-0 flex-1 rounded-[8px] border border-transparent bg-transparent px-2 py-1 text-[14px] font-medium text-[#1d1d1f] outline-none placeholder:font-normal placeholder:text-[#b4b4b8] focus:border-[#d8d8dc] focus:bg-white"
         />
@@ -484,17 +601,57 @@ function OlayKarti({
               </option>
             ))}
           </select>
-          {TETIK_ALANLARI[tetikTuru].map((alan) => (
-            <AlanGirdisi
-              key={alan.ad}
-              alan={alan}
-              deger={tetik[alan.ad]}
-              secenekler={secenekler}
-              degistir={(yeni) =>
-                degistir((o) => ({ ...o, tetik: { ...(o.tetik as Taslak), [alan.ad]: yeni } }))
-              }
-            />
-          ))}
+          {TETIK_ALANLARI[tetikTuru].map((alan) =>
+            // Hangi olaydan sonra? Kimlik elle yazılmaz, listeden seçilir;
+            // yanlış yazılan bir kimlik zinciri sessizce koparıyordu.
+            alan.ad === "olayId" ? (
+              <AlanKutusu
+                key={alan.ad}
+                etiket={alan.etiket}
+                zorunlu
+                alanId={alanKimligi(`olaylar.${sira}.tetik.olayId`)}
+                hata={hata("tetik.olayId")}
+              >
+                <select
+                  value={String(tetik.olayId ?? "")}
+                  onChange={(e) =>
+                    degistir((o) => ({
+                      ...o,
+                      tetik: {
+                        ...(o.tetik as Taslak),
+                        olayId: e.target.value === "" ? undefined : e.target.value,
+                      },
+                    }))
+                  }
+                  className={GIRDI_SINIFI}
+                >
+                  <option value="">Seçin…</option>
+                  {olaylar.map((o, j) => {
+                    const kimlik = String(o?.id ?? "");
+                    if (j === sira || kimlik === "") return null;
+                    const ad = String(o?.ad ?? "").trim();
+                    return (
+                      <option key={kimlik} value={kimlik}>
+                        {j + 1}. {ad === "" ? kimlik : ad}
+                      </option>
+                    );
+                  })}
+                </select>
+              </AlanKutusu>
+            ) : (
+              <AlanGirdisi
+                key={alan.ad}
+                alan={alan}
+                deger={tetik[alan.ad]}
+                secenekler={secenekler}
+                alanId={alanKimligi(`olaylar.${sira}.tetik.${alan.ad}`)}
+                hata={hata(`tetik.${alan.ad}`)}
+                degistir={(yeni) =>
+                  degistir((o) => ({ ...o, tetik: { ...(o.tetik as Taslak), [alan.ad]: yeni } }))
+                }
+              />
+            ),
+          )}
         </Bolme>
 
         <Bolme etiket="NE OLSUN">
@@ -521,6 +678,8 @@ function OlayKarti({
               alan={alan}
               deger={aksiyon[alan.ad]}
               secenekler={secenekler}
+              alanId={alanKimligi(`olaylar.${sira}.aksiyon.${alan.ad}`)}
+              hata={hata(`aksiyon.${alan.ad}`)}
               degistir={(yeni) =>
                 degistir((o) => ({ ...o, aksiyon: { ...(o.aksiyon as Taslak), [alan.ad]: yeni } }))
               }
@@ -529,15 +688,44 @@ function OlayKarti({
         </Bolme>
       </div>
 
-      <div className="px-4 pb-4">
-        <AlanKutusu etiket="Kimlik" zorunlu ipucu="Kısa ve benzersiz: ilk-mesaj, sezai-arar">
-          <input
-            value={String(olay.id ?? "")}
-            onChange={(e) => degistir((o) => ({ ...o, id: e.target.value }))}
-            placeholder="ilk-mesaj"
-            className={`${GIRDI_SINIFI} font-mono text-[13px]`}
-          />
-        </AlanKutusu>
+      {/* Kimlik addan türüyor; normalde gösterilmiyor. Sette telefondan sahne
+          düzenleyen kimse bununla uğraşmamalı. */}
+      <div className="px-4 pb-4" id={alanKimligi(`olaylar.${sira}.id`)}>
+        {kimlikAcik ? (
+          <AlanKutusu
+            etiket="Kimlik"
+            zorunlu
+            hata={hata("id")}
+            ipucu="Adı değiştirince kimlik de değişir. Elle değiştirirseniz sabit kalır."
+          >
+            <input
+              value={String(olay.id ?? "")}
+              onChange={(e) => kimlikAta(kimlikYaz(e.target.value))}
+              onBlur={(e) => kimlikAta(kimlikBitir(e.target.value))}
+              placeholder="ilk-mesaj"
+              autoCapitalize="none"
+              autoCorrect="off"
+              autoComplete="off"
+              spellCheck={false}
+              className={`${GIRDI_SINIFI} font-mono text-[13px]`}
+            />
+          </AlanKutusu>
+        ) : (
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span className="text-[11px] text-[#8e8e93]">
+              Kimlik: <span className="font-mono">{String(olay.id ?? "—")}</span>
+            </span>
+            <button
+              onClick={() => setKimlikAcik(true)}
+              className="text-[11px] font-medium text-[#0071e3]"
+            >
+              değiştir
+            </button>
+            {hata("id") !== null && (
+              <span className="text-[11px] font-medium text-[#c7392e]">{hata("id")}</span>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
