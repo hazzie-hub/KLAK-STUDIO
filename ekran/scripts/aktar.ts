@@ -5,8 +5,13 @@
  * varsa güncellenir, yoksa eklenir. Silme yapmaz — veritabanında olup
  * dosyalarda olmayan bir kayda dokunmaz.
  *
- *   npm run aktar          neyin aktarılacağını yazar, aktarır
- *   npm run aktar -- --kuru   hiçbir şey yazmaz, sadece ne olacağını gösterir
+ *   npm run aktar             doğrudan veritabanına yazar (anahtar gerekir)
+ *   npm run aktar -- --kuru   hiçbir şey yazmaz, ne olacağını gösterir
+ *   npm run aktar -- --sql    supabase/02-veri.sql üretir (anahtar GEREKMEZ)
+ *
+ * `--sql` kipi, gizli service role anahtarının bu bilgisayarda hiç bulunmasına
+ * gerek kalmadan veriyi taşımak için: üretilen dosya Supabase panelindeki SQL
+ * düzenleyicisine yapıştırılır.
  */
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -21,6 +26,7 @@ import {
 import { cihazOku, karakterOku } from "../src/icerik/yukle";
 import { readdirSync } from "node:fs";
 import { kodCoz } from "../src/studio/teslim";
+import { writeFileSync } from "node:fs";
 
 const c = {
   yesil: (s: string) => `\x1b[32m${s}\x1b[0m`,
@@ -52,13 +58,27 @@ function klasordekiKodlar(klasor: string): string[] {
     .sort();
 }
 
+/** JSON'u SQL metin sabitine çevirir — tek tırnak ikilenir. */
+function sqlMetni(deger: unknown): string {
+  return `'${JSON.stringify(deger).replace(/'/g, "''")}'`;
+}
+
+function sqlDeger(deger: unknown): string {
+  if (deger === null || deger === undefined) return "null";
+  if (typeof deger === "number") return String(deger);
+  if (typeof deger === "boolean") return deger ? "true" : "false";
+  if (typeof deger === "object") return `${sqlMetni(deger)}::jsonb`;
+  return `'${String(deger).replace(/'/g, "''")}'`;
+}
+
 async function main(): Promise<void> {
   ortamiYukle();
   const kuru = process.argv.includes("--kuru");
+  const sqlKipi = process.argv.includes("--sql");
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anahtar = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (url === undefined || anahtar === undefined || url === "" || anahtar === "") {
+  if (!sqlKipi && (url === undefined || anahtar === undefined || url === "" || anahtar === "")) {
     console.error(
       c.kirmizi("✗") +
         " NEXT_PUBLIC_SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY tanımlı değil.\n" +
@@ -68,9 +88,9 @@ async function main(): Promise<void> {
     return;
   }
 
-  const db = createClient(url, anahtar, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
+  const db = sqlKipi
+    ? null
+    : createClient(url!, anahtar!, { auth: { persistSession: false, autoRefreshToken: false } });
 
   // Sıra ÖNEMLİ: yabancı anahtarlar önce üst kaydı ister.
   const diziler = tumDiziler();
@@ -140,6 +160,47 @@ async function main(): Promise<void> {
     },
   ];
 
+  if (sqlKipi) {
+    const parcalar: string[] = [
+      "-- Ekran — içerik aktarımı (npm run aktar -- --sql ile üretildi)",
+      "-- Supabase panelinde SQL Editor'a yapıştırıp çalıştırın.",
+      "-- Tekrar çalıştırmak güvenlidir: her kayıt upsert edilir, silme yapılmaz.",
+      "",
+      "begin;",
+      "",
+    ];
+    for (const is of isler) {
+      if (is.satirlar.length === 0) continue;
+      const sutunlar = Object.keys(is.satirlar[0]!);
+      const anahtarlar = is.anahtar.split(",");
+      const guncellenecek = sutunlar.filter((x) => !anahtarlar.includes(x));
+      parcalar.push(`-- ${is.tablo}: ${is.satirlar.length} kayıt`);
+      parcalar.push(`insert into ${is.tablo} (${sutunlar.join(", ")}) values`);
+      parcalar.push(
+        is.satirlar
+          .map((satir) => `  (${sutunlar.map((x) => sqlDeger(satir[x])).join(", ")})`)
+          .join(",\n"),
+      );
+      parcalar.push(
+        `on conflict (${anahtarlar.join(", ")}) do update set`,
+        guncellenecek.map((x) => `  ${x} = excluded.${x}`).join(",\n") + ";",
+        "",
+      );
+    }
+    parcalar.push("commit;", "");
+
+    const yol = join(process.cwd(), "supabase", "02-veri.sql");
+    writeFileSync(yol, parcalar.join("\n"), "utf-8");
+    const toplam = isler.reduce((n, is) => n + is.satirlar.length, 0);
+    console.log(`${c.yesil("✓")} supabase/02-veri.sql yazıldı — ${toplam} kayıt`);
+    for (const is of isler) {
+      if (is.satirlar.length > 0) {
+        console.log(`  ${c.soluk("·")} ${is.tablo.padEnd(14)} ${is.satirlar.length}`);
+      }
+    }
+    return;
+  }
+
   console.log(kuru ? c.soluk("KURU ÇALIŞMA — hiçbir şey yazılmayacak\n") : "");
 
   let hata = false;
@@ -152,7 +213,7 @@ async function main(): Promise<void> {
       console.log(`${c.soluk("→")} ${is.tablo.padEnd(14)} ${is.satirlar.length} kayıt`);
       continue;
     }
-    const { error } = await db.from(is.tablo).upsert(is.satirlar, { onConflict: is.anahtar });
+    const { error } = await db!.from(is.tablo).upsert(is.satirlar, { onConflict: is.anahtar });
     if (error !== null) {
       console.error(`${c.kirmizi("✗")} ${is.tablo.padEnd(14)} ${error.message}`);
       hata = true;
