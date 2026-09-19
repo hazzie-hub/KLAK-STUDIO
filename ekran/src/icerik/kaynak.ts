@@ -152,6 +152,14 @@ export async function tumIcerikleriGetir(): Promise<Icerik[]> {
   return supabaseKaynakMi() ? tabloOku("icerikler", IcerikSchema) : tumIcerikler();
 }
 
+export async function tumCihazlariGetir(): Promise<Cihaz[]> {
+  if (supabaseKaynakMi()) return tabloOku("cihazlar", CihazSchema);
+  return tumSahneler()
+    .map((s) => s.cihaz)
+    .filter((c): c is Cihaz => c !== null)
+    .filter((c, i, hepsi) => hepsi.findIndex((x) => x.kod === c.kod) === i);
+}
+
 export async function tumDizileriGetir(): Promise<Dizi[]> {
   return supabaseKaynakMi() ? tabloOku("diziler", DiziSchema) : tumDiziler();
 }

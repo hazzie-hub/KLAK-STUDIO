@@ -10,6 +10,9 @@ import { tumDizileriGetir, tumSahneleriGetir } from "@/icerik/kaynak";
  * Faz 4.1'de yalnızca OKUR: veri hâlâ `content/` altındaki dosyalardan gelir.
  * Düzenleme ekranları Supabase'e geçişten sonra (4.2–4.3).
  */
+/** Stüdyo her zaman taze veri gösterir — kaydedilen sahne anında görünmeli. */
+export const dynamic = "force-dynamic";
+
 export default async function StudioSayfasi() {
   const sahneler = await tumSahneleriGetir();
   const diziler = await tumDizileriGetir();
@@ -32,6 +35,12 @@ export default async function StudioSayfasi() {
         <h1 className="text-[22px] font-semibold tracking-tight">Stüdyo</h1>
         <Link href="/" className="ml-auto text-[13px] text-[#0071e3]">
           Sahne listesi →
+        </Link>
+        <Link
+          href="/studio/yeni"
+          className="rounded-full bg-[#0071e3] px-4 py-[6px] text-[13px] font-medium text-white active:opacity-80"
+        >
+          + Yeni sahne
         </Link>
       </div>
       <p className="mt-1 text-[14px] text-[#6e6e73]">

@@ -1,12 +1,11 @@
 import Link from "next/link";
 
-import { cihazGetir, diziGetir, karakterGetir, sahneGetir, tumSahneKodlariniGetir } from "@/icerik/kaynak";
+import { cihazGetir, diziGetir, karakterGetir, sahneGetir } from "@/icerik/kaynak";
 import { TeslimPaketi } from "@/studio/teslim-paketi";
 import { kodCoz } from "@/studio/teslim";
 
-export async function generateStaticParams() {
-  return (await tumSahneKodlariniGetir()).map((kod) => ({ kod }));
-}
+/** Teslim paketi her zaman taze okunur; sahne düzenlenince anında güncellenir. */
+export const dynamic = "force-dynamic";
 
 /** Stüdyo — tek sahnenin teslim paketi. CLAUDE.md §8 */
 export default async function TeslimSayfasi({ params }: { params: Promise<{ kod: string }> }) {
@@ -33,9 +32,17 @@ export default async function TeslimSayfasi({ params }: { params: Promise<{ kod:
 
   return (
     <main className="acik-sayfa mx-auto min-h-dvh max-w-[760px] px-5 py-8 text-[#1d1d1f]">
-      <Link href="/studio" className="text-[13px] text-[#0071e3]">
-        ← Stüdyo
-      </Link>
+      <div className="flex items-center gap-3">
+        <Link href="/studio" className="text-[13px] text-[#0071e3]">
+          ← Stüdyo
+        </Link>
+        <Link
+          href={`/studio/${kod}/duzenle`}
+          className="ml-auto rounded-full border border-[#d2d2d7] px-4 py-[6px] text-[13px] font-medium text-[#1d1d1f] active:bg-[#f5f5f7]"
+        >
+          Düzenle
+        </Link>
+      </div>
       <TeslimPaketi sahne={sahne} cihaz={cihaz} dizi={dizi} karakter={karakter} />
     </main>
   );
