@@ -56,6 +56,12 @@ const SAHNELER = [
     basta: (m) => !m.includes("Kimseye söyleme."),
   },
   {
+    kod: "eg-b03-s44",
+    ad: "gelen arama",
+    bitti: (m) => m.includes("Sezai") && m.includes("gelen arama"),
+    basta: (m) => !m.includes("gelen arama"),
+  },
+  {
     kod: "eg-b03-s71",
     ad: "pil bitmesi",
     bitti: (_m, d) => d.kapanmaEkrani,

@@ -1,6 +1,7 @@
 "use client";
 
 import type { Modul } from "@/schema";
+import { AramaEkrani } from "./arama-ekrani";
 import { BannerKatmani } from "./banner-katmani";
 import { KapanmaEkrani } from "./kapanma";
 import { PilUyarisi } from "./pil-uyarisi";
@@ -21,6 +22,7 @@ export function SistemKatmani({ aktifModul }: { aktifModul: Modul }) {
     <>
       {bannerGoster && <BannerKatmani />}
       <PilUyarisi />
+      <AramaEkrani />
       <KapanmaEkrani />
     </>
   );

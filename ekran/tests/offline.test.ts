@@ -7,12 +7,22 @@ import { cihazOku, sahneVarliklari, tumHesaplar, tumIcerikler, tumSahneKodlari }
 const KOK = join(import.meta.dirname, "..");
 
 describe("sahneVarliklari — sette ne indirilecek (CLAUDE.md §2.3)", () => {
-  it("tüm post görsellerini ve avatarları listeler", () => {
+  it("tüm post görsellerini, fotoğrafları ve avatarları listeler", () => {
     const varliklar = sahneVarliklari(cihazOku("nergis-telefon"));
-    const postSayisi = tumIcerikler().filter((i) => i.tur === "post").length;
-    const avatarSayisi = tumHesaplar().filter((h) => h.avatar !== undefined).length;
+    const icerikler = tumIcerikler();
 
-    expect(varliklar.filter((v) => v.startsWith("/ornek/"))).toHaveLength(postSayisi);
+    // Post ve foto görselleri aynı klasörde; aynı dosyayı paylaşabilirler,
+    // bu yüzden benzersiz dosya adı üzerinden sayıyoruz.
+    const beklenenGorseller = new Set(
+      icerikler.flatMap((i) =>
+        i.tur === "post" ? [i.veri.gorsel] : i.tur === "foto" ? [i.veri.dosya] : [],
+      ),
+    );
+    const avatarSayisi = new Set(
+      tumHesaplar().flatMap((h) => (h.avatar === undefined ? [] : [h.avatar])),
+    ).size;
+
+    expect(varliklar.filter((v) => v.startsWith("/ornek/"))).toHaveLength(beklenenGorseller.size);
     expect(varliklar.filter((v) => v.startsWith("/avatar/"))).toHaveLength(avatarSayisi);
   });
 

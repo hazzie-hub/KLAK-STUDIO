@@ -309,6 +309,9 @@ CLAUDE.md §3.1'in 4. katmanı: hangi modül açık olursa olsun üstte görüne
 - **Pil uyarısı** — %20, %10, %5 eşiklerinin altına YENİ düşüldüğünde çıkar.
   Sahneye özel değil, genel bir yetenek (CLAUDE.md §2.2): sahne sadece pili
   düşürür, uyarıyı sistem katmanı kendisi çıkarır.
+- **Gelen arama ekranı** — `aramaGeldi` olayıyla gelir, her şeyin üstünü kaplar.
+  Kabul edilince sayaç işler, reddedilince kapanır. Kapanma olay listesine iz
+  bırakmaz; başa sarınca arama yeniden gelir.
 - **Kapanma ekranı** — pil %0 olunca ekran kararır, kısa süre boş pil işareti
   görünür, sonra tamamen siyah kalır.
 

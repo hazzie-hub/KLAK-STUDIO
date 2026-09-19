@@ -1,0 +1,30 @@
+{
+  "kod": "eg-b03-s44",
+  "cihaz": "nergis-telefon",
+  "baslangic": {
+    "modul": "kilit",
+    "ekran": "kilit"
+  },
+  "durum": {
+    "baglanti": "normal",
+    "gorsel": "normal",
+    "saat": "00:12"
+  },
+  "olaylar": [
+    {
+      "id": "arama-geliyor",
+      "ad": "Sezai arar",
+      "tetik": {
+        "tur": "baslangic",
+        "gecikme": 3000
+      },
+      "aksiyon": {
+        "tur": "aramaGeldi",
+        "arayan": "Sezai",
+        "numara": "cep",
+        "gorselRef": "sezai-foto"
+      }
+    }
+  ],
+  "talimat": "Telefon kilitli. 3 sn sonra Sezai arar; gelen arama ekranı her şeyin üstünü kaplar. Oyuncu Kabul et ya da Reddet'e basar. Kabul edince sayaç işlemeye başlar."
+}
