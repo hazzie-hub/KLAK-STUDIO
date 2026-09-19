@@ -34,12 +34,17 @@ export class DokunusSayaci {
   }
 }
 
-/** Nokta, dikdörtgenin verilen köşesindeki kare alanın içinde mi? */
+/**
+ * Nokta, dikdörtgenin verilen köşesindeki kare alanın içinde mi?
+ *
+ * Alan parmak için yeterince büyük (92 px ≈ 1,5 cm): gerçek iPhone'da 70 px
+ * ile isabet ettirmek zordu.
+ */
 export function koseIcinde(
   nokta: { x: number; y: number },
   alan: { sol: number; ust: number; genislik: number; yukseklik: number },
   kose: "sagUst" | "solUst",
-  boyut = 70,
+  boyut = 92,
 ): boolean {
   const ustSinir = alan.ust + boyut;
   if (nokta.y < alan.ust || nokta.y > ustSinir) return false;

@@ -4,9 +4,15 @@ import { useEffect, useRef } from "react";
 
 import { DokunusSayaci, koseIcinde } from "./dokunus-sayaci";
 
-/** Dokunuşun "dokunuş" sayılması için izin verilen en fazla hareket ve süre. */
-const EN_FAZLA_KAYMA = 12;
-const EN_FAZLA_SURE = 700;
+/**
+ * Dokunuşun "dokunuş" sayılması için izin verilen en fazla hareket ve süre.
+ *
+ * Parmak fareden çok daha çok kayar: 12 px farede bol, telefonda hiç yetmiyor
+ * (gerçek iPhone'da denendi, panel hiç açılmadı). Parmak izi genişliği ve
+ * ekran titremesi için pay bırakıldı.
+ */
+const EN_FAZLA_KAYMA = 30;
+const EN_FAZLA_SURE = 900;
 
 /**
  * Köşeye 5 dokunuş dinleyicisi. CLAUDE.md §6
@@ -38,7 +44,13 @@ export function useKoseDokunusu(
     };
 
     const basildi = (e: PointerEvent) => {
-      basimRef.current = { x: e.clientX, y: e.clientY, zaman: e.timeStamp };
+      basimRef.current = { x: e.clientX, y: e.clientY, zaman: Date.now() };
+    };
+
+    // Kaydırma/yakınlaştırma devraldıysa sayaç sıfırlanır.
+    const iptalEdildi = () => {
+      basimRef.current = null;
+      sayacRef.current.sifirla();
     };
 
     const birakildi = (e: PointerEvent) => {
@@ -47,7 +59,7 @@ export function useKoseDokunusu(
       if (basim === null) return;
 
       const kayma = Math.hypot(e.clientX - basim.x, e.clientY - basim.y);
-      const sure = e.timeStamp - basim.zaman;
+      const sure = Date.now() - basim.zaman;
       if (kayma > EN_FAZLA_KAYMA || sure > EN_FAZLA_SURE) {
         sayacRef.current.sifirla();
         return;
@@ -58,14 +70,16 @@ export function useKoseDokunusu(
         return;
       }
 
-      if (sayacRef.current.dokun(e.timeStamp)) tetikRef.current();
+      if (sayacRef.current.dokun(Date.now())) tetikRef.current();
     };
 
     window.addEventListener("pointerdown", basildi, { passive: true });
     window.addEventListener("pointerup", birakildi, { passive: true });
+    window.addEventListener("pointercancel", iptalEdildi, { passive: true });
     return () => {
       window.removeEventListener("pointerdown", basildi);
       window.removeEventListener("pointerup", birakildi);
+      window.removeEventListener("pointercancel", iptalEdildi);
     };
   }, [kose, etkin]);
 }

@@ -6,6 +6,14 @@ html,
 body {
   margin: 0;
   padding: 0;
+  /* iOS hızlı art arda dokunuşu "yakınlaştır" sanıyor ve olayları yutuyordu;
+     gizli panelin 5 dokunuşu bu yüzden telefonda çalışmıyordu. */
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  /* Sette lastik gibi esneyen kaydırma kameraya sahte görünür. */
+  overscroll-behavior: none;
 }
 
 /* Bildirim bannerının üstten inişi. */

@@ -146,6 +146,23 @@ Tarayıcıda ölçüldü — internet kesildikten sonra:
 > Geliştirme sırasında (`npm run dev`) service worker **kapalıdır**, yoksa
 > yaptığın değişiklikler görünmez.
 
+## Set telefonu hazırlığı (iOS)
+
+Gerçek iPhone'da denendi; sırası önemli:
+
+1. Sahneyi **Safari'de** aç
+2. **Paylaş → Ana Ekrana Ekle** → ana ekrandaki ikondan aç
+   *(Safari'den açarsan kamerada iki saat görünür: iPhone'unki + bizimki, ayrıca
+   altta tarayıcı çubuğu kalır. Gizli panel bunu uyarı olarak gösterir.)*
+3. Gizli panelden **"Hazır — internet kesilebilir"** yazdığını gör
+4. **Uçak moduna** al
+5. **Rehberli Erişim**'i aç (Ayarlar → Erişilebilirlik → Rehberli Erişim).
+   Telefonun kendi durum çubuğunu gizleyen tek yol budur; web sayfası onu
+   koddan kaldıramaz.
+
+Ayrıca CLAUDE.md §6: Odak/Rahatsız Etme açık, otomatik kilit kapalı,
+parlaklık sabit.
+
 ## Hazır göstergesi
 
 CLAUDE.md §6: tüm varlıklar inince operatöre sadece onun anlayacağı bir işaret

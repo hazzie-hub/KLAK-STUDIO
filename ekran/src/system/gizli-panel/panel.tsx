@@ -82,13 +82,26 @@ export function GizliPanel({ kapat }: { kapat: () => void }) {
           </div>
           {!hazirlik.swDevrede && (
             <div className="mt-[6px] text-[11px] leading-snug text-white/45">
-              Sayfayı bir kez yenileyin ve birkaç saniye bekleyin. iOS&apos;ta
-              uygulamayı ana ekrana ekledikten sonra İNTERNETLİ olarak bir kez
-              açın; çevrimdışı desteği o zaman kurulur.
+              Birkaç saniye bekleyin. Hâlâ kurulmuyorsa sayfayı bir kez
+              yenileyin.
             </div>
           )}
         </div>
 
+        {!hazirlik.tamEkranUygulama && skin !== "desktop" && (
+          <div className="mb-1 rounded-xl border border-amber-400/40 bg-amber-400/10 px-3 py-[10px]">
+            <div className="font-medium text-white">Tarayıcıdan açık</div>
+            <div className="mt-[2px] text-[11px] leading-snug text-white/55">
+              Kamerada telefonun kendi saati/pili bizimkiyle birlikte görünür ve
+              altta tarayıcı çubuğu kalır. Sete çıkmadan önce:{" "}
+              <strong className="text-white/80">Paylaş → Ana Ekrana Ekle</strong>,
+              sonra ana ekrandaki ikondan açın. Telefonun kendi durum çubuğunu
+              tamamen gizlemek için{" "}
+              <strong className="text-white/80">Rehberli Erişim</strong>
+              &apos;i açın (Ayarlar → Erişilebilirlik).
+            </div>
+          </div>
+        )}
         <Baslik>Olaylar</Baslik>
         <div className="flex flex-col gap-[6px]">
           {sahne.olaylar.map((olay) => {

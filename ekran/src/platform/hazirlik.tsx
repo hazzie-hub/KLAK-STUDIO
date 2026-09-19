@@ -22,6 +22,11 @@ type Hazirlik = {
   toplam: number;
   /** Service worker gerçekten devrede mi? Devrede değilse offline çalışmaz. */
   swDevrede: boolean;
+  /**
+   * Ana ekrandan mı açıldı? iOS'ta tarayıcıdan açılınca hem Safari'nin
+   * çubuğu hem iOS'un durum çubuğu görünür — kameraya iki saat çıkar.
+   */
+  tamEkranUygulama: boolean;
 };
 
 const Baglam = createContext<Hazirlik>({
@@ -30,6 +35,7 @@ const Baglam = createContext<Hazirlik>({
   inen: 0,
   toplam: 0,
   swDevrede: false,
+  tamEkranUygulama: false,
 });
 
 const ISARET_SURESI = 900;
@@ -47,6 +53,14 @@ export function HazirlikSaglayici({
   const [isaretVer, setIsaretVer] = useState(false);
   const [inen, setInen] = useState(0);
   const [swDevrede, setSwDevrede] = useState(false);
+  const [tamEkranUygulama, setTamEkranUygulama] = useState(false);
+
+  useEffect(() => {
+    const iosTamEkran =
+      (navigator as Navigator & { standalone?: boolean }).standalone === true;
+    const digerTamEkran = window.matchMedia("(display-mode: standalone)").matches;
+    setTamEkranUygulama(iosTamEkran || digerTamEkran);
+  }, []);
 
   useEffect(() => {
     let iptal = false;
@@ -54,11 +68,28 @@ export function HazirlikSaglayici({
     const indir = async () => {
       // Service worker varsa devreye girmesini bekle ki indirdiklerimiz önbelleğe girsin.
       if ("serviceWorker" in navigator) {
+        // 1) Kurulumu bitirmesini bekle.
         const kayit = await Promise.race([
           navigator.serviceWorker.ready,
           new Promise<null>((c) => setTimeout(() => c(null), SW_BEKLEME)),
         ]);
-        if (!iptal) setSwDevrede(kayit !== null && navigator.serviceWorker.controller !== null);
+
+        // 2) SAYFAYI DEVRALMASINI bekle. İlk ziyarette kurulum biter ama
+        //    sayfa henüz service worker'ın denetiminde değildir; bu yüzden
+        //    "hazır" dememize rağmen uçak modunda açılmıyordu. Devralana
+        //    kadar bekleyip öyle hazır diyoruz.
+        if (kayit !== null && navigator.serviceWorker.controller === null) {
+          await Promise.race([
+            new Promise<void>((c) => {
+              navigator.serviceWorker.addEventListener("controllerchange", () => c(), {
+                once: true,
+              });
+            }),
+            new Promise<void>((c) => setTimeout(c, SW_BEKLEME)),
+          ]);
+        }
+
+        if (!iptal) setSwDevrede(navigator.serviceWorker.controller !== null);
       }
 
       await Promise.all(
@@ -90,7 +121,14 @@ export function HazirlikSaglayici({
 
   return (
     <Baglam.Provider
-      value={{ hazir, isaretVer, inen, toplam: varliklar.length, swDevrede }}
+      value={{
+        hazir,
+        isaretVer,
+        inen,
+        toplam: varliklar.length,
+        swDevrede,
+        tamEkranUygulama,
+      }}
     >
       {children}
     </Baglam.Provider>
