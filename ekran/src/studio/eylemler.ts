@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { SahneSchema } from "@/schema";
 import {
   StudioHatasi,
+  dosyalardanAktar,
   sahneKilitle,
   sahneSil,
   sahneYaz,
@@ -115,6 +116,32 @@ export async function yeniVersiyon(kod: string): Promise<KayitSonucu> {
   revalidatePath(`/studio/${kod}`);
   revalidatePath("/studio");
   return { ok: true, kod };
+}
+
+/**
+ * Depodaki `content/` dosyalarını veritabanına aktarır.
+ *
+ * Veritabanına geçtikten sonra dosyalar yayını beslemiyor; depoya eklenen
+ * yeni içeriğin veritabanına girmesi için bu gerekiyor. Yalnızca ekler ve
+ * günceller, silmez; kilitli sahnelere dokunmaz.
+ */
+export type AktarimSonucu =
+  | { ok: true; sayim: Record<string, number> }
+  | { ok: false; mesaj: string };
+
+export async function iceriginiAktar(): Promise<AktarimSonucu> {
+  let sayim: Record<string, number>;
+  try {
+    sayim = await dosyalardanAktar();
+  } catch (hata) {
+    const mesaj = hata instanceof StudioHatasi ? hata.message : "İçerik aktarılamadı.";
+    if (!(hata instanceof StudioHatasi)) console.error("[ekran] iceriginiAktar:", hata);
+    return { ok: false, mesaj };
+  }
+
+  revalidatePath("/studio");
+  revalidatePath("/");
+  return { ok: true, sayim };
 }
 
 export async function sahneyiSil(kod: string): Promise<KayitSonucu> {

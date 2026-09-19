@@ -160,6 +160,111 @@ export async function sahneGecmisi(
   });
 }
 
+/**
+ * `content/` dosyalarını veritabanına aktarır. Faz 4.6
+ *
+ * NEDEN VAR: veritabanına geçtikten sonra dosyalar yayını beslemiyor. Depoya
+ * yeni bir sahne ya da içerik eklendiğinde (geliştirme sırasında olur) bunun
+ * veritabanına da girmesi gerekiyor. Alternatifi, üretilen SQL'i panele elle
+ * yapıştırmaktı; bu düğme aynı işi sunucuda yapıyor ve kimseden bir şey
+ * istemiyor.
+ *
+ * Yalnızca EKLER VE GÜNCELLER — veritabanında olup dosyalarda olmayan hiçbir
+ * kaydı silmez. Stüdyo'dan girilen sahneler bu yüzden güvende.
+ */
+export async function dosyalardanAktar(): Promise<Record<string, number>> {
+  const { cihazOku, karakterOku, tumDiziler, tumHesaplar, tumIcerikler, tumSahneler } =
+    await import("./yukle");
+  const { readdirSync, existsSync } = await import("node:fs");
+  const { join } = await import("node:path");
+
+  const kodlar = (klasor: string): string[] => {
+    const yol = join(process.cwd(), "content", klasor);
+    if (!existsSync(yol)) return [];
+    return readdirSync(yol)
+      .filter((d) => d.endsWith(".json"))
+      .map((d) => d.replace(/\.json$/, ""));
+  };
+
+  const db = baglan();
+  const sayim: Record<string, number> = {};
+
+  const yaz = async (tablo: string, anahtar: string, satirlar: Record<string, unknown>[]) => {
+    if (satirlar.length === 0) return;
+    const { error } = await db.from(tablo).upsert(satirlar, { onConflict: anahtar });
+    if (error !== null) throw new StudioHatasi(`"${tablo}" aktarılamadı: ${error.message}`);
+    sayim[tablo] = satirlar.length;
+  };
+
+  // Sıra ÖNEMLİ: yabancı anahtarlar önce üst kaydı ister.
+  const diziler = tumDiziler();
+  await yaz("diziler", "kod", diziler.map((d) => ({ kod: d.kod, veri: d })));
+
+  const karakterler = kodlar("karakterler").flatMap((id) => {
+    const k = karakterOku(id);
+    return k === null ? [] : [k];
+  });
+  await yaz("karakterler", "id", karakterler.map((k) => ({ id: k.id, dizi: k.dizi, veri: k })));
+
+  const cihazlar = kodlar("cihazlar").flatMap((kod) => {
+    const c = cihazOku(kod);
+    return c === null ? [] : [c];
+  });
+  await yaz(
+    "cihazlar",
+    "kod",
+    cihazlar.map((c) => ({ kod: c.kod, karakter: c.karakter ?? null, veri: c })),
+  );
+
+  await yaz(
+    "hesaplar",
+    "id",
+    tumHesaplar().map((h) => ({ id: h.id, dizi: h.dizi ?? null, modul: h.modul, veri: h })),
+  );
+
+  await yaz(
+    "icerikler",
+    "id",
+    tumIcerikler().map((i) => ({ id: i.id, dizi: i.dizi ?? null, tur: i.tur, veri: i })),
+  );
+
+  // Sahneler: KİLİTLİ olanlara dokunulmaz. Onaylanmış bir sahnenin dosyadaki
+  // eski hali, sette oynayan onaylı halin üstüne yazmamalı.
+  const { data: kilitliler } = await db.from("sahneler").select("kod").eq("kilitli", true);
+  const kilitliKodlar = new Set(
+    ((kilitliler ?? []) as Array<{ kod: string }>).map((x) => x.kod),
+  );
+
+  const sahneler = tumSahneler()
+    .map((x) => x.sahne)
+    .filter((x) => !kilitliKodlar.has(x.kod));
+
+  await yaz(
+    "sahneler",
+    "kod",
+    sahneler.map((x) => {
+      const parca = kodCoz(x.kod);
+      return { kod: x.kod, dizi: parca?.dizi ?? null, bolum: parca?.bolum ?? null, veri: x };
+    }),
+  );
+
+  // Bölümler sahne kodlarından türer.
+  const bolumler = new Map<string, { dizi: string; no: number }>();
+  for (const x of tumSahneler().map((y) => y.sahne)) {
+    const parca = kodCoz(x.kod);
+    if (parca === null) continue;
+    bolumler.set(`${parca.dizi}|${parca.bolum}`, { dizi: parca.dizi, no: parca.bolum });
+  }
+  await yaz(
+    "bolumler",
+    "dizi,no",
+    [...bolumler.values()].map((b) => ({ dizi: b.dizi, no: b.no, veri: b })),
+  );
+
+  if (kilitliKodlar.size > 0) sayim["atlanan_kilitli_sahne"] = kilitliKodlar.size;
+  return sayim;
+}
+
 /** Bir sahneyi siler. Geri alınamaz; çağıran onay almalı. */
 export async function sahneSil(kod: string): Promise<void> {
   const durum = await sahneDurumu(kod);

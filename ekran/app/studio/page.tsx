@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { kodCoz } from "@/studio/teslim";
+import { AktarmaDugmesi } from "@/studio/aktarma-dugmesi";
 import { tumDizileriGetir, tumSahneleriGetir } from "@/icerik/kaynak";
 
 /**
@@ -111,6 +112,8 @@ export default async function StudioSayfasi() {
             </section>
           );
         })}
+
+      <AktarmaDugmesi />
     </main>
   );
 }
