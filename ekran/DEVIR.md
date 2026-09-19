@@ -3,7 +3,8 @@
 Bu dosya, yeni bir oturuma başlarken okunacak. `CLAUDE.md` projenin anayasası;
 bu dosya ise **nerede kaldığımızı** anlatır.
 
-Son güncelleme: Faz 2 bitti, Faz 3 başladı, Supabase bağlantısında açık sorun var.
+Son güncelleme: Faz 2 BİTTİ ve yayında doğrulandı. Supabase sorunu çözüldü.
+Sıradaki iş Faz 3 — ama kullanıcıdan karar bekliyor (§5).
 
 ---
 
@@ -15,6 +16,10 @@ Son güncelleme: Faz 2 bitti, Faz 3 başladı, Supabase bağlantısında açık 
 | Dal | `main` (çalışma dalı `claude/phase-1-planning-setup-u2d7wt`, ikisi aynı noktada) |
 | Yayın | https://ekran-rosy.vercel.app — Vercel, kök dizin `ekran` |
 | Veritabanı | Supabase, proje `gyrsjoziawhvjwdqhwcz` (yalnızca kumanda için kullanılıyor) |
+
+Kullanıcının masaüstündeki `KLAK-STUDIO-main` klasörü **eski, kopuk bir
+indirmedir** — git deposu değil, GitHub'a bağlı değil. Ona dokunma, oradan
+çalışma. Çalışma kopyası her oturumda GitHub'dan taze klonlanır.
 
 Kökteki `app/`, `components/`, `hooks/`, `lib/`, `types/` **başka bir projeye**
 aittir (creative-assistant / workflow builder). Ona dokunulmadı, dokunulmayacak.
@@ -38,8 +43,8 @@ Sahneler: `eg-b03-s12` (kilit+bildirim), `eg-b03-s13` (mesajlaşma),
 | Faz | Durum |
 |---|---|
 | **Faz 1** | 10 adımın 10'u bitti. Kabul testi geçiyor. Gerçek iPhone'da test edildi, çıkan 3 sorun düzeltildi. |
-| **Faz 2** (kumanda) | Kod bitti. **Supabase bağlantısı henüz kurulamadı — aşağıya bak.** |
-| **Faz 3** (modüller) | `mesaj` bitti. `arama`, `web`, `telefon` yapılmadı. |
+| **Faz 2** (kumanda) | **BİTTİ.** Supabase kanalı yayında açık, çift yönlü doğrulandı (§3). |
+| **Faz 3** (modüller) | `mesaj` bitti. `arama`, `web`, `telefon` yapılmadı — §5'teki kararlar bekleniyor. |
 | **Faz 4** (Stüdyo) | Başlanmadı. Supabase veritabanı gerekiyor. |
 | **Faz 5** | Başlanmadı. |
 
@@ -48,40 +53,36 @@ Doğrulama: `npm test` (152 test), `npm run validate` (25 dosya),
 
 ---
 
-## 3. AÇIK SORUN — buradan devam edilecek
+## 3. ÇÖZÜLDÜ — Supabase kanalı (kayıt için duruyor)
 
-**Kumanda, Supabase üzerinden bağlanamıyor.**
+**Belirti:** `/k/{kod}` sayfasının üst satırı
+`Supabase · kanal kapalı · CHANNEL_ERROR: channel error: transport failure`.
 
-`/k/eg-b03-s12` sayfasının üst satırı şunu gösteriyordu:
+**Asıl sebep:** Vercel'deki `NEXT_PUBLIC_SUPABASE_ANON_KEY` değişkenine anahtar
+değil, anahtarın **Supabase panelinde gizli gösterilen hâli** yapıştırılmıştı.
+Yani değer `eyJhbGci` ile başlayıp geri kalan 200 karakteri `•` (nokta işareti)
+olan bir metindi. JWT'de olması gereken iki `.` ayıracı hiç yoktu.
 
-```
-Supabase   kanal kapalı   CHANNEL_ERROR: channel error: transport failure
-```
+Kullanıcı anahtarı panelde fareyle seçip kopyalamıştı; Supabase o alanı maskeli
+gösterdiği için maskenin kendisi kopyalanmış oldu.
 
-### Şimdiye kadar yapılanlar
+**Çözüm:** Supabase panelinde **kopyala düğmesiyle** (fareyle seçerek değil)
+alınan legacy `anon` JWT anahtarı Vercel'e yapıştırıldı, önbelleksiz yeniden
+dağıtım yapıldı.
 
-1. Ortam değişkenleri Vercel'e girildi (`NEXT_PUBLIC_SUPABASE_URL`,
-   `NEXT_PUBLIC_SUPABASE_ANON_KEY`). Kumandanın "Supabase" yazması, ikisinin de
-   tarayıcıya ULAŞTIĞINI kanıtlıyor.
-2. İlk denemede `sb_publishable_...` (yeni biçim) anahtar kullanıldı → transport failure.
-3. **Sonra fark edildi:** Vercel'deki `ANON_KEY` değişkeninin DEĞER kutusuna
-   anahtar yerine **değişkenin adı** yapıştırılmıştı. Yani anahtar hiç
-   gitmiyordu. Bu, transport failure'ın muhtemel asıl sebebi.
-4. Değer, Supabase'in **legacy `anon` (JWT, `eyJ...`)** anahtarıyla değiştirildi
-   ve önbelleksiz yeniden dağıtım yapıldı.
-5. **Sonuç öğrenilemedi — oturum burada bitti.**
+**Doğrulama (yayında, iki sekme, gerçekten Supabase üzerinden):**
 
-### Yeni oturumda ilk iş
+- Üst satır: `Supabase · kanal açık`
+- Kumandadan **Başa sar** → oynatıcıdaki mesaj anında silindi
+- Kumandadan **Şimdi** → oynatıcıda mesaj anında düştü
+- Oynatıcıdan kumandaya telemetri geldi: `çevrimiçi`, `pil %42`,
+  `Sıradaki: ikinci-mesaj 2.0 sn`, `Son tetiklenen: ilk-mesaj`
 
-Kullanıcıdan `/k/eg-b03-s12` sayfasının üst gri satırını sormak:
-
-- `Supabase · kanal açık` → **Faz 2 bitti.** İki cihazlı test yapılır
-  (bilgisayarda `/p/eg-b03-s12`, telefonda `/k/eg-b03-s12`).
-- Hâlâ `kanal kapalı` → sarı teşhis metni istenir. Sıradaki şüpheliler:
-  - Supabase projesi yeni açıldıysa Realtime servisi henüz ayakta olmayabilir
-  - Supabase panelinde Realtime'ın kapalı olması
-  - `sb_publishable_` anahtarın Realtime tarafından kabul edilmemesi (legacy
-    JWT anahtara geçildi, bu ihtimal büyük olasılıkla elendi)
+**Ders (koda yansıtılabilir):** Bu tuzak kullanıcıyı İKİ kez yakaladı — önce
+değişkenin adı yapıştırıldı, sonra maskeli görüntü. Her ikisinde de ekranda
+yalnızca anlamsız `transport failure` yazdı. `tasiyiciSec` şu an sadece "boş mu"
+diye bakıyor. Anahtarın JWT biçiminde olup olmadığı denetlenip sade bir Türkçe
+uyarı gösterilebilir. **Kullanıcıya soruldu, karar vermedi — tekrar sorulabilir.**
 
 ---
 
@@ -116,19 +117,39 @@ Kullanıcıdan `/k/eg-b03-s12` sayfasının üst gri satırını sormak:
    Sezai'nin yorumu hâlâ `"..."` (CLAUDE.md'de de öyle yazıyordu, birebir korundu)
 4. **Yapımdan gelen fotoğraflar** — `public/ornek` ve `public/avatar` altındaki
    soyut çizimlerin yerine
+5. **Anahtar biçim denetimi eklensin mi?** — §3'ün sonundaki ders
 
 ---
 
-## 6. Ortam kısıtları (önemli)
+## 6. Çalışma ortamı
 
-- Bu çalışma ortamının ağ politikası **`vercel.app` ve `supabase.co`
-  adreslerini engelliyor.** Yayındaki siteyi veya Supabase'i buradan test etmek
-  MÜMKÜN DEĞİL. Doğrulamayı kullanıcı yapmalı.
+Ortam iki türlü olabiliyor, ikisini karıştırma:
+
+**A) Kullanıcının Mac'i (şu anki durum — tercih edilen)**
+
+- Yayındaki siteye ve Supabase'e **erişilebiliyor.** Tarayıcı panelinden
+  `https://ekran-rosy.vercel.app` açılıp doğrudan teşhis yapılabiliyor —
+  Supabase anahtarı hatası böyle bulundu. Kullanıcıya ekran görüntüsü
+  sorma zahmeti kalktı.
+- `gh` (GitHub komutu) **kuruldu ve giriş yapıldı** (hesap `hazzie-hub`,
+  keyring'de token, `repo` yetkisi var). Koda değişiklik gönderme artık
+  doğrudan buradan yapılabiliyor; kullanıcının elle bir şey yapması gerekmiyor.
+- Çalışma kopyası: depo her oturumda scratchpad'e taze klonlanır, `npm install`
+  çalıştırılır. Masaüstündeki eski klasör kullanılmaz (§1).
+- Tarayıcıda PWA servis çalışanı eski yapıyı önbellekte tutuyor; yeni dağıtımı
+  görmek için servis çalışanını kaldırıp önbelleği temizlemek gerekiyor,
+  yoksa eski sayfa görünüp yanlış teşhis konur.
+
+**B) Bulut oturumu (eski oturumlar böyleydi)**
+
+- Ağ politikası `vercel.app` ve `supabase.co` adreslerini **engelliyor.**
+  Yayındaki siteyi oradan test etmek mümkün değil; doğrulamayı kullanıcı yapmalı.
 - Yerel doğrulama tam çalışıyor: `npm run build && npm run start` + Playwright
   (Chromium: `/opt/pw-browsers/chromium-1194/chrome-linux/chrome`).
-- Sunucu yeniden başlatılırken portun boşaldığından emin olunmalı; `next start`
-  port doluysa sessizce ölüyor ve eski yapı servis edilmeye devam ediyor
-  (bu tuzağa bir kez düşüldü).
+
+Her iki ortamda da: sunucu yeniden başlatılırken portun boşaldığından emin
+olunmalı; `next start` port doluysa sessizce ölüyor ve eski yapı servis
+edilmeye devam ediyor (bu tuzağa bir kez düşüldü).
 
 ---
 
@@ -138,10 +159,10 @@ Kullanıcıdan `/k/eg-b03-s12` sayfasının üst gri satırını sormak:
   Açıklamalar sade olmalı, jargon açıklanmalı.
 - **Aynı anda tek adım ver.** Uzun listeler boğuyor; "geldim" deyince sonraki
   adımı vermek iyi çalıştı.
-- İletişim **Türkçe**. Ekran görüntüsü atarak soruyor; görüntüden okuyup teşhis
-  koymak gerekiyor.
+- İletişim **Türkçe**.
 - Kendi bilgisayarında komut çalıştırmayı sevmiyor — mümkün olan her şeyi
-  bu taraftan yapıp sonucu ekran görüntüsüyle göstermek iyi karşılandı.
+  bu taraftan yapıp sonucu göstermek iyi karşılandı. Mac ortamında (§6-A)
+  bu artık neredeyse tamamen mümkün.
 - Her adım sonunda **GitHub'a ve `main`'e** gidiyor; Vercel kendiliğinden kuruyor.
 - Kredi tüketimine dikkat edilmesi istendi: az ve toplu araç çağrısı, gereksiz
   ekran görüntüsü almamak.
@@ -152,7 +173,8 @@ Kullanıcıdan `/k/eg-b03-s12` sayfasının üst gri satırını sormak:
   `npm run build`, gerektiğinde `npm run kabul`.
 - Tarayıcıda **gerçekten** doğrulamak (sadece test değil) — birkaç gerçek hata
   böyle yakalandı: banner hiç kalkmıyordu, panel gecikmesi ekrana yansımıyordu,
-  offline'da parametreli adres açılmıyordu, telefonda 5 dokunuş çalışmıyordu.
+  offline'da parametreli adres açılmıyordu, telefonda 5 dokunuş çalışmıyordu,
+  ve son olarak Supabase anahtarı maskeli kopyalanmıştı.
 - Bulunan her hatayı commit mesajında açıkça anlatmak.
 
 ---
