@@ -5,6 +5,8 @@ ekranlarında oynatılan kurgusal arayüzler.
 
 Projenin anayasası: [`CLAUDE.md`](./CLAUDE.md). Her oturumda önce o okunur.
 
+Nerede kaldığımız, açık sorunlar ve verilmiş kararlar: [`DEVIR.md`](./DEVIR.md).
+
 ## Kurulum
 
 ```bash
