@@ -46,7 +46,7 @@ export default async function TeslimSayfasi({ params }: { params: Promise<{ kod:
       </div>
       <TeslimPaketi sahne={sahne} cihaz={cihaz} dizi={dizi} karakter={karakter} />
       <div className="mt-5">
-        <YayinlaDugmesi />
+        <YayinlaDugmesi kod={kod} />
       </div>
     </main>
   );

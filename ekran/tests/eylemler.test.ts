@@ -86,21 +86,9 @@ describe("sahneKaydet — doğrulama", () => {
 });
 
 describe("yayınla", () => {
-  it("kanca tanımlı değilse ne yapılacağını söyler", async () => {
-    const onceki = process.env.VERCEL_DEPLOY_HOOK_URL;
-    delete process.env.VERCEL_DEPLOY_HOOK_URL;
-    const sonuc = await yayinla();
+  it("sahne kodu boşsa ne eksik olduğunu söyler", async () => {
+    const sonuc = await yayinla("");
     expect(sonuc.ok).toBe(false);
-    if (!sonuc.ok) expect(sonuc.mesaj).toContain("Deploy Hook");
-    if (onceki !== undefined) process.env.VERCEL_DEPLOY_HOOK_URL = onceki;
-  });
-
-  it("boş metin kurulmuş sayılmaz", async () => {
-    const onceki = process.env.VERCEL_DEPLOY_HOOK_URL;
-    process.env.VERCEL_DEPLOY_HOOK_URL = "   ";
-    const sonuc = await yayinla();
-    expect(sonuc.ok).toBe(false);
-    if (onceki === undefined) delete process.env.VERCEL_DEPLOY_HOOK_URL;
-    else process.env.VERCEL_DEPLOY_HOOK_URL = onceki;
+    if (!sonuc.ok) expect(sonuc.mesaj).toContain("belli değil");
   });
 });

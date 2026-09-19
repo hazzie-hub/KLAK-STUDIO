@@ -41,39 +41,40 @@ export async function sahneKaydet(ham: unknown): Promise<KayitSonucu> {
 
   revalidatePath("/studio");
   revalidatePath(`/studio/${sonuc.data.kod}`);
+  revalidatePath(`/p/${sonuc.data.kod}`);
+  revalidatePath(`/k/${sonuc.data.kod}`);
   revalidatePath("/");
   return { ok: true, kod: sonuc.data.kod };
 }
 
 /**
- * Yayınla: siteyi yeniden kurdurur. CLAUDE.md §2.3
+ * Yayınla: sahnenin sayfalarını tazeler. CLAUDE.md §2.3 / §8
  *
- * Sahne sayfaları STATİK üretilir; yeni kayıt ancak yeniden kurulunca yayına
- * çıkar. Oynatıcının veritabanına canlı bağlanması bilinçli olarak tercih
- * EDİLMEDİ: sette internet kesildiğinde sahne açılmak zorunda.
+ * Sahne sayfaları statik üretilir. Next bunları yeniden KURULUM yapmadan tek
+ * tek tazeleyebiliyor (`revalidatePath`): bir sonraki açılışta sayfa
+ * veritabanındaki son haliyle yeniden üretilir ve yine statik olarak
+ * önbelleğe girer. Sette internetsiz çalışma şartı bozulmuyor.
  *
- * Kurulum 1–2 dakika sürer; bu fonksiyon yalnızca başlatır, beklemez.
+ * ÖNCEKİ TASARIM BIRAKILDI: Vercel deploy hook'una istek atıp tüm siteyi
+ * yeniden kurduruyordu. Çalışırdı ama kullanıcıdan kurulum istiyordu ve iki
+ * dakika sürüyordu. Bu yol hem anında hem kurulumsuz.
  */
 export type YayinSonucu = { ok: true } | { ok: false; mesaj: string };
 
-export async function yayinla(): Promise<YayinSonucu> {
-  const kanca = process.env.VERCEL_DEPLOY_HOOK_URL;
-  if (typeof kanca !== "string" || kanca.trim() === "") {
-    return {
-      ok: false,
-      mesaj:
-        "Yayınlama kurulmamış. Vercel'de bir Deploy Hook oluşturup adresini VERCEL_DEPLOY_HOOK_URL değişkenine girin.",
-    };
+export async function yayinla(kod: string): Promise<YayinSonucu> {
+  if (typeof kod !== "string" || kod.trim() === "") {
+    return { ok: false, mesaj: "Hangi sahnenin yayınlanacağı belli değil." };
   }
 
   try {
-    const cevap = await fetch(kanca, { method: "POST" });
-    if (!cevap.ok) {
-      return { ok: false, mesaj: `Yayın başlatılamadı (${cevap.status}).` };
-    }
+    revalidatePath(`/p/${kod}`);
+    revalidatePath(`/k/${kod}`);
+    revalidatePath(`/studio/${kod}`);
+    revalidatePath("/studio");
+    revalidatePath("/");
   } catch (hata) {
     console.error("[ekran] yayinla:", hata);
-    return { ok: false, mesaj: "Yayın başlatılamadı. Ağ bağlantısını kontrol edin." };
+    return { ok: false, mesaj: "Yayınlanamadı. Sayfayı yenileyip tekrar deneyin." };
   }
 
   return { ok: true };

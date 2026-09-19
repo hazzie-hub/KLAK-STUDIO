@@ -11,7 +11,7 @@ import { yayinla, type YayinSonucu } from "./eylemler";
  * statik üretildiği için sitenin yeniden kurulması gerekir. Bu ayrım bilerek
  * görünür tutuldu: operatör neyin yayında olduğunu bilmeli.
  */
-export function YayinlaDugmesi() {
+export function YayinlaDugmesi({ kod }: { kod: string }) {
   const [bekliyor, basla] = useTransition();
   const [sonuc, setSonuc] = useState<YayinSonucu | null>(null);
 
@@ -23,14 +23,14 @@ export function YayinlaDugmesi() {
             Yayın
           </h3>
           <p className="mt-1 text-[12px] leading-relaxed text-[#6e6e73]">
-            Kaydedilen değişiklikler sete ancak yayınlandıktan sonra gider. Yayın 1–2 dakika
-            sürer; bu sırada eski sürüm ayakta kalır.
+            Kaydedilen değişiklikler sete ancak yayınlandıktan sonra gider. Yayınlamak
+            birkaç saniye sürer, kurulum beklemez.
           </p>
         </div>
         <button
           onClick={() => {
             setSonuc(null);
-            basla(async () => setSonuc(await yayinla()));
+            basla(async () => setSonuc(await yayinla(kod)));
           }}
           disabled={bekliyor}
           className="shrink-0 rounded-full bg-[#1d1d1f] px-5 py-[9px] text-[14px] font-medium text-white active:opacity-80 disabled:opacity-50"
@@ -44,7 +44,7 @@ export function YayinlaDugmesi() {
           className={`mt-3 text-[13px] ${sonuc.ok ? "text-[#1d6b3f]" : "text-[#8c2820]"}`}
         >
           {sonuc.ok
-            ? "Yayın başlatıldı. 1–2 dakika sonra sahne linki güncel olacak."
+            ? "Yayınlandı. Sahne linki artık güncel."
             : sonuc.mesaj}
         </p>
       )}

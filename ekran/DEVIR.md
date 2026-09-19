@@ -57,7 +57,7 @@ denemek için açıldı. Yapımdan gerçek sahne numaraları gelince dosya adlar
 | **Faz 4** (Stüdyo) | 4.1 bitti (aşağıdaki plan). 4.2'de Supabase gerekiyor. |
 | **Faz 5** | Başlanmadı. |
 
-Doğrulama: `npm test` (245 test), `npm run validate` (32 dosya),
+Doğrulama: `npm test` (244 test), `npm run validate` (32 dosya),
 `npm run kabul` (3 kabuk × 6 sahne × 20 tur, internet kesik).
 
 ---
@@ -160,10 +160,13 @@ bölüm, tür) ayrıca sütun.
 - Doğrulama tek yerde: form serbest taslak tutar, kaydederken `SahneSchema`
   çalışır, hatalar alan alan gösterilir.
 - Stüdyo sayfaları `force-dynamic`. Oynatıcı sayfaları STATİK kalır.
-- **Yayınla** düğmesi `VERCEL_DEPLOY_HOOK_URL` değişkenini kullanır.
-  HENÜZ TANIMLI DEĞİL — kurulmadan düğme "Yayınlama kurulmamış" der.
-  Kullanıcıdan istenecek: Vercel → Settings → Git → Deploy Hooks'tan bir kanca
-  oluşturup adresini bu değişkene girmek.
+- **Yayınlama kurulum İSTEMEZ.** Kaydetmek, sahnenin oyuncu ve kumanda
+  sayfalarını `revalidatePath` ile tazeler; sayfa bir sonraki açılışta
+  veritabanındaki son haliyle yeniden üretilir ve yine statik kalır. Sette
+  internetsiz çalışma şartı bozulmuyor. "Yayınla" düğmesi aynı şeyi elle
+  yapar, emin olmak isteyenler için.
+  Vercel deploy hook fikri DENENDİ VE BIRAKILDI: çalışırdı ama kullanıcıdan
+  kurulum istiyordu ve iki dakika sürüyordu (bkz. §7'deki kural).
 
 ---
 
@@ -254,8 +257,18 @@ edilmeye devam ediyor (bu tuzağa bir kez düşüldü).
 
 - **Kullanıcı yazılımcı değil.** Terminal, GitHub, Vercel gibi şeyler yeni.
   Açıklamalar sade olmalı, jargon açıklanmalı.
+- **GEREKMEDİKÇE KULLANICIDAN HİÇBİR ŞEY İSTEME.** Bu, kullanıcının açık
+  talimatıdır. İki yol varsa senin tek başına tamamlayabildiğini seç; kullanıcı
+  yükü farkı genellikle diğer ölçütlerden baskındır. Bir adım istemeden önce
+  "bunu ben yapabilir miyim?" diye sor — genellikle yapılabiliyor:
+  Vercel deploy hook kurdurmak yerine Next'in `revalidatePath`'i, elle veri
+  girişi yerine üretilen SQL, gizli anahtarı yerelde tutmak yerine anahtarsız
+  çalışan bir kip. Gerçekten zorunlu tek iş tipi: yalnızca onun hesabında
+  yapılabilen ve gizli bilgi gerektirenler. Onu da tek seferde, sebebiyle iste.
+  Seçimini bildir ama onay için bekleme.
 - **Aynı anda tek adım ver.** Uzun listeler boğuyor; "geldim" deyince sonraki
-  adımı vermek iyi çalıştı.
+  adımı vermek iyi çalıştı. Bu, yukarıdaki kuralın istisnası değil: önce
+  isteme, istemek zorundaysan tek adım ver.
 - İletişim **Türkçe**.
 - Kendi bilgisayarında komut çalıştırmayı sevmiyor — mümkün olan her şeyi
   bu taraftan yapıp sonucu göstermek iyi karşılandı. Mac ortamında (§6-A)
