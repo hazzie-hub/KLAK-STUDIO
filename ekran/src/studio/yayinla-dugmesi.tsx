@@ -23,8 +23,8 @@ export function YayinlaDugmesi({ kod }: { kod: string }) {
             Yayın
           </h3>
           <p className="mt-1 text-[12px] leading-relaxed text-[#6e6e73]">
-            Kaydedilen değişiklikler sete ancak yayınlandıktan sonra gider. Yayınlamak
-            birkaç saniye sürer, kurulum beklemez.
+            Kaydedince sahne linki kendiliğinden güncellenir. Bu düğme aynı şeyi elle
+            yapar: emin olmak istediğinizde kullanın, birkaç saniye sürer.
           </p>
         </div>
         <button

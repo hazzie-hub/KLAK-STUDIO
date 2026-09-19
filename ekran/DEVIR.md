@@ -286,6 +286,11 @@ edilmeye devam ediyor (bu tuzağa bir kez düşüldü).
   offline'da parametreli adres açılmıyordu, telefonda 5 dokunuş çalışmıyordu,
   ve son olarak Supabase anahtarı maskeli kopyalanmıştı.
 - Bulunan her hatayı commit mesajında açıkça anlatmak.
+- **Toplu metin değişiminde MUTLAKA doğrula.** Betikle yapılan `replace`
+  eşleşmezse sessizce hiçbir şey yapmaz ve "tamam" yazar. Bir kez buna
+  düşüldü: arayüz metni hiç değişmedi, sonra yayında o metin aranıp
+  "kurulum gelmedi" sanıldı ve yarım saat boşa gitti. Ya `assert eski in s`
+  yaz, ya da tek tek düzenleme aracını kullan.
 
 ### Bilinen, henüz çözülmemiş küçük konular
 
