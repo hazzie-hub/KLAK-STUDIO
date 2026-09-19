@@ -77,7 +77,7 @@ export function cihazHazirligi(skin: Skin, kumandaVar: boolean): string[] {
     "Otomatik kilit KAPALI",
     "Parlaklık sabit (otomatik parlaklık kapalı)",
     skin === "ios"
-      ? "Rehberli Erişim açık (Ayarlar → Erişilebilirlik)"
+      ? "Sahne açıkken yan tuşa ÜÇ KEZ basıp Rehberli Erişim'i BAŞLATIN. Telefonun kendi saati ve pil göstergesi ancak böyle kaybolur; sadece ayarlardan açmak yetmez. (Ayarlar → Erişilebilirlik → Rehberli Erişim'den bir kez etkinleştirilmiş olmalı.)"
       : "Ekran Sabitleme açık (Ayarlar → Güvenlik)",
     kumandaVar
       ? "Wi-Fi ya da operatörün hotspot'u açık — kumanda bağlanacak"

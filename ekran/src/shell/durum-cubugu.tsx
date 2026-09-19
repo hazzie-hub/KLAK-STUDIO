@@ -38,10 +38,15 @@ export function DurumCubugu({
       <div
         className="relative z-30 flex shrink-0 items-end justify-between px-[26px] pb-[6px] text-[15px] font-semibold tabular-nums"
         style={{
-          height: "var(--durum-cubugu-yukseklik)",
+          // Güvenli alan payı yüksekliğin İÇİNE değil ÜSTÜNE eklenir. Aksi
+          // halde kutu taşar ve çizdiğimiz saat, gerçek cihazın saatinin
+          // üstüne biner — sette iki saat görünür.
+          height: cerceveli
+            ? "var(--durum-cubugu-yukseklik)"
+            : "calc(var(--durum-cubugu-yukseklik) + env(safe-area-inset-top))",
           color: renk,
           textShadow: golge,
-          paddingTop: cerceveli ? "14px" : "max(14px, env(safe-area-inset-top))",
+          paddingTop: cerceveli ? "14px" : "calc(14px + env(safe-area-inset-top))",
         }}
       >
         <span className="tracking-tight">
@@ -61,7 +66,9 @@ export function DurumCubugu({
     <div
       className="relative z-30 flex shrink-0 items-center justify-between px-4 text-[13px] font-medium tabular-nums"
       style={{
-        height: "var(--durum-cubugu-yukseklik)",
+        height: cerceveli
+          ? "var(--durum-cubugu-yukseklik)"
+          : "calc(var(--durum-cubugu-yukseklik) + env(safe-area-inset-top))",
         color: renk,
         textShadow: golge,
         paddingTop: cerceveli ? "0" : "env(safe-area-inset-top)",

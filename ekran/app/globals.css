@@ -6,6 +6,11 @@ html,
 body {
   margin: 0;
   padding: 0;
+  /* Sayfanın kendi zemini SİYAH. Telefonda sahne tam ekran açılınca, güvenli
+     alanın altında kalan şerit tarayıcının varsayılan beyazıyla boyanıyordu ve
+     kameraya beyaz bir bant giriyordu. Oynatıcı kendi zeminini üstüne çizer;
+     operatör sayfaları `.acik-sayfa` ile beyaza döner. */
+  background: #000;
   /* iOS hızlı art arda dokunuşu "yakınlaştır" sanıyor ve olayları yutuyordu;
      gizli panelin 5 dokunuşu bu yüzden telefonda çalışmıyordu. */
   touch-action: manipulation;

@@ -76,9 +76,18 @@ describe("service worker yapılandırması", () => {
 });
 
 describe("PWA manifesti — CLAUDE.md §4", () => {
-  it("standalone modda açılır (tarayıcı çubuğu görünmez)", () => {
+  it("tarayıcı çubuğu görünmeyecek şekilde açılır", () => {
     const m = readFileSync(join(KOK, "app/manifest.ts"), "utf-8");
-    expect(m).toContain('display: "standalone"');
+    // `fullscreen` Android'de telefonun durum çubuğunu da gizler; desteklenmeyen
+    // yerlerde `standalone`a düşmesi için yedek zincir bildirilmeli. İkisi de
+    // tarayıcı çubuğunu kaldırır; kabul edilmeyen tek şey "browser".
+    const kabul = ['display: "fullscreen"', 'display: "standalone"'];
+    expect(kabul.some((x) => m.includes(x))).toBe(true);
+    expect(m).not.toContain('display: "browser"');
+    if (m.includes('display: "fullscreen"')) {
+      expect(m).toContain("display_override");
+      expect(m).toContain('"standalone"');
+    }
   });
 
   it("iOS için ana ekran desteği bildirilmiş", () => {

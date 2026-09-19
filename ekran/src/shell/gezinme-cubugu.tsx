@@ -19,7 +19,11 @@ export function GezinmeCubugu({
     <div
       className="relative z-30 flex shrink-0 items-center justify-center"
       style={{
-        height: "var(--alt-cubuk-yukseklik)",
+        // Güvenli alan payı yüksekliğin ÜSTÜNE eklenir; içine eklenirse ana
+        // ekran çizgisi aşağı taşar ve altta boşluk kalır.
+        height: cerceveli
+          ? "var(--alt-cubuk-yukseklik)"
+          : "calc(var(--alt-cubuk-yukseklik) + env(safe-area-inset-bottom))",
         paddingBottom: cerceveli ? "0" : "env(safe-area-inset-bottom)",
       }}
     >
