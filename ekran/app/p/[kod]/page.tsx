@@ -1,13 +1,5 @@
-import {
-  DurumSaglayici,
-  durumEzmeleri,
-  tekDeger,
-  type Aramalar,
-} from "@/durum";
-import { SahneSaglayici } from "@/engine";
-import { ModulSec, modulGorunumu } from "@/modules";
-import { GizliKatman, SistemKatmani } from "@/system";
-import { Kabuk, gorunenDurum, skinSec } from "@/shell";
+import { Suspense } from "react";
+
 import {
   cihazOku,
   sahneOku,
@@ -16,24 +8,20 @@ import {
   tumIcerikler,
   tumSahneKodlari,
 } from "@/icerik/yukle";
-import { HazirlikSaglayici } from "@/platform/hazirlik";
-import { KutuphaneSaglayici } from "@/icerik/kutuphane";
+import { Oynatici } from "@/oynatici";
 
 /** Sahneler derleme anında üretilir — sette internet gerekmez (CLAUDE.md §2.3). */
 export function generateStaticParams() {
   return tumSahneKodlari().map((kod) => ({ kod }));
 }
 
-export default async function OynaticiSayfasi({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ kod: string }>;
-  searchParams: Promise<Aramalar>;
-}) {
+/**
+ * Sayfa TAMAMEN STATİK: adres çubuğu parametreleri burada okunmaz, `Oynatici`
+ * içinde istemci tarafında okunur. Böylece service worker önbelleğindeki tek
+ * kopya `?skin=android` gibi parametrelerle de eşleşir ve offline açılır.
+ */
+export default async function OynaticiSayfasi({ params }: { params: Promise<{ kod: string }> }) {
   const { kod } = await params;
-  const aramalar = await searchParams;
-
   const sahne = sahneOku(kod);
 
   // CLAUDE.md §2.6: kamerada hata mesajı görünmez.
@@ -50,30 +38,15 @@ export default async function OynaticiSayfasi({
     );
   }
 
-  const skin = skinSec(tekDeger(aramalar, "skin"), cihaz?.skin);
-  const onizleme = tekDeger(aramalar, "onizleme") === "1";
-  const durum = durumEzmeleri(aramalar, gorunenDurum(sahne, cihaz));
-
-  const gorunum = modulGorunumu(sahne.baslangic.modul);
-
   return (
-    <HazirlikSaglayici varliklar={sahneVarliklari(cihaz)}>
-      <DurumSaglayici baslangic={durum}>
-        <KutuphaneSaglayici hesaplar={tumHesaplar()} icerikler={tumIcerikler()}>
-          <SahneSaglayici sahne={sahne}>
-            <Kabuk
-              skin={skin}
-              onizleme={onizleme}
-              icerikUste={gorunum.icerikUste}
-              ustKatman={gorunum.ustKatman}
-            >
-              <ModulSec sahne={sahne} cihaz={cihaz} />
-              <SistemKatmani aktifModul={sahne.baslangic.modul} />
-              <GizliKatman />
-            </Kabuk>
-          </SahneSaglayici>
-        </KutuphaneSaglayici>
-      </DurumSaglayici>
-    </HazirlikSaglayici>
+    <Suspense fallback={<div className="fixed inset-0" style={{ background: "#000" }} />}>
+      <Oynatici
+        sahne={sahne}
+        cihaz={cihaz}
+        hesaplar={tumHesaplar()}
+        icerikler={tumIcerikler()}
+        varliklar={sahneVarliklari(cihaz)}
+      />
+    </Suspense>
   );
 }

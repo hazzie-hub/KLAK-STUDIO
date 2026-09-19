@@ -19,8 +19,38 @@ npm install
 | `npm run validate` | `/content` altındaki tüm sahne ve veri dosyalarını denetler |
 | `npm test` | Şema testlerini çalıştırır |
 | `npm run typecheck` | TypeScript tip denetimi |
+| `npm run kabul` | Kabul testi — aşağıya bak |
 | `npm run dev` | Geliştirme sunucusu (http://localhost:3000) |
 | `npm run build` | Üretim derlemesi |
+
+## Kabul testi
+
+Faz 1'in bitiş şartı (CLAUDE.md §9): sahneler üç cihazda, **internetsiz**,
+**20 tekrar üst üste** hatasız oynamalı. `npm run kabul` bunu otomatik yapar.
+
+```bash
+npx playwright install chromium   # bir kereye mahsus
+npm run build && npm run start    # ayrı bir terminalde
+npm run kabul
+```
+
+İki aşamalı:
+
+1. **Panelden sürülen turlar** — 3 kabuk × 4 sahne × 20 tur = 240 tur.
+   Her turda olaylar gizli panelden tetiklenir (sette operatörün yaptığı),
+   ekranın beklenen hale geldiği doğrulanır, sol üst köşeye 5 dokunuşla başa
+   sarılır ve ilk hale döndüğü doğrulanır.
+2. **Gerçek dokunuşlu turlar** — oyuncunun yaptığı: `+` → fotoğraf → Paylaş,
+   sonra zincirin kendi süresini beklemek.
+
+Her turda denetlenen: beklenen son durum, ekranda teknik metin olmaması,
+tüm görsellerin yüklenmiş olması, başa sarmanın tam olması, konsolun temiz olması.
+
+Son çalıştırma: **240 + 9 tur, internet kesik, sıfır hata.**
+
+> Bu otomatik test gerçek cihaz testinin YERİNE GEÇMEZ. Faz 1 ancak sahneler
+> gerçek bir iPhone'da, gerçek bir Android'de ve set bilgisayarında uçak
+> modunda oynatıldıktan sonra biter.
 
 ## Klasörler
 

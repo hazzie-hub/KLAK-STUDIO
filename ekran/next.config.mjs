@@ -75,6 +75,8 @@ const withSerwist = withSerwistInit({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Kökteki diğer proje de bir lockfile taşıyor; kökü açıkça bildiriyoruz.
+  outputFileTracingRoot: process.cwd(),
 };
 
 export default withSerwist(nextConfig);

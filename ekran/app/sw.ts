@@ -20,6 +20,10 @@ declare const self: ServiceWorkerGlobalScope;
 
 const serwist = new Serwist({
   precacheEntries: self.__SW_MANIFEST,
+  // Sahne adresi ?skin= / ?pil= gibi parametreler alabilir. Bunlar istemcide
+  // okunuyor, sayfa her parametrede aynı. Önbellek eşleşmesinde parametreleri
+  // yok sayıyoruz ki sette parametreli adres offline da açılsın.
+  precacheOptions: { ignoreURLParametersMatching: [/.*/] },
   skipWaiting: true,
   clientsClaim: true,
   navigationPreload: true,
